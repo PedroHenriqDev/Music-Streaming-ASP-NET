@@ -1,6 +1,6 @@
 ﻿namespace MusicWeave.Models.Interfaces
 {
-    public interface IEntity
+    public interface IEntity<T> where T : class
     {
         int Id { get; }
     }

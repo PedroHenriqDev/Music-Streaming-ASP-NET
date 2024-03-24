@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddLogging();
-builder.Services.AddScoped<RegisterService>();
+builder.Services.AddScoped<RegisterUserService>();
 builder.Services.AddScoped<VerifyService>();
 builder.Services.AddScoped<EncryptService>();
 builder.Services.AddScoped<ConnectionDb>();

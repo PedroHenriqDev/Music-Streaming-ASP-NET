@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MusicWeave.Models.ViewModels
 {
-    public class RegisterUserViewModel : Listener
+    public class RegisterListenerViewModel : Listener
     {
         [Required]
         public string Username { get; set; }

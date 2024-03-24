@@ -1,7 +1,6 @@
 ﻿using System.Data.SqlClient;
 using Dapper;
 using MusicWeave.Exceptions;
-using MusicWeave.Models.AbstractClasses;
 using MusicWeave.Models.ConcreteClasses;
 using MusicWeave.Models.Interfaces;
 
@@ -41,20 +40,47 @@ namespace MusicWeave.Data
             }
         }
 
-        public async Task<User> GetUserByEmailAsync(string email) 
+        public async Task<IUser<T>> GetUserByEmailAsync<T>(T user) 
+            where T : class, IUser<T> 
         {
-            if(email == null) 
+            if(user == null) 
             {
-                _logger.LogWarning("At the time of query the email was null");
-                throw new DbException("Email used as a paramater is null");
+                _logger.LogWarning("At the time of query the user was null");
+                throw new DbException("User used as a paramater is null");
+            }
+
+            using(SqlConnection connection = new SqlConnection(GetConnectionString())) 
+            {
+                string tableName = typeof(T).Name + "s";
+                string sqlQuery = $"SELECT * FROM {tableName} WHERE Email = @email";
+                return await connection.QueryFirstOrDefaultAsync<T>(sqlQuery, new {email = user.Email });
+            }
+        }
+
+        public async Task CreateListenerAsync(Listener listener) 
+        {
+            if(listener == null) 
+            {
+                _logger.LogWarning("At the time of query the user was null");
+                throw new DbException("User used as a paramater is null");
             }
 
             using(SqlConnection connection = new SqlConnection(GetConnectionString())) 
             {
                 connection.Open();
-                string sqlQuery = $"SELECT * FROM Users WHEre Email = @email";
-                return await connection.QueryFirstOrDefaultAsync<User>(sqlQuery, new {email = email});
+                string sqlQuery = @$"INSERT INTO Users (Id, Email, Name, Password, Description, BirthDate, PhoneNumber) 
+                                     VALUES (@id, @email, password, description, birthDate, phoneNumber)";
+
+                await connection.QueryAsync(sqlQuery, new 
+                {
+                    id = listener.Id, 
+                    email = listener.Email, 
+                    password = listener.Password, 
+                    description = listener.Description, 
+                    birthDate = listener.BirthDate, 
+                    phoneNumber = listener.PhoneNumber
+                });
             }
-        }
+        } 
     }
 }
