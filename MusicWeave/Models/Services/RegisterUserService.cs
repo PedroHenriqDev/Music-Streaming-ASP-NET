@@ -17,11 +17,13 @@ namespace MusicWeave.Models.Services
         public RegisterUserService(
             ILogger<RegisterUserService> logger,
             ConnectionDb connectionDb,
-            VerifyService verifyService)
+            VerifyService verifyService,
+            EncryptService encryptService)
         {
             _logger = logger;
             _connectionDb = connectionDb;
             _verifyService = verifyService;
+            _encryptService = encryptService;
         }
 
         private int RamdomId() 
@@ -30,21 +32,21 @@ namespace MusicWeave.Models.Services
             return random.Next();
         }
 
-        public async void CreateListenerAsync(RegisterListenerViewModel userVM) 
+        public async Task CreateListenerAsync(RegisterListenerViewModel listenerVM) 
         {
-            if (await _verifyService.HasNameInDbAsync<Listener>((Listener)userVM)) 
+            if (await _verifyService.HasNameInDbAsync<Listener>((Listener)listenerVM)) 
             {
                 _logger.LogInformation("User creation attempt failed because the same name already exists in the database");
                 throw new RegisterException("This name exist");
             }
 
-            if(await _verifyService.HasEmailInDbAsync<Listener>((Listener)userVM))
+            if(await _verifyService.HasEmailInDbAsync<Listener>((Listener)listenerVM))
             {
                 _logger.LogInformation("User creation attempt failed because the same email already exists in the database");
                 throw new RegisterException("This email exist");
             }
 
-            await _connectionDb.CreateListenerAsync(new Listener(RamdomId(), userVM.Username, _encryptService.EncryptPasswordSHA512(userVM.Password), userVM.Email, userVM.PhoneNumber, userVM.Description, userVM.BirthDate));
+            await _connectionDb.CreateListenerAsync(new Listener(RamdomId(), listenerVM.Name, _encryptService.EncryptPasswordSHA512(listenerVM.Password), listenerVM.Email, listenerVM.PhoneNumber, listenerVM.Description, listenerVM.BirthDate));
         }
     }
 }

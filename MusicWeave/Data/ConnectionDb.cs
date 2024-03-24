@@ -11,7 +11,9 @@ namespace MusicWeave.Data
         private readonly IConfiguration _configuration;
         private readonly ILogger<ConnectionDb> _logger;
 
-        public ConnectionDb(IConfiguration configuration, ILogger<ConnectionDb> logger) 
+        public ConnectionDb(
+            IConfiguration configuration,
+            ILogger<ConnectionDb> logger) 
         {
             _configuration = configuration;
             _logger = logger;
@@ -28,7 +30,7 @@ namespace MusicWeave.Data
             if(entity == null) 
             {
                 _logger.LogWarning("At the time of query the object was null");
-                throw new DbException("Object used as a parameter is null");
+                throw new ConnectionDbException("Object used as a parameter is null");
             }
 
             using (SqlConnection connection = new SqlConnection(GetConnectionString()))
@@ -46,7 +48,7 @@ namespace MusicWeave.Data
             if(user == null) 
             {
                 _logger.LogWarning("At the time of query the user was null");
-                throw new DbException("User used as a paramater is null");
+                throw new ConnectionDbException("User used as a paramater is null");
             }
 
             using(SqlConnection connection = new SqlConnection(GetConnectionString())) 
@@ -62,19 +64,20 @@ namespace MusicWeave.Data
             if(listener == null) 
             {
                 _logger.LogWarning("At the time of query the user was null");
-                throw new DbException("User used as a paramater is null");
+                throw new ConnectionDbException("User used as a paramater is null");
             }
 
             using(SqlConnection connection = new SqlConnection(GetConnectionString())) 
             {
                 connection.Open();
-                string sqlQuery = @$"INSERT INTO Users (Id, Email, Name, Password, Description, BirthDate, PhoneNumber) 
-                                     VALUES (@id, @email, password, description, birthDate, phoneNumber)";
+                string sqlQuery = @$"INSERT INTO Listeners (Id, Email, Name, Password, Description, BirthDate, PhoneNumber) 
+                                     VALUES (@id, @email, @name, @password, @description, @birthDate, @phoneNumber)";
 
                 await connection.QueryAsync(sqlQuery, new 
                 {
                     id = listener.Id, 
                     email = listener.Email, 
+                    name = listener.Name,
                     password = listener.Password, 
                     description = listener.Description, 
                     birthDate = listener.BirthDate, 

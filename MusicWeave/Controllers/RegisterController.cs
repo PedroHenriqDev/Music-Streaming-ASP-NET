@@ -1,12 +1,68 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using MusicWeave.Exceptions;
+using MusicWeave.Models.Services;
+using MusicWeave.Models.ViewModels;
+using System.Data.Common;
+using System.Diagnostics;
 
 namespace MusicWeave.Controllers
 {
     public class RegisterController : Controller
     {
-        public IActionResult Register()
+
+        private readonly RegisterUserService _registerService;
+
+        public RegisterController(RegisterUserService registerService)
+        {
+            _registerService = registerService;
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult RegisterListener()
         {
             return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AllowAnonymous]
+        public async Task<IActionResult> RegisterListener(RegisterListenerViewModel listenerVM) 
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    await _registerService.CreateListenerAsync(listenerVM);
+                    TempData["SuccessMessage"] = "User created successfully";
+                    return RedirectToAction("Login", "Login");
+                }
+                return View(listenerVM);
+            }
+            catch (RegisterException ex)
+            {
+                TempData["ErrorMessage"] = "User created successfully";
+                return View(listenerVM);
+            }
+            catch (ConnectionDbException ex)
+            {
+                return RedirectToAction(nameof(Error), new { message = ex.Message });
+            }
+            catch(EncryptException ex) 
+            {
+                return RedirectToAction(nameof(Error), new { message = ex.Message });
+            }
+        }
+            
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error(string message)
+        {
+            return View(new ErrorViewModel 
+            {  
+                Message = message,
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier 
+            });
         }
     }
 }

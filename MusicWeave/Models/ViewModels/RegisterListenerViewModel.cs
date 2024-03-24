@@ -7,7 +7,7 @@ namespace MusicWeave.Models.ViewModels
     public class RegisterListenerViewModel : Listener
     {
         [Required]
-        public string Username { get; set; }
+        public string Name { get; set; }
 
         [Required]
         public string Password { get; set; }
