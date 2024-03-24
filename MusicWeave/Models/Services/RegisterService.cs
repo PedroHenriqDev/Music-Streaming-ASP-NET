@@ -21,5 +21,16 @@ namespace MusicWeave.Models.Services
             _connectionDb = connectionDb;
             _verifyService = verifyService;
         }
+
+        public async void CreateUserAsync(RegisterUserViewModel userVM) 
+        {
+            if (await _verifyService.HasNameInDbAsync<User>((User)userVM)) 
+            {
+                _logger.LogInformation("User creation attempt failed because the same name already exists in the database");
+                throw new RegisterException("This name exist");
+            }
+
+            
+        }
     }
 }
