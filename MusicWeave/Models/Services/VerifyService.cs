@@ -1,4 +1,4 @@
-﻿using MusicWeave.Data;
+﻿using MusicWeave.Datas;
 using MusicWeave.Models.Interfaces;
 
 namespace MusicWeave.Models.Services

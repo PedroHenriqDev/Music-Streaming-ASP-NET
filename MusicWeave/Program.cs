@@ -1,5 +1,5 @@
 
-using MusicWeave.Data;
+using MusicWeave.Datas;
 using MusicWeave.Models.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,7 +11,16 @@ builder.Services.AddScoped<RegisterUserService>();
 builder.Services.AddScoped<LoginService>();
 builder.Services.AddScoped<VerifyService>();
 builder.Services.AddScoped<EncryptService>();
+builder.Services.AddScoped<SearchService>();
 builder.Services.AddScoped<ConnectionDb>();
+
+builder.Services.AddSession(options =>
+{
+    options.Cookie.Name = "Social.Session";
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 var app = builder.Build();
 
