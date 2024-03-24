@@ -1,4 +1,5 @@
 ﻿using MusicWeave.Models.Interfaces;
+using System.ComponentModel.DataAnnotations;
 
 namespace MusicWeave.Models.ConcreteClasses
 {
@@ -9,7 +10,7 @@ namespace MusicWeave.Models.ConcreteClasses
         public string Password {  get; set; }
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
-        public string Descritpion { get; set; }
+        public string Description { get; set; }
         public DateTime BirthDate { get; set; }
 
         public User() 
@@ -23,7 +24,7 @@ namespace MusicWeave.Models.ConcreteClasses
             Password = password;
             Email = email;
             PhoneNumber = phoneNumber;
-            Descritpion = description;
+            Description = description;
             BirthDate = birthDate;
         }
     }

@@ -1,0 +1,110 @@
+﻿@using MusicWeave.Models.ViewModels;
+
+@model MusicWeave.Models.ViewModels.RegisterUserViewModel;
+
+<div class="row">
+    <div class="col-md-12 text-center">
+        <h1 class="info-text">Register<i class="bi bi-music-note-list"></i></h1>
+    </div>
+</div>
+<div class="custom-border"></div>
+<form method="post" asp-controller="User" asp-action="Register" onsubmit="return validateForm()">
+    <div class="container">
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger strong-red" role="alert">
+                @TempData["ErrorMessage"]
+            </div>
+        }
+        <main role="main" class="pb-3">
+            <div class="login-container">
+                <div class="mb-3">
+                    <label for="Username" class="form-label">Username:</label>
+                    <input type="text" class="form-control bg-white text-dark" asp-for="Username" id="Name" placeholder="Enter your name">
+                    <span class="text-danger" asp-validation-for="Username"></span>
+                </div>
+                <div class="mb-3">
+                    <label for="Email" class="form-label">Email:</label>
+                    <input type="email" class="form-control bg-white text-black" asp-for="Email" id="Email" placeholder="Enter your email">
+                    <span class="text-danger" asp-validation-for="Email"></span>
+                </div>
+                <div class="mb-3">
+                    <label for="BirthDate" class="form-label">Birth Date:</label>
+                    <input type="date" class="form-control bg-white text-black" asp-for="BirthDate" id="BirthDate">
+                    <span class="text-danger" asp-validation-for="BirthDate"></span>
+                </div>
+                <div class="mb-3">
+                    <label for="Password" class="form-label">Password:</label>
+                    <input type="password" class="form-control bg-white text-black" asp-for="Password" id="Password" placeholder="Enter your password">
+                    <span class="text-danger" asp-validation-for="Password"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label for="ConfirmPassword" class="form-label">Confirm Password: </label>
+                    <input type="password" class="form-control bg-white text-black" id="ConfirmPassword" placeholder="Confirm your password">
+                    <span class="text-danger" id="confirmPasswordError"></span>
+                </div>
+                <div class="mb-3">
+                    <label for="PhoneNumber" class="form-label">Phone Number:</label>
+                    <input type="tel" class="form-control bg-white text-black" asp-for="PhoneNumber" id="PhoneNumber" placeholder="Optional">
+                    <span class="text-danger" asp-validation-for="PhoneNumber"></span>
+                </div>
+                <div class="text-center" style="margin-top: 60px">
+                    <button type="submit" class="btn btn-success w-50">Register</button>
+                </div>
+                <a class="w-50" asp-controller="User" asp-action="Login">Login</a>
+            </div>
+        </main>
+    </div>
+    <div class="custom-border"></div>
+</form>
+
+<style>
+    .strong-green {
+        background-color: #28a745;
+        color: #fff;
+    }
+
+    .strong-red {
+        background-color: #dc3545;
+        color: #fff;
+    }
+
+    .post-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .custom-border {
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(to right, #ff5733, #d90000);
+        margin: 40px 0;
+    }
+
+    .info-text {
+        background: linear-gradient(to right, #ff5733, #d90000);
+        -webkit-background-clip: text;
+        color: transparent;
+        padding: 10px 20px;
+        margin-bottom: 20px;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        function validateForm() {
+            var password = document.getElementById("Password").value;
+            var confirmPassword = document.getElementById("ConfirmPassword").value;
+
+            if (password !== confirmPassword) {
+                document.getElementById("confirmPasswordError").innerText = "Passwords do not match.";
+                return false;
+            }
+
+            document.getElementById("confirmPasswordError").innerText = "";
+            return true;
+        }
+    </script>
+}
