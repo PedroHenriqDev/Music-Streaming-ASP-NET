@@ -1,9 +1,10 @@
 ﻿using MusicWeave.Attributes;
+using MusicWeave.Models.ConcreteClasses;
 using System.ComponentModel.DataAnnotations;
 
 namespace MusicWeave.Models.ViewModels
 {
-    public class RegisterArtistViewModel
+    public class RegisterArtistViewModel : Artist
     {
         [Required]
         public string Name { get; set; }

@@ -97,7 +97,7 @@ namespace MusicWeave.Data
             using(SqlConnection connection = new SqlConnection(GetConnectionString()))
             {
                 await connection.OpenAsync();
-                string sqlQuery = $@"INSERT INTO Artist (Id, Email, Name, Password, Description, BirthDate, PhoneNumber) 
+                string sqlQuery = $@"INSERT INTO Artists (Id, Email, Name, Password, Description, BirthDate, PhoneNumber) 
                                      VALUES (@id, @email, @name, @password, @description, @birthDate, @phoneNumber)";
 
                 await connection.QueryAsync(sqlQuery, new

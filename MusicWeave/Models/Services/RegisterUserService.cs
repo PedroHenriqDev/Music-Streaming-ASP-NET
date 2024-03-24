@@ -41,19 +41,45 @@ namespace MusicWeave.Models.Services
                 listenerVM.Description,
                 listenerVM.BirthDate);
 
-            if (await _verifyService.HasNameInDbAsync<Listener>(listener)) 
+            if (await _verifyService.HasNameInDbAsync(listener)) 
             {
                 _logger.LogInformation("User creation attempt failed because the same name already exists in the database");
                 throw new RegisterException("This name exist");
             }
 
-            if(await _verifyService.HasEmailInDbAsync<Listener>(listener))
+            if(await _verifyService.HasEmailInDbAsync(listener))
             {
                 _logger.LogInformation("User creation attempt failed because the same email already exists in the database");
                 throw new RegisterException("This email exist");
             }
 
             await _connectionDb.CreateListenerAsync(listener);
+        }
+
+        public async Task CreateArtistAsync(RegisterArtistViewModel artistVM) 
+        {
+            Artist artist = new Artist(
+                RamdomId(),
+                artistVM.Name,
+                _encryptService.EncryptPasswordSHA512(artistVM.Password),
+                artistVM.Email,
+                artistVM.PhoneNumber,
+                artistVM.Description,
+                artistVM.BirthDate);
+
+            if(await _verifyService.HasNameInDbAsync<Artist>(artist)) 
+            {
+                _logger.LogInformation("User creation attempt failed because the same name already exists in the database");
+                throw new RegisterException("Existing name.");
+            }
+
+            if(await _verifyService.HasEmailInDbAsync(artist))
+            {
+                _logger.LogInformation("User creation attempt failed because the same email already exists in the database");
+                throw new RegisterException("Existing email.");
+            }
+
+            await _connectionDb.CreateArtistAsync(artist);
         }
     }
 }
