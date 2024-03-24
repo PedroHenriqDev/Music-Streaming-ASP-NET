@@ -34,19 +34,28 @@ namespace MusicWeave.Models.Services
 
         public async Task CreateListenerAsync(RegisterListenerViewModel listenerVM) 
         {
-            if (await _verifyService.HasNameInDbAsync<Listener>((Listener)listenerVM)) 
+            Listener listener = new Listener(
+                RamdomId(),
+                listenerVM.Name,
+                _encryptService.EncryptPasswordSHA512(listenerVM.Password),
+                listenerVM.Email,
+                listenerVM.PhoneNumber,
+                listenerVM.Description,
+                listenerVM.BirthDate);
+
+            if (await _verifyService.HasNameInDbAsync<Listener>(listener)) 
             {
                 _logger.LogInformation("User creation attempt failed because the same name already exists in the database");
                 throw new RegisterException("This name exist");
             }
 
-            if(await _verifyService.HasEmailInDbAsync<Listener>((Listener)listenerVM))
+            if(await _verifyService.HasEmailInDbAsync<Listener>(listener))
             {
                 _logger.LogInformation("User creation attempt failed because the same email already exists in the database");
                 throw new RegisterException("This email exist");
             }
 
-            await _connectionDb.CreateListenerAsync(new Listener(RamdomId(), listenerVM.Name, _encryptService.EncryptPasswordSHA512(listenerVM.Password), listenerVM.Email, listenerVM.PhoneNumber, listenerVM.Description, listenerVM.BirthDate));
+            await _connectionDb.CreateListenerAsync(listener);
         }
     }
 }

@@ -1,14 +1,14 @@
 ﻿@using MusicWeave.Models.ViewModels;
 
-@model MusicWeave.Models.ViewModels.RegisterListenerViewModel;
+@model MusicWeave.Models.ViewModels.RegisterArtistViewModel;
 
 <div class="row">
     <div class="col-md-12 text-center">
-        <h1 class="info-text">Register Listener <i class="bi bi-music-note-list"></i></h1>
+        <h1 class="info-text">Register Artist <i class="bi bi-music-note-list"></i></h1>
     </div>
 </div>
 <div class="custom-border"></div>
-<form method="post" asp-controller="Register" asp-action="RegisterListener" onsubmit="return validateForm()">
+<form method="post" asp-controller="Register" asp-action="RegisterArtist" onsubmit="return validateForm()">
     <div class="container">
         @if (TempData["ErrorMessage"] != null)
         {
@@ -57,7 +57,7 @@
                         <a class="w-50" asp-controller="Login" asp-action="Login">Login</a>
                     </div>
                     <div>
-                        <a class="w-50" asp-controller="Register" asp-action="RegisterArtist">Artist</a>
+                        <a class="w-50" asp-controller="Register" asp-action="RegisterListener">Listener</a>
                     </div>
                 </div>
             </div>

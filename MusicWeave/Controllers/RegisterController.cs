@@ -28,7 +28,7 @@ namespace MusicWeave.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
-        public async Task<IActionResult> RegisterListener(RegisterListenerViewModel listenerVM) 
+        public async Task<IActionResult> RegisterListener(RegisterListenerViewModel listenerVM)
         {
             try
             {
@@ -49,12 +49,23 @@ namespace MusicWeave.Controllers
             {
                 return RedirectToAction(nameof(Error), new { message = ex.Message });
             }
-            catch(EncryptException ex) 
+            catch (EncryptException ex)
+            {
+                return RedirectToAction(nameof(Error), new { message = ex.Message });
+            }
+            catch (Exception ex)
             {
                 return RedirectToAction(nameof(Error), new { message = ex.Message });
             }
         }
-            
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult RegisterArtist(RegisterArtistViewModel artistVM) 
+        {
+            return View();
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error(string message)
         {
