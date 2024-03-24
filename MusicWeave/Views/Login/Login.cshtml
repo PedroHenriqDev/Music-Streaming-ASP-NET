@@ -1,0 +1,92 @@
+﻿@model MusicWeave.Models.ViewModels.LoginUserViewModel
+
+<form method="post" asp-controller="User" asp-action="Login">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success strong-green" role="alert">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+    @if (TempData["InvalidUser"] != null)
+    {
+        <div class="alert alert-danger strong-red" role="alert">
+            @TempData["InvalidUser"]
+        </div>
+    }
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1 class="info-text">Login <i class="bi bi-music-note-list"></i></h1>
+            </div>
+        </div>
+        <main role="main" class="pb-3">
+            <div class="login-container">
+                <div class="custom-border"></div>
+                <div class="mb-3">
+                    <label for="Email" class="form-label text-center">Email: </label>
+                    <input type="email" class="form-control bg-light text-dark" asp-for="Email" id="Email" placeholder="Enter your email">
+                    <span class="text-danger" asp-validation-for="Email"></span>
+                </div>
+                <div class="mb-3">
+                    <label for="Password" class="form-label">Password: </label>
+                    <div class="input-group">
+                        <input type="password" class="form-control bg-light text-dark" asp-for="Password" id="Password" placeholder="Enter your password">
+                        <button class="btn btn-secondary" type="button" id="togglePassword">Show</button>
+                    </div>
+                    <span class="text-danger" asp-validation-for="Password"></span>
+                </div>
+                <div class="text-center" style="margin-top: 60px">
+                    <button type="submit" class="btn btn-primary w-50">Login</button>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <a class="text-decoration-none" asp-controller="User" asp-action="Register">Sign Up</a>
+                    </div>
+                    <div>
+                        <a class="text-decoration-none" asp-controller="User" asp-action="ForgotPassword">Forgot Password</a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <div class="custom-border"></div>
+</form>
+
+<style>
+    .strong-green {
+        background-color: #28a745;
+        color: #fff;
+    }
+
+    .strong-red {
+        background-color: #dc3545;
+        color: #fff;
+    }
+
+    .custom-border {
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(to right, #ff5733, #d90000); 
+        margin: 40px 0;
+    }
+
+    .info-text {
+        background: linear-gradient(to right, #ff5733, #d90000); 
+        -webkit-background-clip: text;
+        color: transparent;
+        padding: 10px 20px;
+        margin-bottom: 20px;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            var passwordInput = document.getElementById('Password');
+            var type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.textContent = type === 'password' ? 'Show' : 'Hide';
+        });
+    </script>
+}
