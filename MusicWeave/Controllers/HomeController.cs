@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using MusicWeave.Models;
+using MusicWeave.Models.ViewModels;
 using System.Diagnostics;
 
 namespace MusicWeave.Controllers

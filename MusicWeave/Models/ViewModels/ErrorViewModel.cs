@@ -1,4 +1,4 @@
-namespace MusicWeave.Models
+namespace MusicWeave.Models.ViewModels
 {
     public class ErrorViewModel
     {
