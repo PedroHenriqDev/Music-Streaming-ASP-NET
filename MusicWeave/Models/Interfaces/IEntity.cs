@@ -1,9 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc.ViewFeatures;
-
-namespace MusicWeave.Models.Interfaces
+﻿namespace MusicWeave.Models.Interfaces
 {
-    public interface IEntity<T>
+    public interface IEntity
     {
-        public int Id { get; set; }
+        int Id { get; }
     }
 }

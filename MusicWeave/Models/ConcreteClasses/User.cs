@@ -3,10 +3,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MusicWeave.Models.ConcreteClasses
 {
-    public class User<T> : IEntity<User<T>>
+    public class User<T> : IEntityWithName<User<T>>
     {
         public int Id { get; set; }
-        public string Username { get; set; }
+        public string Name { get; set; }
         public string Password {  get; set; }
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
@@ -17,10 +17,10 @@ namespace MusicWeave.Models.ConcreteClasses
         {
         }
 
-        public User(int id, string username, string password, string email, string phoneNumber, string description, DateTime birthDate) 
+        public User(int id, string name, string password, string email, string phoneNumber, string description, DateTime birthDate) 
         {
             Id = id;
-            Username = username;
+            Name = name;
             Password = password;
             Email = email;
             PhoneNumber = phoneNumber;
