@@ -1,5 +1,6 @@
 ﻿using System.Data.SqlClient;
 using Dapper;
+using MusicWeave.Exceptions;
 
 using MusicWeave.Models.Interfaces;
 

@@ -1,8 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using MusicWeave.Models.ConcreteClasses;
+using MusicWeave.Models.Interfaces;
+using System.ComponentModel.DataAnnotations;
 
 namespace MusicWeave.Models.ViewModels
 {
-    public class RegisterUserViewModel
+    public class RegisterUserViewModel : User
     {
         [Required]
         public string Username { get; set; }
@@ -16,6 +18,6 @@ namespace MusicWeave.Models.ViewModels
         [Required]
         public DateTime BirthDate { get; set; }
 
-        public string PhoneNumber { get; set; }
+        public string? PhoneNumber { get; set; }
     }
 }
