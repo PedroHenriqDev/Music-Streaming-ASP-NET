@@ -21,7 +21,7 @@ namespace MusicWeave.Models.ViewModels
         [Age(ErrorMessage = "It's mandatory be at least 10 years old!")]
         public DateTime BirthDate { get; set; }
 
-        
+        [PhoneNumber(ErrorMessage = "The format of this number is incorrect")]
         public string? PhoneNumber { get; set; }
     }
 }
