@@ -1,4 +1,7 @@
 ﻿using MusicWeave.Datas;
+using MusicWeave.Exceptions;
+using MusicWeave.Models.AbstractClasses;
+using MusicWeave.Models.ConcreteClasses;
 using MusicWeave.Models.Interfaces;
 
 namespace MusicWeave.Models.Services
@@ -12,16 +15,18 @@ namespace MusicWeave.Models.Services
             _connectionDb = connectionDb;
         }
 
-        public async Task<T> ReturnUserByEmailAsync<T>(string email) where T : class, IUser<T>
+        public async Task<T> FindUserByEmailAsync<T>(string email) 
+            where T : IEntityWithEmail<T>
         {
-            if (email == null) throw new ArgumentNullException("Email reference null");
+            if (email == null) throw new SearchException("Email reference null");
 
             return await _connectionDb.GetUserByEmailAsync<T>(email);
         }
 
-        public async Task<T> ReturnUserByCredentialsAsync<T>(string email, string password) where T : class, IUser<T>
+        public async Task<T> FindUserByCredentialsAsync<T>(string email, string password) 
+            where T : IEntityWithEmail<T>
         {
-            if (password == null || email == null) throw new ArgumentNullException("Password or email were used as a null reference");
+            if (password == null || email == null) throw new SearchException("Password or email were used as a null reference");
 
             return await _connectionDb.GetUserByCredentialsAsync<T>(email, password);
         }

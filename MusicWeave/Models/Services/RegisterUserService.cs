@@ -1,5 +1,6 @@
 ﻿using MusicWeave.Datas;
 using MusicWeave.Exceptions;
+using MusicWeave.Models.AbstractClasses;
 using MusicWeave.Models.ConcreteClasses;
 using MusicWeave.Models.ViewModels;
 
@@ -38,22 +39,23 @@ namespace MusicWeave.Models.Services
                 _encryptService.EncryptPasswordSHA512(listenerVM.Password),
                 listenerVM.Email,
                 listenerVM.PhoneNumber,
-                listenerVM.Description,
-                listenerVM.BirthDate);
+                typeof(Listener).Name,
+                listenerVM.BirthDate,
+                DateTime.Now);
 
-            if (await _verifyService.HasNameInDbAsync(listener)) 
+            if (await _verifyService.HasNameInDbAsync<User>(listener.Name)) 
             {
                 _logger.LogInformation("User creation attempt failed because the same name already exists in the database");
                 throw new RegisterException("This name exist");
             }
 
-            if(await _verifyService.HasEmailInDbAsync(listener))
+            if(await _verifyService.HasNameInDbAsync<User>(listener.Name) || await _verifyService.HasNameInDbAsync<User>(listener.Name))
             {
                 _logger.LogInformation("User creation attempt failed because the same email already exists in the database");
                 throw new RegisterException("This email exist");
             }
 
-            await _connectionDb.CreateListenerAsync(listener);
+            await _connectionDb.CreateUserAsync(listener);
         }
 
         public async Task CreateArtistAsync(RegisterArtistViewModel artistVM) 
@@ -64,22 +66,23 @@ namespace MusicWeave.Models.Services
                 _encryptService.EncryptPasswordSHA512(artistVM.Password),
                 artistVM.Email,
                 artistVM.PhoneNumber,
-                artistVM.Description,
-                artistVM.BirthDate);
+                typeof(Artist).Name,
+                artistVM.BirthDate,
+                DateTime.Now);
 
-            if(await _verifyService.HasNameInDbAsync<Artist>(artist)) 
+            if(await _verifyService.HasNameInDbAsync<User>(artist.Name)) 
             {
                 _logger.LogInformation("User creation attempt failed because the same name already exists in the database");
                 throw new RegisterException("Existing name.");
             }
 
-            if(await _verifyService.HasEmailInDbAsync(artist))
+            if(await _verifyService.HasEmailInDbAsync<User>(artist.Email) || await _verifyService.HasEmailInDbAsync<User>(artist.Email))
             {
                 _logger.LogInformation("User creation attempt failed because the same email already exists in the database");
                 throw new RegisterException("Existing email.");
             }
 
-            await _connectionDb.CreateArtistAsync(artist);
+            await _connectionDb.CreateUserAsync(artist);
         }
     }
 }

@@ -1,4 +1,5 @@
 
+using Microsoft.AspNetCore.Authentication.Cookies;
 using MusicWeave.Datas;
 using MusicWeave.Models.Services;
 
@@ -13,6 +14,8 @@ builder.Services.AddScoped<VerifyService>();
 builder.Services.AddScoped<EncryptService>();
 builder.Services.AddScoped<SearchService>();
 builder.Services.AddScoped<ConnectionDb>();
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
 
 builder.Services.AddSession(options =>
 {

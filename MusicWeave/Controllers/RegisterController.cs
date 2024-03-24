@@ -4,7 +4,6 @@ using MusicWeave.Exceptions;
 using MusicWeave.Models.ConcreteClasses;
 using MusicWeave.Models.Services;
 using MusicWeave.Models.ViewModels;
-using System.Data.Common;
 using System.Diagnostics;
 
 namespace MusicWeave.Controllers

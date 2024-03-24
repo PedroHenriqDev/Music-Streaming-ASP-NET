@@ -1,8 +1,9 @@
-﻿using MusicWeave.Models.Interfaces;
+﻿using MusicWeave.Models.AbstractClasses;
+using MusicWeave.Models.Interfaces;
 
 namespace MusicWeave.Models.ConcreteClasses
 {
-    public class Artist : IUser<Artist>
+    public class Artist : User
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -10,21 +11,32 @@ namespace MusicWeave.Models.ConcreteClasses
         public string Email { get; set; }
         public string? PhoneNumber { get; set; }
         public string? Description { get; set; }
+        public byte[] PictureProfile {  get; set; }
         public DateTime BirthDate { get; set; }
+        public DateTime DateCreation {  get; set; }
 
-        public Artist()
+        public Artist() : base("Artist")
         {
         }
 
-        public Artist(int id, string name, string password, string email, string phoneNumber, string description, DateTime birthDate)
+        public Artist(
+            int id, 
+            string name, 
+            string password, 
+            string email, 
+            string phoneNumber, 
+            string userType,
+            DateTime birthDate, 
+            DateTime dateCreation) : base(id, name, password, email, phoneNumber, userType, birthDate, dateCreation)
         {
             Id = id;
             Name = name;
             Password = password;
             Email = email;
             PhoneNumber = phoneNumber;
-            Description = description;
+            UserType = userType;
             BirthDate = birthDate;
+            DateCreation = dateCreation;
         }
     }
 }

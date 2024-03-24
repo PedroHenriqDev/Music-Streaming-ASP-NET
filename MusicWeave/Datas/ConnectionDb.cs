@@ -1,6 +1,8 @@
 ﻿using System.Data.SqlClient;
+using System.Runtime.InteropServices;
 using Dapper;
 using MusicWeave.Exceptions;
+using MusicWeave.Models.AbstractClasses;
 using MusicWeave.Models.ConcreteClasses;
 using MusicWeave.Models.Interfaces;
 using MusicWeave.Models.ViewModels;
@@ -14,43 +16,45 @@ namespace MusicWeave.Datas
 
         public ConnectionDb(
             IConfiguration configuration,
-            ILogger<ConnectionDb> logger) 
+            ILogger<ConnectionDb> logger)
         {
             _configuration = configuration;
             _logger = logger;
         }
 
-        public string GetConnectionString() 
+        public string GetConnectionString()
         {
             return _configuration.GetConnectionString("DefaultConnection");
         }
-        
-        public async Task<T> GetUserByCredentialsAsync<T>(string email, string password) where T : class, IUser<T>
+
+        public async Task<T> GetUserByCredentialsAsync<T>(string email, string password)
+            where T : IEntityWithEmail<T>
         {
-            if(email == null || password == null) 
+            if (email == null || password == null)
             {
                 _logger.LogWarning("At the time of query the object was null");
                 throw new ConnectionDbException("Objects used as a paramater is null");
             }
 
-            using(SqlConnection connection = new SqlConnection(GetConnectionString())) 
+            using (SqlConnection connection = new SqlConnection(GetConnectionString()))
             {
                 await connection.OpenAsync();
                 string tableName = typeof(T).Name + "s";
-                string sqlQuery = $"SELECT * FROM {tableName} WHERE Email = @email AND Password == @password";
-                return await connection.QueryFirstOrDefaultAsync<T>(sqlQuery, new {email = email, password = password});
+                string sqlQuery = $"SELECT * FROM {tableName} WHERE Email = @email AND Password = @password";
+                return await connection.QueryFirstOrDefaultAsync<T>(sqlQuery, new { email = email, password = password });
             }
         }
 
-        public async Task<T> GetUserByEmailAsync<T>(string email) where T : class, IUser<T> 
+        public async Task<T> GetUserByEmailAsync<T>(string email)
+            where T : IEntityWithEmail<T>
         {
-            if(email == null) 
+            if (email == null)
             {
                 _logger.LogWarning("Email the time of query the object was null");
                 throw new ConnectionDbException("Email used as a parameter is null");
             }
 
-            using(SqlConnection connection = new SqlConnection(GetConnectionString())) 
+            using (SqlConnection connection = new SqlConnection(GetConnectionString()))
             {
                 await connection.OpenAsync();
                 string tableName = typeof(T).Name + "s";
@@ -59,10 +63,10 @@ namespace MusicWeave.Datas
             }
         }
 
-        public async Task<T> GetEntityByNameAsync<T>(T entity) 
+        public async Task<T> GetEntityByNameAsync<T>(string name)
             where T : class, IEntityWithName<T>
         {
-            if(entity == null) 
+            if (name == null)
             {
                 _logger.LogWarning("At the time of query the object was null");
                 throw new ConnectionDbException("Object used as a parameter is null");
@@ -73,79 +77,38 @@ namespace MusicWeave.Datas
                 await connection.OpenAsync();
                 string tableName = typeof(T).Name + "s";
                 string sqlQuery = $"SELECT * FROM {tableName} WHERE Name = @name";
-                return await connection.QueryFirstOrDefaultAsync<T>(sqlQuery, new { name = entity.Name });
+                return await connection.QueryFirstOrDefaultAsync<T>(sqlQuery, new { name = name });
             }
         }
 
-        public async Task<IUser<T>> GetUserByEmailAsync<T>(T user) 
-            where T : class, IUser<T> 
+        public async Task CreateUserAsync(User user)
         {
-            if(user == null) 
+            if (user == null)
             {
-                _logger.LogWarning("At the time of query the user was null");
-                throw new ConnectionDbException("User used as a paramater is null");
+                _logger.LogWarning("At the time of query the object was null");
+                throw new ConnectionDbException("Object used as a parameter is null");
             }
 
-            using(SqlConnection connection = new SqlConnection(GetConnectionString())) 
+            using (SqlConnection connection = new SqlConnection(GetConnectionString()))
             {
-                string tableName = typeof(T).Name + "s";
-                string sqlQuery = $"SELECT * FROM {tableName} WHERE Email = @email";
-                return await connection.QueryFirstOrDefaultAsync<T>(sqlQuery, new {email = user.Email });
-            }
-        }
-
-        public async Task CreateListenerAsync(Listener listener) 
-        {
-            if(listener == null) 
-            {
-                _logger.LogWarning("At the time of query the user was null");
-                throw new ConnectionDbException("User used as a paramater is null");
-            }
-
-            using(SqlConnection connection = new SqlConnection(GetConnectionString())) 
-            {
-                await connection.OpenAsync();
-                string sqlQuery = @$"INSERT INTO Listeners (Id, Email, Name, Password, Description, BirthDate, PhoneNumber) 
-                                     VALUES (@id, @email, @name, @password, @description, @birthDate, @phoneNumber)";
-
-                await connection.QueryAsync(sqlQuery, new 
-                {
-                    id = listener.Id, 
-                    email = listener.Email, 
-                    name = listener.Name,
-                    password = listener.Password, 
-                    description = listener.Description, 
-                    birthDate = listener.BirthDate, 
-                    phoneNumber = listener.PhoneNumber
-                });
-            }
-        } 
-
-        public async Task CreateArtistAsync(Artist artist) 
-        {
-            if(artist == null) 
-            {
-                _logger.LogWarning("At the time of query the user was null");
-                throw new ConnectionDbException("User used as a paramater is null");
-            }
-
-            using(SqlConnection connection = new SqlConnection(GetConnectionString()))
-            {
-                await connection.OpenAsync();
-                string sqlQuery = $@"INSERT INTO Artists (Id, Email, Name, Password, Description, BirthDate, PhoneNumber) 
-                                     VALUES (@id, @email, @name, @password, @description, @birthDate, @phoneNumber)";
+                string sqlQuery = $@"INSERT INTO Users (Id, Email, Name, Password, Description, BirthDate, PictureProfile, UserType, PhoneNumber, DateCreation) 
+                                     VALUES (@id, @email, @name, @password, @description, @birthDate, @pictureProfile, @userType, @phoneNumber, @dateCreation)";
 
                 await connection.QueryAsync(sqlQuery, new
                 {
-                    id = artist.Id,
-                    email = artist.Email,
-                    name = artist.Name,
-                    password = artist.Password,
-                    description = artist.Description,
-                    birthDate = artist.BirthDate,
-                    phoneNumber = artist.PhoneNumber,
+                    id = user.Id,
+                    email = user.Email,
+                    name = user.Name,
+                    password = user.Password,
+                    description = user.Description,
+                    birthDate = user.BirthDate,
+                    pictureProfile = user.PictureProfile,
+                    userType = user.UserType,
+                    phoneNumber = user.PhoneNumber,
+                    dateCreation = user.DateCreation,
                 });
             }
         }
     }
 }
+

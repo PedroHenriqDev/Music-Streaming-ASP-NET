@@ -1,4 +1,5 @@
 ﻿using MusicWeave.Datas;
+using MusicWeave.Models.AbstractClasses;
 using MusicWeave.Models.ConcreteClasses;
 using MusicWeave.Models.Interfaces;
 using MusicWeave.Models.ViewModels;
@@ -23,9 +24,8 @@ namespace MusicWeave.Models.Services
 
         public async Task<bool> LoginAsync(LoginViewModel credentialsVM)
         {
-            Artist artist = await _searchService.ReturnUserByCredentialsAsync<Artist>(credentialsVM.Email, _encryptService.EncryptPasswordSHA512(credentialsVM.Password));
-            Listener listener = await _searchService.ReturnUserByCredentialsAsync<Listener>(credentialsVM.Email, _encryptService.EncryptPasswordSHA512(credentialsVM.Password));
-            return artist != null || listener != null;
+            User user = await _searchService.FindUserByCredentialsAsync<User>(credentialsVM.Email, _encryptService.EncryptPasswordSHA512(credentialsVM.Password));
+            return user != null;
         }
     }
 }
