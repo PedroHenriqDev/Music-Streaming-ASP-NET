@@ -35,7 +35,7 @@ namespace MusicWeave.Data
 
             using (SqlConnection connection = new SqlConnection(GetConnectionString()))
             {
-                connection.Open();
+                await connection.OpenAsync();
                 string tableName = typeof(T).Name + "s";
                 string sqlQuery = $"SELECT * FROM {tableName} WHERE Name = @name";
                 return await connection.QueryFirstOrDefaultAsync<T>(sqlQuery, new { name = entity.Name });
@@ -69,7 +69,7 @@ namespace MusicWeave.Data
 
             using(SqlConnection connection = new SqlConnection(GetConnectionString())) 
             {
-                connection.Open();
+                await connection.OpenAsync();
                 string sqlQuery = @$"INSERT INTO Listeners (Id, Email, Name, Password, Description, BirthDate, PhoneNumber) 
                                      VALUES (@id, @email, @name, @password, @description, @birthDate, @phoneNumber)";
 
@@ -85,5 +85,32 @@ namespace MusicWeave.Data
                 });
             }
         } 
+
+        public async Task CreateArtistAsync(Artist artist) 
+        {
+            if(artist == null) 
+            {
+                _logger.LogWarning("At the time of query the user was null");
+                throw new ConnectionDbException("User used as a paramater is null");
+            }
+
+            using(SqlConnection connection = new SqlConnection(GetConnectionString()))
+            {
+                await connection.OpenAsync();
+                string sqlQuery = $@"INSERT INTO Artist (Id, Email, Name, Password, Description, BirthDate, PhoneNumber) 
+                                     VALUES (@id, @email, @name, @password, @description, @birthDate, @phoneNumber)";
+
+                await connection.QueryAsync(sqlQuery, new
+                {
+                    id = artist.Id,
+                    email = artist.Email,
+                    name = artist.Name,
+                    password = artist.Password,
+                    description = artist.Description,
+                    birthDate = artist.BirthDate,
+                    phoneNumber = artist.PhoneNumber,
+                });
+            }
+        }
     }
 }
