@@ -11,6 +11,7 @@ namespace MusicWeave.Models.ViewModels
         public string Name { get; set; }
 
         [Required]
+        [StrongPassword(ErrorMessage = "The password must contain letters, numbers and special characters")]
         public string Password { get; set; }
 
         [Required]
@@ -20,6 +21,7 @@ namespace MusicWeave.Models.ViewModels
         [Age(ErrorMessage = "It's mandatory be at least 10 years old!")]
         public DateTime BirthDate { get; set; }
 
+        
         public string? PhoneNumber { get; set; }
     }
 }
