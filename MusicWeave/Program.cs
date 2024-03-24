@@ -8,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddLogging();
 builder.Services.AddScoped<RegisterUserService>();
+builder.Services.AddScoped<LoginService>();
 builder.Services.AddScoped<VerifyService>();
 builder.Services.AddScoped<EncryptService>();
 builder.Services.AddScoped<ConnectionDb>();
