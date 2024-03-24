@@ -21,5 +21,14 @@ namespace MusicWeave.Models.Services
             }
             return false;
         }
+
+        public async Task<bool> HasEmailInDbAsync(string email) 
+        {
+            if(await _connectionDb.GetUserByEmailAsync(email) != null) 
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }
