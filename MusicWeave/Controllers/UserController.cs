@@ -17,15 +17,18 @@ namespace MusicWeave.Controllers
         private readonly RegisterUserService _registerService;
         private readonly LoginService _loginService;
         private readonly SearchService _searchService;
+        private readonly PictureService _pictureService;
 
         public UserController(
             RegisterUserService registerService,
-            LoginService loginService, 
-            SearchService searchService)
+            LoginService loginService,
+            SearchService searchService,
+            PictureService pictureService)
         {
             _registerService = registerService;
             _loginService = loginService;
             _searchService = searchService;
+            _pictureService = pictureService;
         }
 
         [HttpGet]
@@ -121,7 +124,7 @@ namespace MusicWeave.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Login() 
+        public async Task<IActionResult> Login()
         {
             return View();
         }
@@ -140,13 +143,22 @@ namespace MusicWeave.Controllers
 
                 if (ModelState.IsValid && await _loginService.LoginAsync(credentialsVM))
                 {
+                    var claims = new List<Claim>();
                     User user = await _searchService.FindUserByEmailAsync<User>(credentialsVM.Email);
 
-                    var claims = new List<Claim>()
+                    if (user.PictureProfile != null)
+                    {
+                        string pictureUrl = await _pictureService.SavePictureProfileAsync(user.PictureProfile, HttpContext.Request.PathBase);
+                        claims = new List<Claim>()
                         {
-                            new Claim(ClaimTypes.Name, user.Name),
-                            new Claim(ClaimTypes.Email, user.Email)
+                            new Claim("PictureProfile", pictureUrl),
                         };
+                    }
+                    claims = new List<Claim>()
+                    {
+                            new Claim(ClaimTypes.Name, user.Name),
+                            new Claim(ClaimTypes.Email, user.Email),
+                    };
 
                     var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                     var authProperties = new AuthenticationProperties();
@@ -169,7 +181,7 @@ namespace MusicWeave.Controllers
             {
                 return RedirectToAction(nameof(Error), new { message = ex.Message });
             }
-            catch(BadHttpRequestException ex) 
+            catch (BadHttpRequestException ex)
             {
                 return RedirectToAction(nameof(Error), new { message = ex.Message });
             }
@@ -181,7 +193,7 @@ namespace MusicWeave.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Logout() 
+        public IActionResult Logout()
         {
             return View();
         }
@@ -189,11 +201,11 @@ namespace MusicWeave.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> LogoutPost() 
+        public async Task<IActionResult> LogoutPost()
         {
-            try 
+            try
             {
-                if(Request.Method != "POST") 
+                if (Request.Method != "POST")
                 {
                     throw new BadHttpRequestException("An brutal error ocurred in request");
                 }
@@ -201,7 +213,7 @@ namespace MusicWeave.Controllers
                 await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
                 return RedirectToAction(nameof(Login));
             }
-            catch(BadHttpRequestException ex) 
+            catch (BadHttpRequestException ex)
             {
                 return RedirectToAction(nameof(Error), new { message = ex.Message });
             }

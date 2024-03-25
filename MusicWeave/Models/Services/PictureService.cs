@@ -14,43 +14,58 @@ namespace MusicWeave.Models.Services
             _encryptService = encryptService;
         }
 
-        public async Task SavePictureProfileAsync(byte[] pictureData, string webRootPath)
+        public async Task<string> SavePictureProfileAsync(byte[] pictureData, string webRootPath)
         {
             string profilePictureUrl = string.Empty;
-            string profilePictureDiretory = Path.Combine(webRootPath, "profile-pictures");
-            string fileExtension = ".jpg";
+            string profilePictureDiretory = CreateProfilePictureDirectory(webRootPath);
+            string fileExtension = GetImageExtension(pictureData);
+
+            string fileName = _encryptService.GetFileHash(pictureData) + fileExtension;
+            string filePath = Path.Combine(profilePictureDiretory, fileName);
+
+            if (!File.Exists(filePath))
+            {
+                await SaveFileAsync(filePath, pictureData);
+            }
+
+            return profilePictureUrl = $"/profile-pictures/{fileName}";
+        }
+
+        private string CreateProfilePictureDirectory(string webRootPath)
+        {
+            string profilePictureDiretory = Path.Combine(webRootPath, "Profile-Pictures");
 
             if (!Directory.Exists(profilePictureDiretory))
             {
                 Directory.CreateDirectory(profilePictureDiretory);
             }
 
+            return profilePictureDiretory;
+        }
 
-            if (pictureData != null)
+        private string GetImageExtension(byte[] pictureData)
+        {
+            if (IsWebPImage(pictureData))
             {
-                if (IsWebPImage(pictureData))
-                {
-                    fileExtension = ".webp";
-                }
-                else if (IsPngImage(pictureData))
-                {
-                    fileExtension = ".png";
-                }
-                else if (IsJpegImage(pictureData))
-                {
-                    fileExtension = ".jpeg";
-                }
+                return ".webp";
             }
-
-            string fileName = _encryptService.GetFileHash(pictureData) + fileExtension;
-
-            string filePath = Path.Combine(profilePictureDiretory, fileName);
-
-            if (!File.Exists(filePath))
+            else if (IsPngImage(pictureData))
             {
-                await File.WriteAllBytesAsync(filePath, pictureData);
+                return ".png";
             }
-            profilePictureUrl = $"/profile-pictures/{fileName}";
+            else if (IsJpegImage(pictureData))
+            {
+                return ".jpeg";
+            }
+            else
+            {
+                return ".jpg";
+            }
+        }
+
+        private async Task SaveFileAsync(string filePath, byte[] pictureData)
+        {
+            await File.WriteAllBytesAsync(filePath, pictureData);
         }
 
         private bool IsWebPImage(byte[] imageData)
