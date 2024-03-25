@@ -18,6 +18,7 @@ namespace MusicWeave.Controllers
         private readonly LoginService _loginService;
         private readonly SearchService _searchService;
         private readonly PictureService _pictureService;
+        private string _userEmail => User.FindFirst(ClaimTypes.Email)?.Value;
 
         public UserController(
             RegisterUserService registerService,
@@ -218,6 +219,26 @@ namespace MusicWeave.Controllers
                 return RedirectToAction(nameof(Error), new { message = ex.Message });
             }
         }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> UserPage() 
+        {
+            try
+            {
+                if (Request.Method != "GET")
+                {
+                    throw new BadHttpRequestException("An brutal error ocurred in request");
+                }
+                
+                    return View(await _searchService.FindUserByEmailAsync<User>(_userEmail));
+            }
+            catch (BadHttpRequestException ex) 
+            {
+                return RedirectToAction(nameof(Error), new {message = ex.Message});
+            }
+        }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error(string message)

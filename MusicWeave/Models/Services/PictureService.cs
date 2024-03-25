@@ -4,7 +4,6 @@ namespace MusicWeave.Models.Services
 {
     public class PictureService
     {
-
         private readonly ConnectionDb _connectionDb;
         private readonly EncryptService _encryptService;
 
