@@ -12,6 +12,7 @@ builder.Services.AddScoped<RegisterUserService>();
 builder.Services.AddScoped<LoginService>();
 builder.Services.AddScoped<VerifyService>();
 builder.Services.AddScoped<EncryptService>();
+builder.Services.AddScoped<PictureService>();
 builder.Services.AddScoped<SearchService>();
 builder.Services.AddScoped<ConnectionDb>();
 

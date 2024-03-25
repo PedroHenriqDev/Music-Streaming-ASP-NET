@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using MusicWeave.Extensions;
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -27,37 +29,37 @@
             transition: width 0.3s ease;
         }
 
-        .sidebar:hover {
-            width: 280px;
-        }
+            .sidebar:hover {
+                width: 280px;
+            }
 
-        .sidebar ul {
-            list-style-type: none;
-            padding: 0; 
-            margin: 0;
-            text-align: center;
-        }
+            .sidebar ul {
+                list-style-type: none;
+                padding: 0;
+                margin: 0;
+                text-align: center;
+            }
 
-        .sidebar ul li {
-            padding: 15px 0;
-        }
+                .sidebar ul li {
+                    padding: 15px 0;
+                }
 
-        .sidebar ul li a {
-            color: white;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            transition: background-color 0.3s ease;
-        }
+                    .sidebar ul li a {
+                        color: white;
+                        text-decoration: none;
+                        display: flex;
+                        align-items: center;
+                        transition: background-color 0.3s ease;
+                    }
 
-        .sidebar ul li a i {
-            margin-right: 10px;
-        }
+                        .sidebar ul li a i {
+                            margin-right: 10px;
+                        }
 
-        .sidebar ul li a:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
-        }
+                        .sidebar ul li a:hover {
+                            background-color: rgba(255, 255, 255, 0.1);
+                            border-radius: 5px;
+                        }
 
         .content {
             margin-left: 250px;
@@ -70,7 +72,7 @@
         <ul>
             <li><a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">MusicWeave <i class="bi bi-music-note-list mx-2"></i></a></li>
             <li><a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home <i class="bi bi-house mx-2"></i></a></li>
-            <li><a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Privacy">About <i class="bi bi-person-workspace mx-2"></i></a></li>
+            <li><a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="About">About <i class="bi bi-person-workspace mx-2"></i></a></li>
             @if (User.Identity.IsAuthenticated)
             {
                 <li><a class="nav-link text-light" asp-area="" asp-controller="User" asp-action="Logout">Logout <i class="bi-box-arrow-right mx-2"></i></a></li>
@@ -80,6 +82,22 @@
                 <li><a class="nav-link text-light" asp-area="" asp-controller="User" asp-action="Login">Login <i class="bi-box-arrow-in-right mx-2"></i></a></li>
             }
         </ul>
+        @if (User.HasClaim(c => c.Type == "ProfilePictureUrl"))
+        {
+            var profilePictureUrl = User.FindFirst("ProfilePictureUrl").Value;
+                <a class="mt-auto text-light" asp-area="" asp-controller="User" asp-action="UserPage">
+                    <a href="@Url.Action("UserPage", "User")" class="nav-link text-light">
+                        <img src="@profilePictureUrl" alt="Profile Picture" class="img-fluid rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;" />
+                    </a>
+                </a>
+        }
+        else
+        {
+                <a class="mt-auto text-light" asp-area="" asp-controller="User" asp-action="UserPage">
+                <strong class="text-light"><i class="bi bi-person-circle me-2"></i></strong>
+                </a>
+        }
+
     </div>
 
     <div class="content">
@@ -95,7 +113,7 @@
             </main>
         </div>
 
-      
+
     </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

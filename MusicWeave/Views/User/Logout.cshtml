@@ -25,9 +25,9 @@
 <div class="container body p-5 rounded-5">
     <div class="mb-5 text-center">
         <h1 class="text-dark">@ViewData["title"]<i class="bi bi-door-open mx-2"></i></h1>
-        <h3 class="text-dark">
+        <h4 class="text-dark">
             Are you sure you want to leave @User.Identity.Name.CutName()
-        </h3>
+        </h4>
     </div>
     <form method="post" asp-controller="User" asp-action="LogoutPost">
         <div class="d-flex justify-content-center">

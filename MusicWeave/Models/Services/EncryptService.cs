@@ -38,5 +38,20 @@ namespace MusicWeave.Models.Services
                 return builder.ToString();
             }
         }
+
+        public string GetFileHash(byte[] data) 
+        {
+            if(data == null) 
+            {
+                _logger.LogError("A problem occurred when trying to convert data to hash, due to null reference reasons");
+                throw new EncryptException("A problem occurred when trying to convert data to hash, due to null reference reasons!");
+            }
+
+            using(SHA512 sha5112 = SHA512.Create()) 
+            {
+                byte[] hashBytes = sha5112.ComputeHash(data);
+                return BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
+            }
+        }
     }
 }
