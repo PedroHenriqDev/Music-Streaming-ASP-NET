@@ -222,7 +222,7 @@ namespace MusicWeave.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> UserPage() 
+        public async Task<IActionResult> UserPage()
         {
             try
             {
@@ -230,15 +230,21 @@ namespace MusicWeave.Controllers
                 {
                     throw new BadHttpRequestException("An brutal error ocurred in request");
                 }
-                
-                    return View(await _searchService.FindUserByEmailAsync<User>(_userEmail));
+
+                return View(await _searchService.FindUserByEmailAsync<User>(_userEmail));
             }
-            catch (BadHttpRequestException ex) 
+            catch (BadHttpRequestException ex)
             {
-                return RedirectToAction(nameof(Error), new {message = ex.Message});
+                return RedirectToAction(nameof(Error), new { message = ex.Message });
             }
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult AddPictureProfile()
+        {
+            return View();
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error(string message)
