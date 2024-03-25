@@ -21,7 +21,7 @@ namespace MusicWeave.Controllers
 
         public LoginController(
             LoginService loginService,
-            SearchService searchService) 
+            SearchService searchService)
         {
             _loginService = loginService;
             _searchService = searchService;
@@ -60,7 +60,7 @@ namespace MusicWeave.Controllers
             }
             catch (EncryptException ex)
             {
-                return RedirectToAction(nameof(Error), new {message = ex.Message});
+                return RedirectToAction(nameof(Error), new { message = ex.Message });
             }
             catch (SearchException ex)
             {
@@ -70,7 +70,7 @@ namespace MusicWeave.Controllers
             {
                 return RedirectToAction(nameof(Error), new { message = ex.Message });
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 return RedirectToAction(nameof(Error), new { message = ex.Message });
             }

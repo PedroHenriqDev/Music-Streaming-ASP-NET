@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MusicWeave.Exceptions;
-using MusicWeave.Models.ConcreteClasses;
 using MusicWeave.Models.Services;
 using MusicWeave.Models.ViewModels;
 using System.Diagnostics;
