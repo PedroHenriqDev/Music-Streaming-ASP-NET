@@ -2,68 +2,64 @@
 
 @model MusicWeave.Models.ViewModels.RegisterListenerViewModel;
 
-<div class="row">
-    <div class="col-md-12 text-center">
-        <h1 class="info-text">Register Listener <i class="bi bi-music-note-list"></i></h1>
-    </div>
-</div>
-<div class="custom-border"></div>
-<form method="post" asp-controller="Register" asp-action="RegisterListener" onsubmit="return validateForm()">
+<form method="post" asp-controller="User" asp-action="RegisterListener" onsubmit="return validateForm()" class="mt-5">
     <div class="container">
-        @if (TempData["ErrorMessage"] != null)
-        {
-            <div class="alert alert-danger strong-red" role="alert">
-                @TempData["ErrorMessage"]
-            </div>
-        }
-        <main role="main" class="pb-3">
-            <div class="login-container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger strong-red" role="alert">
+                        @TempData["ErrorMessage"]
+                    </div>
+                }
+                <div class="text-center mb-4">
+                    <h1 class="info-text"><i class="bi bi-earbuds"></i></h1>
+                    <p>Create an account to listen to music and podcasts for free</p>
+                </div>
                 <div class="mb-3">
                     <label for="Name" class="form-label">Name:</label>
-                    <input type="text" class="form-control bg-white text-dark" asp-for="Name" id="Name" placeholder="Enter your name">
+                    <input type="text" class="form-control rounded-pill" asp-for="Name" id="Name" placeholder="Enter your name">
                     <span class="text-danger" asp-validation-for="Name"></span>
                 </div>
                 <div class="mb-3">
                     <label for="Email" class="form-label">Email:</label>
-                    <input type="email" class="form-control bg-white text-black" asp-for="Email" id="Email" placeholder="Enter your email">
+                    <input type="email" class="form-control rounded-pill" asp-for="Email" id="Email" placeholder="Enter your email">
                     <span class="text-danger" asp-validation-for="Email"></span>
                 </div>
                 <div class="mb-3">
                     <label for="BirthDate" class="form-label">Birth Date:</label>
-                    <input type="date" class="form-control bg-white text-black" asp-for="BirthDate" id="BirthDate">
+                    <input type="date" class="form-control rounded-pill" asp-for="BirthDate" id="BirthDate">
                     <span class="text-danger" asp-validation-for="BirthDate"></span>
                 </div>
                 <div class="mb-3">
                     <label for="Password" class="form-label">Password:</label>
-                    <input type="password" class="form-control bg-white text-black" asp-for="Password" id="Password" placeholder="Enter your password">
+                    <input type="password" class="form-control rounded-pill" asp-for="Password" id="Password" placeholder="Enter your password">
                     <span class="text-danger" asp-validation-for="Password"></span>
                 </div>
-
                 <div class="mb-3">
                     <label for="ConfirmPassword" class="form-label">Confirm Password: </label>
-                    <input type="password" class="form-control bg-white text-black" id="ConfirmPassword" placeholder="Confirm your password">
+                    <input type="password" class="form-control rounded-pill" id="ConfirmPassword" placeholder="Confirm your password">
                     <span class="text-danger" id="confirmPasswordError"></span>
                 </div>
                 <div class="mb-3">
                     <label for="PhoneNumber" class="form-label">Phone Number:</label>
-                    <input type="tel" class="form-control bg-white text-black" asp-for="PhoneNumber" id="PhoneNumber" placeholder="Optional">
+                    <input type="tel" class="form-control rounded-pill" asp-for="PhoneNumber" id="PhoneNumber" placeholder="Optional">
                     <span class="text-danger" asp-validation-for="PhoneNumber"></span>
                 </div>
                 <div class="text-center" style="margin-top: 60px">
-                    <button type="submit" class="btn btn-success w-50">Register</button>
+                    <button type="submit" class="btn btn-success rounded-pill w-50">Register</button>
                 </div>
-                <div class="d-flex justify-content-between">
+                <div class="d-flex justify-content-between mt-3">
                     <div>
-                        <a class="w-50" asp-controller="Login" asp-action="Login">Login</a>
+                        <a asp-controller="User" asp-action="Login" class="text-decoration-none">Login</a>
                     </div>
                     <div>
-                        <a class="w-50" asp-controller="Register" asp-action="RegisterArtist">Artist</a>
+                        <a asp-controller="User" asp-action="RegisterArtist" class="text-decoration-none">Artist</a>
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
     </div>
-    <div class="custom-border"></div>
 </form>
 
 <style>
@@ -75,19 +71,6 @@
     .strong-red {
         background-color: #dc3545;
         color: #fff;
-    }
-
-    .post-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-
-    .custom-border {
-        width: 100%;
-        height: 2px;
-        background: linear-gradient(to right, #ff5733, #d90000);
-        margin: 40px 0;
     }
 
     .info-text {

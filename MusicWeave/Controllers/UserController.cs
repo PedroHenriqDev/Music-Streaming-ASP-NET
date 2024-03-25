@@ -1,20 +1,30 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MusicWeave.Exceptions;
+using MusicWeave.Models.AbstractClasses;
 using MusicWeave.Models.Services;
 using MusicWeave.Models.ViewModels;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace MusicWeave.Controllers
 {
-    public class RegisterController : Controller
+    public class UserController : Controller
     {
-
         private readonly RegisterUserService _registerService;
+        private readonly LoginService _loginService;
+        private readonly SearchService _searchService;
 
-        public RegisterController(RegisterUserService registerService)
+        public UserController(
+            RegisterUserService registerService,
+            LoginService loginService, 
+            SearchService searchService)
         {
             _registerService = registerService;
+            _loginService = loginService;
+            _searchService = searchService;
         }
 
         [HttpGet]
@@ -35,7 +45,7 @@ namespace MusicWeave.Controllers
                 {
                     await _registerService.CreateListenerAsync(listenerVM);
                     TempData["SuccessMessage"] = "User created successfully";
-                    return RedirectToAction("Login", "Login");
+                    return RedirectToAction("User", "Login");
                 }
                 return View(listenerVM);
             }
@@ -72,15 +82,15 @@ namespace MusicWeave.Controllers
         {
             try
             {
-                if (ModelState.IsValid) 
+                if (ModelState.IsValid)
                 {
                     await _registerService.CreateArtistAsync(artistVM);
                     TempData["SuccessMessage"] = "User created successfully";
-                    return RedirectToAction("Login", "Login");
+                    return RedirectToAction("User", "Login");
                 }
                 return View(artistVM);
             }
-            catch(RegisterException ex) 
+            catch (RegisterException ex)
             {
                 TempData["ErrorMessage"] = ex.Message;
                 return View(artistVM);
@@ -90,6 +100,56 @@ namespace MusicWeave.Controllers
                 return RedirectToAction(nameof(Error), new { message = ex.Message });
             }
             catch (EncryptException ex)
+            {
+                return RedirectToAction(nameof(Error), new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction(nameof(Error), new { message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Login() 
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AllowAnonymous]
+        public async Task<IActionResult> Login(LoginViewModel credentialsVM)
+        {
+            try
+            {
+                if (ModelState.IsValid && await _loginService.LoginAsync(credentialsVM))
+                {
+                    User user = await _searchService.FindUserByEmailAsync<User>(credentialsVM.Email);
+
+                    var claims = new List<Claim>()
+                        {
+                            new Claim(ClaimTypes.Name, user.Name),
+                            new Claim(ClaimTypes.Email, user.Email)
+                        };
+
+                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    var authProperties = new AuthenticationProperties();
+
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+                    return RedirectToAction("Index", "Home");
+                }
+                TempData["InvalidUser"] = "Email or password incorrect!";
+                return View(credentialsVM);
+            }
+            catch (EncryptException ex)
+            {
+                return RedirectToAction(nameof(Error), new { message = ex.Message });
+            }
+            catch (SearchException ex)
+            {
+                return RedirectToAction(nameof(Error), new { message = ex.Message });
+            }
+            catch (ConnectionDbException ex)
             {
                 return RedirectToAction(nameof(Error), new { message = ex.Message });
             }
