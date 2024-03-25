@@ -33,7 +33,7 @@
 
         .sidebar ul {
             list-style-type: none;
-            padding: 0;
+            padding: 0; 
             margin: 0;
             text-align: center;
         }
@@ -73,11 +73,11 @@
             <li><a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Privacy">About <i class="bi bi-person-workspace mx-2"></i></a></li>
             @if (User.Identity.IsAuthenticated)
             {
-                <li><a class="nav-link text-light" asp-area="" asp-controller="Login" asp-action="Logout">Logout <i class="bi-box-arrow-right mx-2"></i></a></li>
+                <li><a class="nav-link text-light" asp-area="" asp-controller="User" asp-action="Logout">Logout <i class="bi-box-arrow-right mx-2"></i></a></li>
             }
             else
             {
-                <li><a class="nav-link text-light" asp-area="" asp-controller="Login" asp-action="Login">Login <i class="bi-box-arrow-in-right mx-2"></i></a></li>
+                <li><a class="nav-link text-light" asp-area="" asp-controller="User" asp-action="Login">Login <i class="bi-box-arrow-in-right mx-2"></i></a></li>
             }
         </ul>
     </div>

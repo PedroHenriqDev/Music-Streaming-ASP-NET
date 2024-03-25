@@ -8,6 +8,7 @@ using MusicWeave.Models.Services;
 using MusicWeave.Models.ViewModels;
 using System.Diagnostics;
 using System.Security.Claims;
+using System.Net;
 
 namespace MusicWeave.Controllers
 {
@@ -41,6 +42,11 @@ namespace MusicWeave.Controllers
         {
             try
             {
+                if (Request.Method != "POST")
+                {
+                    throw new BadHttpRequestException("An brutal error ocurred in request!");
+                }
+
                 if (ModelState.IsValid)
                 {
                     await _registerService.CreateListenerAsync(listenerVM);
@@ -82,6 +88,11 @@ namespace MusicWeave.Controllers
         {
             try
             {
+                if (Request.Method != "POST")
+                {
+                    throw new BadHttpRequestException("An brutal error ocurred in request!");
+                }
+
                 if (ModelState.IsValid)
                 {
                     await _registerService.CreateArtistAsync(artistVM);
@@ -122,6 +133,11 @@ namespace MusicWeave.Controllers
         {
             try
             {
+                if (Request.Method != "POST")
+                {
+                    throw new BadHttpRequestException("An brutal error ocurred in request!");
+                }
+
                 if (ModelState.IsValid && await _loginService.LoginAsync(credentialsVM))
                 {
                     User user = await _searchService.FindUserByEmailAsync<User>(credentialsVM.Email);
@@ -153,7 +169,39 @@ namespace MusicWeave.Controllers
             {
                 return RedirectToAction(nameof(Error), new { message = ex.Message });
             }
+            catch(BadHttpRequestException ex) 
+            {
+                return RedirectToAction(nameof(Error), new { message = ex.Message });
+            }
             catch (Exception ex)
+            {
+                return RedirectToAction(nameof(Error), new { message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult Logout() 
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> LogoutPost() 
+        {
+            try 
+            {
+                if(Request.Method != "POST") 
+                {
+                    throw new BadHttpRequestException("An brutal error ocurred in request");
+                }
+
+                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                return RedirectToAction(nameof(Login));
+            }
+            catch(BadHttpRequestException ex) 
             {
                 return RedirectToAction(nameof(Error), new { message = ex.Message });
             }

@@ -24,8 +24,7 @@ namespace MusicWeave.Models.Services
 
         public async Task<bool> LoginAsync(LoginViewModel credentialsVM)
         {
-            User user = await _searchService.FindUserByCredentialsAsync<User>(credentialsVM.Email, _encryptService.EncryptPasswordSHA512(credentialsVM.Password));
-            return user != null;
+            return await _searchService.FindUserByCredentialsAsync<User>(credentialsVM.Email, _encryptService.EncryptPasswordSHA512(credentialsVM.Password)) != null;
         }
     }
 }
