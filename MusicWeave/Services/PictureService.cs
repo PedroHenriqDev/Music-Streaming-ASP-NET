@@ -1,7 +1,7 @@
 ﻿using MusicWeave.Datas;
 using MusicWeave.Models.AbstractClasses;
 
-namespace MusicWeave.Models.Services
+namespace MusicWeave.Services
 {
     public class PictureService
     {
@@ -14,7 +14,7 @@ namespace MusicWeave.Models.Services
             _encryptService = encryptService;
         }
 
-        public async Task AddPictureProfileAsync(string imageFile, User user) 
+        public async Task AddPictureProfileAsync(string imageFile, User user)
         {
             const int MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
 
@@ -23,7 +23,7 @@ namespace MusicWeave.Models.Services
                 throw new ArgumentNullException("Object null exception.");
             }
 
-            if(imageFile.Length > MAX_IMAGE_SIZE_BYTES) 
+            if (imageFile.Length > MAX_IMAGE_SIZE_BYTES)
             {
                 throw new OverflowException("Image size exceeds the maximum allowed size.");
             }

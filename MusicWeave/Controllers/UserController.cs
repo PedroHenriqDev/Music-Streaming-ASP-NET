@@ -4,11 +4,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MusicWeave.Exceptions;
 using MusicWeave.Models.AbstractClasses;
-using MusicWeave.Models.Services;
 using MusicWeave.Models.ViewModels;
 using System.Diagnostics;
 using System.Security.Claims;
 using System.Net;
+using MusicWeave.Services;
 
 namespace MusicWeave.Controllers
 {

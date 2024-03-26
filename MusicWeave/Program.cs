@@ -1,7 +1,8 @@
 
 using Microsoft.AspNetCore.Authentication.Cookies;
+using MusicWeave.Cloud.Services;
 using MusicWeave.Datas;
-using MusicWeave.Models.Services;
+using MusicWeave.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,8 @@ builder.Services.AddScoped<VerifyService>();
 builder.Services.AddScoped<EncryptService>();
 builder.Services.AddScoped<PictureService>();
 builder.Services.AddScoped<SearchService>();
+builder.Services.AddScoped<MusicService>();
+builder.Services.AddScoped<FirestoreService>();
 builder.Services.AddScoped<ConnectionDb>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
@@ -27,6 +30,7 @@ builder.Services.AddSession(options =>
 });
 
 var app = builder.Build();
+var configuration = new ConfigurationBuilder().SetBasePath(builder.Environment.ContentRootPath).AddJsonFile("appsettings.json").Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

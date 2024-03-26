@@ -4,7 +4,7 @@ using MusicWeave.Models.ConcreteClasses;
 using MusicWeave.Models.Interfaces;
 using MusicWeave.Models.ViewModels;
 
-namespace MusicWeave.Models.Services
+namespace MusicWeave.Services
 {
     public class LoginService
     {
