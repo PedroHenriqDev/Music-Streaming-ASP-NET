@@ -88,11 +88,11 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        transition: transform 0.3s; /* Adiciona transição de 0.3 segundos para suavizar a animação */
+        transition: transform 0.3s; 
     }
 
         #imagePreview:hover {
-            transform: scale(1.1); /* Aumenta a escala em 10% ao passar o mouse */
+            transform: scale(1.1); 
         }
 
         #imagePreview img {
@@ -107,8 +107,6 @@
         <div class="col-md-6 mx-auto">
             <div class="body">
                 <h2 class="text-center mb-4">@ViewData["Title"]</h2>
-                <div class="text-center mb-4">
-                </div>
                 <form id="postForm" asp-action="AddPictureProfile" asp-controller="User" method="post">
                     <div class="mb-3 text-center">
                         <label for="formFile" class="form-label text-dark">Choose Image:</label>
@@ -118,10 +116,8 @@
                         </div>
                         <div class="text-xxl-center" style="margin-left: 232px" id="imagePreview"></div>
                     </div>
-                    <input type="hidden" id="imageBytes" name="ImageBytes" />
+                    <input type="hidden" id="imageBase64" name="ImageBase64" />
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    <div class="mb-3">
-                    </div>
                     <div class="text-center">
                         <button type="button" class="btn btn-outline-primary" onclick="submitForm()"><i class="bi bi-exposure"></i> Add</button>
                     </div>
@@ -133,12 +129,15 @@
 
 <script>
     function previewImage(event) {
-        var reader = new FileReader();
-        reader.onload = function () {
-            var output = document.getElementById('imagePreview');
-            output.innerHTML = '<img src="' + reader.result + '" class="img-fluid" alt="Preview">';
+        var file = event.target.files[0];
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function () {
+                var output = document.getElementById('imagePreview');
+                output.innerHTML = '<img src="' + reader.result + '" class="img-fluid" alt="Preview">';
+            }
+            reader.readAsDataURL(file);
         }
-        reader.readAsDataURL(event.target.files[0]);
     }
 
     function submitForm() {
@@ -146,14 +145,14 @@
         if (fileInput.files.length > 0) {
             var file = fileInput.files[0];
             var reader = new FileReader();
-            reader.onloadend = function () {
-                var imageBytesInput = document.getElementById('imageBytes');
-                imageBytesInput.value = Array.from(new Uint8Array(reader.result)).join(',');
+            reader.onload = function () {
+                var base64String = reader.result.split(',')[1]; 
+                document.getElementById('imageBase64').value = base64String;
+
                 document.getElementById('postForm').submit();
-            }
-            reader.readAsArrayBuffer(file);
-        }
-        else {
+            };
+            reader.readAsDataURL(file);
+        } else {
             var errorMessageElement = document.getElementById('errorMessage');
             errorMessageElement.innerText = 'Please select an image.';
         }

@@ -1,11 +1,8 @@
-﻿using System.Data.SqlClient;
-using System.Runtime.InteropServices;
-using Dapper;
+﻿using Dapper;
+using Npgsql;
 using MusicWeave.Exceptions;
 using MusicWeave.Models.AbstractClasses;
-using MusicWeave.Models.ConcreteClasses;
 using MusicWeave.Models.Interfaces;
-using MusicWeave.Models.ViewModels;
 
 namespace MusicWeave.Datas
 {
@@ -27,16 +24,16 @@ namespace MusicWeave.Datas
             return _configuration.GetConnectionString("DefaultConnection");
         }
 
-        public async Task<T> GetUserByCredentialsAsync<T>(string email, string password)
+        public async Task<T> GetEntityByCredentialsAsync<T>(string email, string password)
             where T : IEntityWithEmail<T>
         {
-            if (email == null || password == null)
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
             {
                 _logger.LogWarning("At the time of query the object was null");
                 throw new ConnectionDbException("Objects used as a paramater is null");
             }
 
-            using (SqlConnection connection = new SqlConnection(GetConnectionString()))
+            using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
             {
                 await connection.OpenAsync();
                 string tableName = typeof(T).Name + "s";
@@ -45,8 +42,7 @@ namespace MusicWeave.Datas
             }
         }
 
-        public async Task<T> GetUserByEmailAsync<T>(string email)
-            where T : IEntityWithEmail<T>
+        public User GetUserByEmail(string email)
         {
             if (email == null)
             {
@@ -54,7 +50,25 @@ namespace MusicWeave.Datas
                 throw new ConnectionDbException("Email used as a parameter is null");
             }
 
-            using (SqlConnection connection = new SqlConnection(GetConnectionString()))
+            using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
+            {
+                connection.Open();
+                string tableName = typeof(User).Name + "s";
+                string sqlQuery = $"SELECT * FROM Users WHERE Email = @email";
+                return connection.QueryFirstOrDefault<User>(sqlQuery, new { email = email });
+            }
+        }
+
+        public async Task<T> GetEntityByEmailAsync<T>(string email)
+            where T : IEntityWithEmail<T>
+        {
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                _logger.LogWarning("Email the time of query the object was null");
+                throw new ConnectionDbException("Email used as a parameter is null");
+            }
+
+            using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
             {
                 await connection.OpenAsync();
                 string tableName = typeof(T).Name + "s";
@@ -66,13 +80,13 @@ namespace MusicWeave.Datas
         public async Task<T> GetEntityByNameAsync<T>(string name)
             where T : class, IEntityWithName<T>
         {
-            if (name == null)
+            if (string.IsNullOrWhiteSpace(name))
             {
                 _logger.LogWarning("At the time of query the object was null");
                 throw new ConnectionDbException("Object used as a parameter is null");
             }
 
-            using (SqlConnection connection = new SqlConnection(GetConnectionString()))
+            using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
             {
                 await connection.OpenAsync();
                 string tableName = typeof(T).Name + "s";
@@ -89,7 +103,7 @@ namespace MusicWeave.Datas
                 throw new ConnectionDbException("Object used as a parameter is null");
             }
 
-            using (SqlConnection connection = new SqlConnection(GetConnectionString()))
+            using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
             {
                 string sqlQuery = $@"INSERT INTO Users (Id, Email, Name, Password, Description, BirthDate, PictureProfile, UserType, PhoneNumber, DateCreation) 
                                      VALUES (@id, @email, @name, @password, @description, @birthDate, @pictureProfile, @userType, @phoneNumber, @dateCreation)";
@@ -107,6 +121,22 @@ namespace MusicWeave.Datas
                     phoneNumber = user.PhoneNumber,
                     dateCreation = user.DateCreation,
                 });
+            }
+        }
+
+        public async Task AddUserProfilePictureAsync(User user) 
+        {
+            if(user == null) 
+            {
+                _logger.LogError("An error ocurred while added picture profile.");
+                throw new ConnectionDbException("An error ocurred, because of null user reference!");
+            }
+
+            using(NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString())) 
+            {
+                await connection.OpenAsync();
+                string sqlQuery = $"UPDATE Users SET PictureProfile = @pictureProfile WHERE Id = @id";
+                await connection.QueryAsync(sqlQuery, new { pictureProfile = user.PictureProfile, id = user.Id });
             }
         }
     }

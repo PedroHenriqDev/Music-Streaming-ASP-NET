@@ -19,6 +19,7 @@ namespace MusicWeave.Controllers
         private readonly SearchService _searchService;
         private readonly PictureService _pictureService;
         private string _userEmail => User.FindFirst(ClaimTypes.Email)?.Value;
+        private User _currentUser => _searchService.FindUserByEmail(_userEmail);
 
         public UserController(
             RegisterUserService registerService,
@@ -48,7 +49,7 @@ namespace MusicWeave.Controllers
             {
                 if (Request.Method != "POST")
                 {
-                    throw new BadHttpRequestException("An brutal error ocurred in request!");
+                    return NotFound();
                 }
 
                 if (ModelState.IsValid)
@@ -63,14 +64,6 @@ namespace MusicWeave.Controllers
             {
                 TempData["ErrorMessage"] = ex.Message;
                 return View(listenerVM);
-            }
-            catch (ConnectionDbException ex)
-            {
-                return RedirectToAction(nameof(Error), new { message = ex.Message });
-            }
-            catch (EncryptException ex)
-            {
-                return RedirectToAction(nameof(Error), new { message = ex.Message });
             }
             catch (Exception ex)
             {
@@ -94,7 +87,7 @@ namespace MusicWeave.Controllers
             {
                 if (Request.Method != "POST")
                 {
-                    throw new BadHttpRequestException("An brutal error ocurred in request!");
+                    return NotFound();
                 }
 
                 if (ModelState.IsValid)
@@ -109,14 +102,6 @@ namespace MusicWeave.Controllers
             {
                 TempData["ErrorMessage"] = ex.Message;
                 return View(artistVM);
-            }
-            catch (ConnectionDbException ex)
-            {
-                return RedirectToAction(nameof(Error), new { message = ex.Message });
-            }
-            catch (EncryptException ex)
-            {
-                return RedirectToAction(nameof(Error), new { message = ex.Message });
             }
             catch (Exception ex)
             {
@@ -139,13 +124,13 @@ namespace MusicWeave.Controllers
             {
                 if (Request.Method != "POST")
                 {
-                    throw new BadHttpRequestException("An brutal error ocurred in request!");
+                    return NotFound();
                 }
 
                 if (ModelState.IsValid && await _loginService.LoginAsync(credentialsVM))
                 {
-                    var claims = new List<Claim>();
                     User user = await _searchService.FindUserByEmailAsync<User>(credentialsVM.Email);
+                    var claims = new List<Claim>();
 
                     if (user.PictureProfile != null)
                     {
@@ -170,22 +155,6 @@ namespace MusicWeave.Controllers
                 TempData["InvalidUser"] = "Email or password incorrect!";
                 return View(credentialsVM);
             }
-            catch (EncryptException ex)
-            {
-                return RedirectToAction(nameof(Error), new { message = ex.Message });
-            }
-            catch (SearchException ex)
-            {
-                return RedirectToAction(nameof(Error), new { message = ex.Message });
-            }
-            catch (ConnectionDbException ex)
-            {
-                return RedirectToAction(nameof(Error), new { message = ex.Message });
-            }
-            catch (BadHttpRequestException ex)
-            {
-                return RedirectToAction(nameof(Error), new { message = ex.Message });
-            }
             catch (Exception ex)
             {
                 return RedirectToAction(nameof(Error), new { message = ex.Message });
@@ -208,7 +177,7 @@ namespace MusicWeave.Controllers
             {
                 if (Request.Method != "POST")
                 {
-                    throw new BadHttpRequestException("An brutal error ocurred in request");
+                    return NotFound();
                 }
 
                 await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
@@ -224,19 +193,12 @@ namespace MusicWeave.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> UserPage()
         {
-            try
+            if (Request.Method != "GET")
             {
-                if (Request.Method != "GET")
-                {
-                    throw new BadHttpRequestException("An brutal error ocurred in request");
-                }
+                return NotFound();
+            }
 
-                return View(await _searchService.FindUserByEmailAsync<User>(_userEmail));
-            }
-            catch (BadHttpRequestException ex)
-            {
-                return RedirectToAction(nameof(Error), new { message = ex.Message });
-            }
+            return View(_currentUser);
         }
 
         [HttpGet]
@@ -244,6 +206,27 @@ namespace MusicWeave.Controllers
         public IActionResult AddPictureProfile()
         {
             return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AllowAnonymous]
+        public async Task<IActionResult> AddPictureProfile(string imageBase64) 
+        {
+            try
+            {
+                if (Request.Method != "POST")
+                {
+                    return NotFound();
+                }
+
+                await _pictureService.AddPictureProfileAsync(imageBase64, _currentUser);
+                return RedirectToAction(nameof(UserPage));
+            }
+            catch(Exception ex) 
+            {
+                return RedirectToAction(nameof(Error), new { message = ex.Message});
+            }
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

@@ -15,12 +15,18 @@ namespace MusicWeave.Models.Services
             _connectionDb = connectionDb;
         }
 
+
+        public User FindUserByEmail(string email)
+        {
+            return _connectionDb.GetUserByEmail(email);
+        }
+
         public async Task<T> FindUserByEmailAsync<T>(string email) 
             where T : IEntityWithEmail<T>
         {
             if (email == null) throw new SearchException("Email reference null");
 
-            return await _connectionDb.GetUserByEmailAsync<T>(email);
+            return await _connectionDb.GetEntityByEmailAsync<T>(email);
         }
 
         public async Task<T> FindUserByCredentialsAsync<T>(string email, string password) 
@@ -28,7 +34,7 @@ namespace MusicWeave.Models.Services
         {
             if (password == null || email == null) throw new SearchException("Password or email were used as a null reference");
 
-            return await _connectionDb.GetUserByCredentialsAsync<T>(email, password);
+            return await _connectionDb.GetEntityByCredentialsAsync<T>(email, password);
         }
     }
 }

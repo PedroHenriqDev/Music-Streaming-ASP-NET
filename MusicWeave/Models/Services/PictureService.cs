@@ -1,4 +1,5 @@
 ﻿using MusicWeave.Datas;
+using MusicWeave.Models.AbstractClasses;
 
 namespace MusicWeave.Models.Services
 {
@@ -11,6 +12,25 @@ namespace MusicWeave.Models.Services
         {
             _connectionDb = connectionDb;
             _encryptService = encryptService;
+        }
+
+        public async Task AddPictureProfileAsync(string imageFile, User user) 
+        {
+            const int MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
+
+            if (string.IsNullOrWhiteSpace(imageFile) || user == null)
+            {
+                throw new ArgumentNullException("Object null exception.");
+            }
+
+            if(imageFile.Length > MAX_IMAGE_SIZE_BYTES) 
+            {
+                throw new OverflowException("Image size exceeds the maximum allowed size.");
+            }
+
+            string base64WithoutPrefix = imageFile.Replace("data:image/jpeg;base64,", "");
+            user.PictureProfile = Convert.FromBase64String(base64WithoutPrefix);
+            await _connectionDb.AddUserProfilePictureAsync(user);
         }
 
         public async Task<string> SavePictureProfileAsync(byte[] pictureData, string webRootPath)

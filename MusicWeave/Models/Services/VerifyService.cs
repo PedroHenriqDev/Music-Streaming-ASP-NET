@@ -26,7 +26,7 @@ namespace MusicWeave.Models.Services
         public async Task<bool> HasEmailInDbAsync<T>(string email) 
             where T : class, IEntityWithEmail<T> 
         {
-            if(await _connectionDb.GetUserByEmailAsync<T>(email) != null) 
+            if(await _connectionDb.GetEntityByEmailAsync<T>(email) != null) 
             {
                 return true;
             }
