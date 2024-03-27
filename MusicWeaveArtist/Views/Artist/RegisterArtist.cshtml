@@ -13,10 +13,8 @@
                     </div>
                 }
                 <div class="text-center mb-4">
-                    <h1 class="info-text"><i class="bi bi-music-note-beamed"></i></h1>
-                    <p>
-                        Create an account, share your music.
-                    </p>
+                    <h1 class="info-text"><i class="bi bi-palette"></i></h1>
+                    <p>Create an account as an artist to share your music with the world</p>
                 </div>
                 <div class="mb-3">
                     <label for="Name" class="form-label">Name:</label>
@@ -44,13 +42,18 @@
                     <span class="text-danger" id="confirmPasswordError"></span>
                 </div>
                 <div class="mb-3">
+                    <label for="Genres" class="form-label">Genres:</label>
+                    <select class="form-select rounded-pill" asp-for="Genres" multiple id="Genres">
+                        @foreach (var genre in ViewBag.Genres)
+                        {
+                            <option value="@genre.Id">@genre.Name</option>
+                        }
+                    </select>
+                    <span class="text-danger" asp-validation-for="Genres"></span>
+                </div>
+                <div class="mb-3">
                     <label for="PhoneNumber" class="form-label">Phone Number:</label>
-                    <div class="input-group">
-                        <input type="tel" class="form-control rounded-pill" asp-for="PhoneNumber" id="PhoneNumber" placeholder="Optional">
-                        <span class="input-group-text rounded-pill" id="phone-icon" style="animation: phone-icon-animation 1s infinite alternate;">
-                            <i class="bi bi-phone" aria-hidden="true"></i>
-                        </span>
-                    </div>
+                    <input type="tel" class="form-control rounded-pill" asp-for="PhoneNumber" id="PhoneNumber" placeholder="Optional">
                     <span class="text-danger" asp-validation-for="PhoneNumber"></span>
                 </div>
                 <div class="text-center" style="margin-top: 60px">
@@ -58,7 +61,7 @@
                 </div>
                 <div class="d-flex justify-content-between mt-3">
                     <div>
-                        <a asp-controller="Artist" asp-action="Login" class="text-decoration-none">Login</a>
+                        <a asp-controller="Listener" asp-action="RegisterListener" class="text-decoration-none">Listener</a>
                     </div>
                     <div>
                         <a asp-controller="User" asp-action="RegisterListener" class="text-decoration-none">Listener</a>
@@ -68,7 +71,6 @@
         </div>
     </div>
 </form>
-
 <style>
     .strong-green {
         background-color: #28a745;
@@ -88,21 +90,21 @@
         margin-bottom: 20px;
     }
 </style>
-
 @section Scripts {
-    <script>
-        function validateForm() {
-            var password = document.getElementById("Password").value;
-            var confirmPassword = document.getElementById("ConfirmPassword").value;
+<script>
+function validateForm() {
+var password = document.getElementById("Password").value;
+var confirmPassword = document.getElementById("ConfirmPassword").value;
 
-            if (password !== confirmPassword) {
-                document.getElementById("confirmPasswordError").innerText = "Passwords do not match.";
-                return false;
-            }
-
-            document.getElementById("confirmPasswordError").innerText = "";
-            return true;
+javascript
+Copy code
+        if (password !== confirmPassword) {
+            document.getElementById("confirmPasswordError").innerText = "Passwords do not match.";
+            return false;
         }
-    </script>
+
+        document.getElementById("confirmPasswordError").innerText = "";
+        return true;
+    }
 </script>
 }

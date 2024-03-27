@@ -1,6 +1,5 @@
 ﻿using Datas.Sql;
 using Exceptions;
-using Models.ConcreteClasses;
 using Models.Interfaces;
 
 namespace Services
@@ -17,6 +16,12 @@ namespace Services
         public T FindUserByEmail<T>(string email) where T : class, IEntityWithEmail<T>
         {
             return _connectionDb.GetUserByEmail<T>(email);
+        }
+
+        public async Task<IEnumerable<T>> FindAllEntitiesAsync<T>()
+            where T : class, IEntity
+        {
+            return await _connectionDb.GetAllEntitiesAsync<T>();
         }
 
         public async Task<T> FindEntityByEmailAsync<T>(string email)

@@ -36,8 +36,10 @@ namespace MusicWeaveArtist.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult RegisterArtist()
+        public async Task<IActionResult> RegisterArtist()
         {
+            IEnumerable<Genre> genres = await _searchService.FindAllEntitiesAsync<Genre>();
+            ViewBag.Genres = genres;
             return View();
         }
 
@@ -48,6 +50,7 @@ namespace MusicWeaveArtist.Controllers
         {
             try
             {
+
                 if (Request.Method != "POST")
                 {
                     return NotFound();

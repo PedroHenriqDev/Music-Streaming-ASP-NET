@@ -2,6 +2,7 @@
 using Services;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using ViewModels;
+using Models.ConcreteClasses;
 
 namespace MusicWeaveArtist.Controllers
 {

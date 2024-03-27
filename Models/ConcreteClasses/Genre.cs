@@ -21,5 +21,9 @@ namespace Models.ConcreteClasses
             Description = description;
             Date = date;
         }
+
+        public Genre() 
+        {
+        }
     }
 }

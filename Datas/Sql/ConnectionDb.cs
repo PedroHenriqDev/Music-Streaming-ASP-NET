@@ -26,6 +26,18 @@ namespace Datas.Sql
             return _configuration.GetConnectionString("DefaultConnection");
         }
 
+        public async Task<IEnumerable<T>> GetAllEntitiesAsync<T>()
+            where T : class, IEntity
+        {
+            using(NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString())) 
+            {
+                await connection.OpenAsync();
+                string tableName = typeof(T).Name + "s";
+                string sqlQuery = $"SELECT * FROM {tableName}";
+                return await connection.QueryAsync<T>(sqlQuery);
+            }
+        }
+
         public async Task<T> GetEntityByCredentialsAsync<T>(string email, string password)
             where T : IUser<T>
         {
