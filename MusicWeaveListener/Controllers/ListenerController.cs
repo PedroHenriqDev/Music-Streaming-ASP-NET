@@ -14,7 +14,7 @@ namespace MusicWeaveListener.Controllers
     public class ListenerController : Controller
     {
 
-        private readonly RegisterUserService _registerService;
+        private readonly RecordService _recordService;
         private readonly LoginService _loginService;
         private readonly SearchService _searchService;
         private readonly PictureService _pictureService;
@@ -22,12 +22,12 @@ namespace MusicWeaveListener.Controllers
         private Listener _currentUser => _searchService.FindUserByEmail<Listener>(_userEmail);
 
         public ListenerController(
-            RegisterUserService registerService,
+            RecordService recordService,
             LoginService loginService,
             SearchService searchService,
             PictureService pictureService) 
         {
-            _registerService = registerService;
+            _recordService = recordService;
             _loginService = loginService;
             _searchService = searchService;
             _pictureService = pictureService;
@@ -54,13 +54,13 @@ namespace MusicWeaveListener.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    await _registerService.CreateListenerAsync(listenerVM);
+                    await _recordService.CreateListenerAsync(listenerVM);
                     TempData["SuccessMessage"] = "User created successfully";
                     return RedirectToAction(nameof(Login));
                 }
                 return View(listenerVM);
             }
-            catch (RegisterException ex)
+            catch (RecordException ex)
             {
                 TempData["ErrorMessage"] = ex.Message;
                 return View(listenerVM);

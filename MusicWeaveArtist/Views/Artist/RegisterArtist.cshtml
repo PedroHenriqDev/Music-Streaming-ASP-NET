@@ -2,8 +2,8 @@
 
 @model RegisterArtistViewModel;
 
-<form method="post" asp-controller="Artist" asp-action="RegisterArtist" onsubmit="return validateForm()" class="mt-5">
-    <div class="container">
+<form method="post" asp-controller="Artist" asp-action="SelectGenres" onsubmit="return validateForm()" class="mt-5">
+    <div class="container" style="margin-top: -50px">
         <div class="row justify-content-center">
             <div class="col-md-6">
                 @if (TempData["ErrorMessage"] != null)
@@ -16,6 +16,8 @@
                     <h1 class="info-text"><i class="bi bi-palette"></i></h1>
                     <p>Create an account as an artist to share your music with the world</p>
                 </div>
+                <h5 class="text-center text-center">Step: 1/2</h5>
+                <hr/></hr>
                 <div class="mb-3">
                     <label for="Name" class="form-label">Name:</label>
                     <input type="text" class="form-control rounded-pill" asp-for="Name" id="Name" placeholder="Enter your name">
@@ -42,26 +44,17 @@
                     <span class="text-danger" id="confirmPasswordError"></span>
                 </div>
                 <div class="mb-3">
-                    <label for="Genres" class="form-label">Genres:</label>
-                    <select class="form-select rounded-pill" asp-for="Genres" multiple id="Genres">
-                        @foreach (var genre in ViewBag.Genres)
-                        {
-                            <option value="@genre.Id">@genre.Name</option>
-                        }
-                    </select>
-                    <span class="text-danger" asp-validation-for="Genres"></span>
-                </div>
-                <div class="mb-3">
                     <label for="PhoneNumber" class="form-label">Phone Number:</label>
                     <input type="tel" class="form-control rounded-pill" asp-for="PhoneNumber" id="PhoneNumber" placeholder="Optional">
                     <span class="text-danger" asp-validation-for="PhoneNumber"></span>
                 </div>
+                
                 <div class="text-center" style="margin-top: 60px">
                     <button type="submit" class="btn btn-success rounded-pill w-50">Register</button>
                 </div>
                 <div class="d-flex justify-content-between mt-3">
                     <div>
-                        <a asp-controller="Listener" asp-action="RegisterListener" class="text-decoration-none">Listener</a>
+                        <a asp-controller="Artist" asp-action="Login" class="text-decoration-none">Login</a>
                     </div>
                     <div>
                         <a asp-controller="User" asp-action="RegisterListener" class="text-decoration-none">Listener</a>
@@ -71,7 +64,9 @@
         </div>
     </div>
 </form>
+
 <style>
+
     .strong-green {
         background-color: #28a745;
         color: #fff;
@@ -90,21 +85,21 @@
         margin-bottom: 20px;
     }
 </style>
-@section Scripts {
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
 <script>
-function validateForm() {
-var password = document.getElementById("Password").value;
-var confirmPassword = document.getElementById("ConfirmPassword").value;
+        function validateForm() {
+            var password = document.getElementById("Password").value;
+            var confirmPassword = document.getElementById("ConfirmPassword").value;
 
-javascript
-Copy code
-        if (password !== confirmPassword) {
-            document.getElementById("confirmPasswordError").innerText = "Passwords do not match.";
-            return false;
+            if (password !== confirmPassword) {
+                document.getElementById("confirmPasswordError").innerText = "Passwords do not match.";
+                return false;
+            }
+            document.getElementById("confirmPasswordError").innerText = "";
+            return true;
         }
-
-        document.getElementById("confirmPasswordError").innerText = "";
-        return true;
-    }
 </script>
-}

@@ -6,15 +6,15 @@ using ViewModels;
 
 namespace Services
 {
-    public class RegisterUserService
+    public class RecordService
     {
-        private readonly ILogger<RegisterUserService> _logger;
+        private readonly ILogger<RecordService> _logger;
         private readonly ConnectionDb _connectionDb;
         private readonly VerifyService _verifyService;
         private readonly EncryptService _encryptService;
 
-        public RegisterUserService(
-            ILogger<RegisterUserService> logger,
+        public RecordService(
+            ILogger<RecordService> logger,
             ConnectionDb connectionDb,
             VerifyService verifyService,
             EncryptService encryptService)
@@ -45,13 +45,13 @@ namespace Services
             if (await _verifyService.HasNameInDbAsync<Listener>(listener.Name) || await _verifyService.HasNameInDbAsync<Artist>(listener.Name))
             {
                 _logger.LogInformation("User creation attempt failed because the same name already exists in the database");
-                throw new RegisterException("This name exist");
+                throw new RecordException("This name exist");
             }
 
             if (await _verifyService.HasEmailInDbAsync<Listener>(listener.Email) || await _verifyService.HasEmailInDbAsync<Artist>(listener.Email))
             {
                 _logger.LogInformation("User creation attempt failed because the same email already exists in the database");
-                throw new RegisterException("This email exist");
+                throw new RecordException("This email exist");
             }
 
             await _connectionDb.RecordListenerAsync(listener);
@@ -71,13 +71,13 @@ namespace Services
             if (await _verifyService.HasNameInDbAsync<Listener>(artist.Name) || await _verifyService.HasNameInDbAsync<Artist>(artist.Name))
             {
                 _logger.LogInformation("User creation attempt failed because the same name already exists in the database");
-                throw new RegisterException("This name exist");
+                throw new RecordException("This name exist");
             }
 
             if (await _verifyService.HasEmailInDbAsync<Artist>(artist.Email) || await _verifyService.HasEmailInDbAsync<Listener>(artist.Email))
             {
                 _logger.LogInformation("User creation attempt failed because the same email already exists in the database");
-                throw new RegisterException("Existing email.");
+                throw new RecordException("Existing email.");
             }
 
             await _connectionDb.RecordArtistAsync(artist);

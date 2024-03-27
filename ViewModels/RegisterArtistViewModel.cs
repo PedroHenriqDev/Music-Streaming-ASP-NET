@@ -17,7 +17,7 @@ namespace ViewModels
         public string Email { get; set; }
 
         [Required]
-        public List<Genre> Genres { get; set; }
+        public List<string> GenresId { get; set; }
 
         [Required]
         [Age(ErrorMessage = "It's mandatory be at least 10 years old!")]

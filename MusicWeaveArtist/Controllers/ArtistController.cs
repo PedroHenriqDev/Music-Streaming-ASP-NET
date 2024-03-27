@@ -15,23 +15,26 @@ namespace MusicWeaveArtist.Controllers
 {
     public class ArtistController : Controller
     {
-        private readonly RegisterUserService _registerService;
+        private readonly RecordService _recordService;
         private readonly LoginService _loginService;
         private readonly SearchService _searchService;
         private readonly PictureService _pictureService;
+        private readonly JsonSerializationService _jsonService;
         private string _userEmail => User.FindFirst(ClaimTypes.Email)?.Value;
         private Artist _currentUser => _searchService.FindUserByEmail<Artist>(_userEmail);
 
         public ArtistController(
-            RegisterUserService registerService,
+            RecordService recordService,
             LoginService loginService,
             SearchService searchService,
-            PictureService pictureService)
+            PictureService pictureService,
+            JsonSerializationService jsonService)
         {
-            _registerService = registerService;
+            _recordService = recordService;
             _loginService = loginService;
             _searchService = searchService;
             _pictureService = pictureService;
+            _jsonService = jsonService;
         }
 
         [HttpGet]
@@ -50,7 +53,6 @@ namespace MusicWeaveArtist.Controllers
         {
             try
             {
-
                 if (Request.Method != "POST")
                 {
                     return NotFound();
@@ -58,13 +60,13 @@ namespace MusicWeaveArtist.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    await _registerService.CreateArtistAsync(artistVM);
+                    await _recordService.CreateArtistAsync(artistVM);
                     TempData["SuccessMessage"] = "User created successfully";
                     return RedirectToAction(nameof(Login));
                 }
                 return View(artistVM);
             }
-            catch (RegisterException ex)
+            catch (RecordException ex)
             {
                 TempData["ErrorMessage"] = ex.Message;
                 return View(artistVM);
@@ -195,6 +197,42 @@ namespace MusicWeaveArtist.Controllers
             }
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AllowAnonymous]
+        public async Task<IActionResult> SelectGenres(RegisterArtistViewModel artistVM)
+        {
+            IEnumerable<Genre> genres = await _searchService.FindAllEntitiesAsync<Genre>();
+
+            string artistVMJson = _jsonService.SerializeObject(artistVM);
+
+            TempData["RegisterArtistViewModel"] = artistVMJson;
+
+            ViewBag.Genres = genres;
+            return View(artistVM);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AllowAnonymous]
+        public async Task<IActionResult> SelectedGenres(List<string> selectedGenres) 
+        {
+
+            if (TempData["RegisterArtistViewModel"] is string artistVMKson)
+            {
+
+                RegisterArtistViewModel artistVM = _jsonService.DeserializeObject<RegisterArtistViewModel>(artistVMKson);
+
+                if (ModelState.IsValid)
+                {
+                    artistVM.GenresId = selectedGenres;
+                    return RedirectToAction(nameof(RegisterArtist), new { artistVM = artistVM });
+                }
+                return View(artistVM);
+            }
+            return RedirectToAction(nameof(Error), "Reference null!");
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error(string message)
         {
@@ -206,3 +244,4 @@ namespace MusicWeaveArtist.Controllers
         }
     }
 }
+    
