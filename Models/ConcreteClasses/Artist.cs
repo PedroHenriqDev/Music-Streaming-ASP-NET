@@ -13,6 +13,7 @@ namespace Models.ConcreteClasses
         public byte[] PictureProfile {  get; set; }
         public DateTime BirthDate { get; set; }
         public DateTime DateCreation {  get; set; }
+        public List<ArtistGenres>? ArtistsGenres;
 
         public Artist()
         {
