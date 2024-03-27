@@ -27,7 +27,7 @@
         {
             <i class="bi bi-person-circle" style="font-size: 5em;"></i>
         }
-        @if (User.Identity.Name == Model.Name && Model.PictureProfile == null)
+        @if (User.Identity.Name == Model.Name)
         {
             <div class="me-2 mx-3" style="margin-top: 0px">
                 <a asp-action="AddPictureProfile" asp-controller="Artist"><i class="bi bi-file-image-fill mx-2"></i></a>

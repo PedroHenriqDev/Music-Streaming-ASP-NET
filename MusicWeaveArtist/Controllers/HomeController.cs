@@ -26,24 +26,6 @@ namespace MusicWeaveArtist.Controllers
             return View();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> AddMusic(MusicViewModel musicViewModel) 
-        {
-            try
-            {
-                if (musicViewModel == null && musicViewModel.File == null && musicViewModel.File.Length <= 0)
-                {
-                    return RedirectToAction(nameof(Error), "Null file reference.");
-                }
-                await _musicService.AddMusicAsync(musicViewModel);
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ex) 
-            {
-                return RedirectToAction(nameof(Error), new { message = ex.Message});
-            }
-        }
-
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error(string message)
         {

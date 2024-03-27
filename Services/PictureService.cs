@@ -48,7 +48,7 @@ namespace Services
                 await SaveFileAsync(filePath, pictureData);
             }
 
-            return profilePictureUrl = $"/profile-pictures/{fileName}";
+            return profilePictureUrl = $"/Profile-Pictures/{fileName}";
         }
 
         private string CreateProfilePictureDirectory(string webRootPath)

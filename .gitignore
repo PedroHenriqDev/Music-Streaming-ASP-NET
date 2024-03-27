@@ -397,5 +397,6 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 appsettings.json
-MusicWeaveArtist/music-weave-firebase-adminsdk-dgvw8-3136a09d43.json
-MusicWeave/profile-pictures/*
+MusicWeaveArtist/music-weave-7d399c1e0e40.json
+MusicWeaveArtist/Profile-Pictures/*
+MusicWeaveListener/Profile-Pictures/*

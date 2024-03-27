@@ -1,17 +1,1 @@
-﻿@using ViewModels;
-
-@model MusicViewModel
-
-@{
-    ViewData["Title"] = "Add Music";
-}
-
-<h2>@ViewData["Title"]</h2>
-
-<form asp-action="AddMusic" asp-controller="Home" method="post" enctype="multipart/form-data">
-    <div class="form-group">
-        <label class="control-label">Selecione o arquivo de áudio:</label>
-        <input type="file" name="File" class="form-control" />
-    </div>
-    <button type="submit" class="btn btn-primary">Add Music</button>
-</form>
+﻿
