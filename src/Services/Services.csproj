@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Datas\Datas.csproj" />
-    <ProjectReference Include="..\Exceptions\Exceptions.csproj" />
     <ProjectReference Include="..\Models\Models.csproj" />
     <ProjectReference Include="..\ViewModels\ViewModels.csproj" />
   </ItemGroup>

@@ -227,7 +227,7 @@ namespace MusicWeaveArtist.Controllers
                 artistVM.GenreIds = genreIds;
                 if (ModelState.IsValid)
                 {
-                    return View("RegisterArtist", artistVM);
+                    return RedirectToAction(nameof(CompleteRegistration));
                 }
                 return RedirectToAction(nameof(RegisterArtist));
             }
@@ -236,6 +236,14 @@ namespace MusicWeaveArtist.Controllers
                 return RedirectToAction(nameof(Error), new { message = ex.Message });
             }
         }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> CompleteRegistration() 
+        {
+            return View();
+        }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error(string message)

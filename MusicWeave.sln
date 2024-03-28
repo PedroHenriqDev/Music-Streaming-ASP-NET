@@ -3,23 +3,21 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34622.214
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicWeaveArtist", "MusicWeaveArtist\MusicWeaveArtist.csproj", "{90FD30A1-6C9B-471B-AFD5-98B70A917B47}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicWeaveArtist", "src\MusicWeaveArtist\MusicWeaveArtist.csproj", "{90FD30A1-6C9B-471B-AFD5-98B70A917B47}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicWeaveListener", "MusicWeaveListener\MusicWeaveListener.csproj", "{0E028427-0AA8-42C9-8D52-CBCAB8335D4F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicWeaveListener", "src\MusicWeaveListener\MusicWeaveListener.csproj", "{0E028427-0AA8-42C9-8D52-CBCAB8335D4F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Models", "Models\Models.csproj", "{227FE62F-06FB-43A3-8533-DADE986CA7EE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Models", "src\Models\Models.csproj", "{227FE62F-06FB-43A3-8533-DADE986CA7EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extensions", "Extensions\Extensions.csproj", "{E864C718-FD0F-4D1B-8FBE-3AC07149C347}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extensions", "src\Extensions\Extensions.csproj", "{E864C718-FD0F-4D1B-8FBE-3AC07149C347}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Datas", "Datas\Datas.csproj", "{15996641-5137-415B-ADA6-C7292591D114}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Datas", "src\Datas\Datas.csproj", "{15996641-5137-415B-ADA6-C7292591D114}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exceptions", "Exceptions\Exceptions.csproj", "{D643ECBF-CA00-4A6C-A510-846B35908156}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services", "src\Services\Services.csproj", "{9D59C229-6675-4747-B0FB-3E4699EB62AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "Services\Services.csproj", "{9D59C229-6675-4747-B0FB-3E4699EB62AE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ViewModels", "src\ViewModels\ViewModels.csproj", "{192F0235-081E-4021-9F99-412E60A444F6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ViewModels", "ViewModels\ViewModels.csproj", "{192F0235-081E-4021-9F99-412E60A444F6}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Attributes", "Attributes\Attributes.csproj", "{B8ACACA9-D8AB-4513-89FD-A4C63E122BB7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Attributes", "src\Attributes\Attributes.csproj", "{B8ACACA9-D8AB-4513-89FD-A4C63E122BB7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,10 +45,6 @@ Global
 		{15996641-5137-415B-ADA6-C7292591D114}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{15996641-5137-415B-ADA6-C7292591D114}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{15996641-5137-415B-ADA6-C7292591D114}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D643ECBF-CA00-4A6C-A510-846B35908156}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D643ECBF-CA00-4A6C-A510-846B35908156}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D643ECBF-CA00-4A6C-A510-846B35908156}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D643ECBF-CA00-4A6C-A510-846B35908156}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9D59C229-6675-4747-B0FB-3E4699EB62AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9D59C229-6675-4747-B0FB-3E4699EB62AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9D59C229-6675-4747-B0FB-3E4699EB62AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
