@@ -6,15 +6,15 @@ using ViewModels;
 
 namespace Services
 {
-    public class RecordService
+    public class RecordUserService
     {
-        private readonly ILogger<RecordService> _logger;
+        private readonly ILogger<RecordUserService> _logger;
         private readonly ConnectionDb _connectionDb;
         private readonly VerifyService _verifyService;
         private readonly EncryptService _encryptService;
 
-        public RecordService(
-            ILogger<RecordService> logger,
+        public RecordUserService(
+            ILogger<RecordUserService> logger,
             ConnectionDb connectionDb,
             VerifyService verifyService,
             EncryptService encryptService)
@@ -29,6 +29,17 @@ namespace Services
         {
             Random random = new Random();
             return random.Next();
+        }
+
+        public async Task CreateUserGenresAsync(string userId, List<string> genreIds)
+        {
+            if (string.IsNullOrWhiteSpace(userId) || genreIds.Any())
+            {
+                _logger.LogInformation("An error ocurred while record User Genre");
+                throw new RecordException("Error in record User Genre.");
+            }
+
+            await _connectionDb.RecordUserGenresAsync(userId, genreIds);
         }
 
         public async Task CreateListenerAsync(RegisterListenerViewModel listenerVM)
@@ -80,6 +91,7 @@ namespace Services
                 throw new RecordException("Existing email.");
             }
 
+            await _connectionDb.RecordUserGenresAsync(artist.Id, artistVM.GenreIds);
             await _connectionDb.RecordArtistAsync(artist);
         }
     }

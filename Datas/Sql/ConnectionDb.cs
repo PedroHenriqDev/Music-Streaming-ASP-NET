@@ -41,12 +41,6 @@ namespace Datas.Sql
         public async Task<T> GetEntityByCredentialsAsync<T>(string email, string password)
             where T : IUser<T>
         {
-            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
-            {
-                _logger.LogWarning("At the time of query the object was null");
-                throw new ConnectionDbException("Objects used as a paramater is null");
-            }
-
             using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
             {
                 await connection.OpenAsync();
@@ -59,12 +53,6 @@ namespace Datas.Sql
         public T GetUserByEmail<T>(string email)
             where T : IEntityWithEmail<T> 
         {
-            if(string.IsNullOrEmpty(email)) 
-            {
-                _logger.LogWarning("Email the time of query the object was null");
-                throw new ConnectionDbException("Email used as a parameter is null");
-            }
-
             using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
             {
                 connection.Open();
@@ -77,12 +65,6 @@ namespace Datas.Sql
         public async Task<T> GetEntityByEmailAsync<T>(string email)
             where T : IEntityWithEmail<T>
         {
-            if (string.IsNullOrWhiteSpace(email))
-            {
-                _logger.LogWarning("Email the time of query the object was null");
-                throw new ConnectionDbException("Email used as a parameter is null");
-            }
-
             using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
             {
                 await connection.OpenAsync();
@@ -95,12 +77,6 @@ namespace Datas.Sql
         public async Task<T> GetEntityByNameAsync<T>(string name)
             where T : class, IEntityWithName<T>
         {
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                _logger.LogWarning("At the time of query the object was null");
-                throw new ConnectionDbException("Object used as a parameter is null");
-            }
-
             using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
             {
                 await connection.OpenAsync();
@@ -112,12 +88,6 @@ namespace Datas.Sql
 
         public async Task RecordListenerAsync(Listener listener)
         {
-            if (listener == null)
-            {
-                _logger.LogWarning("At the time of query the object was null");
-                throw new ConnectionDbException("Object used as a parameter is null");
-            }
-
             using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
             {
                 string sqlQuery = $@"INSERT INTO Listeners (Id, Email, Name, Password, Description, BirthDate, PictureProfile, PhoneNumber, DateCreation) 
@@ -138,14 +108,32 @@ namespace Datas.Sql
             }
         }
 
+        public async Task RecordUserGenresAsync(string userId, List<string> genreIds)
+        {
+            using(NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
+            {
+                await connection.OpenAsync();
+                string sqlQuery = "INSERT INTO UserGenres (UserId, GenreId) VALUES";
+
+                for(int i = 0;  i < genreIds.Count; i++) 
+                {
+                    sqlQuery += $"('{userId}'), '{genreIds[i]}";
+
+                    if(i < genreIds.Count() - 1) 
+                    {
+                        sqlQuery += ",";
+                    }
+                }
+
+                using(NpgsqlCommand command = new NpgsqlCommand(sqlQuery, connection))
+                {
+                    await command.ExecuteNonQueryAsync();
+                }
+            }
+        }
+
         public async Task RecordArtistAsync(Artist artist)
         {
-            if (artist == null)
-            {
-                _logger.LogWarning("At the time of query the object was null");
-                throw new ConnectionDbException("Object used as a parameter is null");
-            }
-
             using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
             {
                 string sqlQuery = $@"INSERT INTO Artists (Id, Email, Name, Password, Description, BirthDate, PictureProfile, PhoneNumber, DateCreation) 
@@ -168,12 +156,6 @@ namespace Datas.Sql
 
         public async Task AddUserProfilePictureAsync<T>(T user) where T : IUser<T> 
         {
-            if(user == null) 
-            {
-                _logger.LogError("An error ocurred while added picture profile.");
-                throw new ConnectionDbException("An error ocurred, because of null user reference!");
-            }
-
             using(NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString())) 
             {
                 await connection.OpenAsync();

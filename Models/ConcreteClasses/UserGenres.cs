@@ -6,15 +6,17 @@ using System.Threading.Tasks;
 
 namespace Models.ConcreteClasses
 {
-    public class ArtistGenres
+    public class UserGenres
     {
-        public string ArtistId { get; set; }
+        public string Id { get; set; } 
+        public string UserId { get; set; }
         public string GenreId { get; set;}
 
-        public ArtistGenres(string artistId, string genreId) 
+        public UserGenres(string id,string userId, string genreId) 
         {
-            ArtistId = artistId;
+            UserId = userId;
             GenreId = genreId;
+            Id = id;
         }
     }
 }
