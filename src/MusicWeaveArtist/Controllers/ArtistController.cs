@@ -156,8 +156,7 @@ namespace MusicWeaveArtist.Controllers
             {
                 return NotFound();
             }
-            Artist currentArtist = _httpHelper.GetSessionValue<Artist>("CurrentUser");
-            return View(currentArtist);
+            return View(await _searchService.FindCurrentUserAsync<Artist>());
         }
 
         [HttpGet]

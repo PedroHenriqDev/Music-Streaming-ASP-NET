@@ -8,6 +8,7 @@ using Utilities.Helpers;
 using Datas.Sql;
 using Models.ConcreteClasses;
 using Microsoft.Extensions.Logging;
+using System.Management;
 
 namespace Services
 {
@@ -35,8 +36,17 @@ namespace Services
         public async Task AddMusicAsync(AddMusicViewModel musicVM)
         {
             string id = Guid.NewGuid().ToString();
-            await _connectionDb.RecordMusicAsync(await ParseMusicAsync(musicVM, id));
-            await _googleCloudService.UploadMusicAsync(await ParseMusicDataAsync(musicVM, id));
+            try
+            {
+                await _connectionDb.RecordMusicAsync(await ParseMusicAsync(musicVM, id));
+                await _googleCloudService.UploadMusicAsync(await ParseMusicDataAsync(musicVM, id));
+            }
+            catch(Exception ex) 
+            {
+                _logger.LogError("An error ocurred while recording music data!");
+                await _connectionDb.DeleteEntityByIdAsync<Music>(id);
+                throw;
+            }
         }
 
         public async Task<Music> ParseMusicAsync(AddMusicViewModel musicVM, string id)
