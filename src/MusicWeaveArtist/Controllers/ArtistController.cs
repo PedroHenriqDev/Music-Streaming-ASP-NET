@@ -23,7 +23,7 @@ namespace MusicWeaveArtist.Controllers
         private readonly PictureService _pictureService;
         private readonly JsonSerializationService _jsonService;
         private readonly VerifyService _verifyService;
-        private Artist _currentUser => _searchService.FindUserByName<Artist>(User.Identity.Name);
+        private readonly HttpService _httpService;
 
         public ArtistController(
             RecordUserService recordUserService,
@@ -32,7 +32,8 @@ namespace MusicWeaveArtist.Controllers
             PictureService pictureService,
             JsonSerializationService jsonService,
             UserAuthenticationService authenticationService,
-            VerifyService verifyService)
+            VerifyService verifyService,
+            HttpService httpService)
         {
             _recordUserService = recordUserService;
             _loginService = loginService;
@@ -41,6 +42,7 @@ namespace MusicWeaveArtist.Controllers
             _jsonService = jsonService;
             _authenticationService = authenticationService;
             _verifyService = verifyService;
+            _httpService = httpService;
         }
 
         [HttpGet]
@@ -105,6 +107,7 @@ namespace MusicWeaveArtist.Controllers
                 if (ModelState.IsValid && await _loginService.LoginAsync<Artist>(credentialsVM))
                 {
                     Artist artist = await _searchService.FindEntityByEmailAsync<Artist>(credentialsVM.Email);
+                    _httpService.SetSessionValue("CurrentUser", artist);
                     await _authenticationService.SignInUserAsync(artist, HttpContext);
                     return RedirectToAction("Index", "Home");
                 }
@@ -153,8 +156,8 @@ namespace MusicWeaveArtist.Controllers
             {
                 return NotFound();
             }
-
-            return View(_currentUser);
+            Artist currentArtist = _httpService.GetSessionValue<Artist>("CurrentUser");
+            return View(currentArtist);
         }
 
         [HttpGet]
@@ -176,7 +179,8 @@ namespace MusicWeaveArtist.Controllers
                     return NotFound();
                 }
 
-                await _pictureService.AddPictureProfileAsync(imageBase64, _currentUser);
+                Artist currentArtist = _httpService.GetSessionValue<Artist>("CurrentUser");
+                await _pictureService.AddPictureProfileAsync(imageBase64, currentArtist);
                 return RedirectToAction(nameof(UserPage));
             }
             catch (Exception ex)

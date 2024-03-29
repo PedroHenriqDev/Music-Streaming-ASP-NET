@@ -3,6 +3,7 @@ using Services;
 using Datas.Cloud;
 using Datas.Sql;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,7 @@ builder.Services.AddScoped<RecordUserService>();
 builder.Services.AddScoped<JsonSerializationService>();
 builder.Services.AddScoped<LoginService>();
 builder.Services.AddScoped<VerifyService>();
+builder.Services.AddScoped<HttpService>();
 builder.Services.AddScoped<EncryptService>();
 builder.Services.AddScoped<PictureService>();
 builder.Services.AddScoped<SearchService>();
@@ -20,6 +22,8 @@ builder.Services.AddScoped<MusicService>();
 builder.Services.AddScoped<GoogleCloudService>();
 builder.Services.AddScoped<UserAuthenticationService>();
 builder.Services.AddScoped<ConnectionDb>();
+
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
 
@@ -43,7 +47,6 @@ var configuration = new ConfigurationBuilder().SetBasePath(builder.Environment.C
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -55,6 +58,7 @@ if (!Directory.Exists(profilePicturesDirectory))
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(profilePicturesDirectory),
@@ -62,8 +66,8 @@ app.UseStaticFiles(new StaticFileOptions
 });
 
 app.UseRouting();
-
 app.UseAuthorization();
+app.UseSession();
 
 app.MapControllerRoute(
     name: "default",
