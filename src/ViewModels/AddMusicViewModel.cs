@@ -12,10 +12,10 @@ namespace ViewModels
     public class AddMusicViewModel
     {
         [Required]
-        public IFormFile MusicPicture { get; set; }
+        public IFormFile Picture { get; set; }
 
         [Required]
-        public IFormFile MusicData { get; set; }
+        public IFormFile Audio { get; set; }
 
         [Required]
         public string Name { get; set; }
@@ -27,26 +27,11 @@ namespace ViewModels
         [Required]
         public string GenreId { get; set; }
 
-        [Required]
-        public string ArtistId { get; set; }
-
         public bool Step1IsValid 
         {
             get 
             {
                 if(!string.IsNullOrEmpty(Name) && !(Date > DateTime.Now) && !string.IsNullOrEmpty(GenreId)) 
-                {
-                    return true;
-                }
-                return false;
-            }
-        }
-
-        public bool Step2IsValid 
-        {
-            get
-            {
-                if(MusicPicture != null && MusicData != null) 
                 {
                     return true;
                 }

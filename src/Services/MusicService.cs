@@ -4,44 +4,61 @@ using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Http;
 using Exceptions;
 using ViewModels;
+using Utilities.Helpers;
+using Datas.Sql;
+using Models.ConcreteClasses;
+using Microsoft.Extensions.Logging;
 
 namespace Services
 {
     public class MusicService
     {
         private readonly GoogleCloudService _googleCloudService;
+        private readonly ConnectionDb _connectionDb;
+        private readonly ByteConvertHelper _byteHelper;
+        private readonly SearchService _searchService;
+        private readonly ILogger<MusicService> _logger;
 
-        public MusicService(GoogleCloudService googleCloudService)
+        public MusicService(
+            GoogleCloudService googleCloudService,
+            ByteConvertHelper byteHelper,
+            ConnectionDb connectionDb,
+            SearchService searchService, ILogger<MusicService> logger)
         {
             _googleCloudService = googleCloudService;
+            _byteHelper = byteHelper;
+            _connectionDb = connectionDb;
+            _searchService = searchService;
+            _logger = logger;
         }
 
         public async Task AddMusicAsync(AddMusicViewModel musicVM)
         {
-            await _googleCloudService.UploadMusicAsync(await ParseMusicDataAsync(musicVM, Guid.NewGuid().ToString()));
+            string id = Guid.NewGuid().ToString();
+            await _connectionDb.RecordMusicAsync(await ParseMusicAsync(musicVM, id));
+            await _googleCloudService.UploadMusicAsync(await ParseMusicDataAsync(musicVM, id));
+        }
+
+        public async Task<Music> ParseMusicAsync(AddMusicViewModel musicVM, string id)
+        {
+            Artist artist = await _searchService.FindCurrentUserAsync<Artist>();
+            if (artist == null)
+            {
+                _logger.LogWarning("Error occurred due to a null user reference");
+                throw new ArgumentNullException("Error occurred when searching for the user");
+            }
+            return new Music(id, musicVM.Name, artist.Id, musicVM.GenreId, musicVM.Date, DateTime.Now);
         }
 
         public async Task<MusicData> ParseMusicDataAsync(AddMusicViewModel musicVM, string Id)
         {
-            if (musicVM.MusicData == null && musicVM.MusicData.Length > 0)
+            if (musicVM.Audio == null && musicVM.Picture == null)
             {
-                throw new MusicException("Error in record music data!");
+                throw new MusicException("Music must have audio and image");
             }
-            else
-            {
-                byte[] audioBytes;
-                using (var memoryStream = new MemoryStream())
-                {
-                    await musicVM.MusicData.CopyToAsync(memoryStream);
-                    audioBytes = memoryStream.ToArray();
-                }
-
-                return new MusicData
-                {
-                    Id = Id,
-                    Data = audioBytes
-                };
-            }
+            byte[] audioBytes = await _byteHelper.ConvertIFormFileInByte(musicVM.Audio);
+            byte[] pictureBytes = await _byteHelper.ConvertIFormFileInByte(musicVM.Picture);
+            return new MusicData(Id, audioBytes, pictureBytes);
         }
     }
 }

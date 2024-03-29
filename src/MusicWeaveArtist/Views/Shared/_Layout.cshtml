@@ -89,7 +89,7 @@
             {
                 var profilePictureUrl = User.FindFirst("ProfilePictureUrl").Value;
                 <a class="mt-auto text-light" asp-area="" asp-controller="Artist" asp-action="UserPage">
-                    <img src="@profilePictureUrl" alt="Profile Picture" class="img-fluid rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;" />
+                    <img src="@profilePictureUrl" alt="Profile Picture" class="img-fluid rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover; margin-bottom:10px" />
                 </a>
             }
             else
@@ -100,7 +100,6 @@
             }
         }
     </div>
-
     <div class="content">
         <header>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"

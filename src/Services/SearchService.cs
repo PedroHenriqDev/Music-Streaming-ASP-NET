@@ -1,5 +1,6 @@
 ﻿using Datas.Sql;
 using Exceptions;
+using Microsoft.AspNetCore.Http;
 using Models.Interfaces;
 
 namespace Services
@@ -7,15 +8,22 @@ namespace Services
     public class SearchService
     {
         private readonly ConnectionDb _connectionDb;
+        private readonly IHttpContextAccessor _httpAcessor;
 
-        public SearchService(ConnectionDb connectionDb)
+        public SearchService(ConnectionDb connectionDb, IHttpContextAccessor httpAcessor)
         {
             _connectionDb = connectionDb;
+            _httpAcessor = httpAcessor;
         }
 
         public T FindUserByName<T>(string name) where T : class,IEntityWithName<T>
         {
             return _connectionDb.GetUserByName<T>(name);
+        }
+
+        public async Task<T> FindCurrentUserAsync<T>() where T : IUser<T> 
+        {
+            return await _connectionDb.GetUserByNameAsync<T>(_httpAcessor.HttpContext.User.Identity.Name);
         }
 
         public async Task<IEnumerable<T>> FindAllEntitiesAsync<T>()

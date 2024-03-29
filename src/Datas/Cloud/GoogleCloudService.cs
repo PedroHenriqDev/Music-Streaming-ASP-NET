@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using System.IO.Compression;
 
 namespace Datas.Cloud
 {
@@ -30,12 +31,28 @@ namespace Datas.Cloud
 
         public async Task UploadMusicAsync(MusicData musicData)
         {
-            using (var memoryStream = new MemoryStream(musicData.Data))
+            using (var memoryStream = new MemoryStream())
             {
-                string objectName = $"{musicData.Id}.mp3"; 
+                using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+                {
+                    var audioEntry = archive.CreateEntry($"{musicData.Id}_audio.mp3");
+                    using (var audioStream = audioEntry.Open())
+                    {
+                        await audioStream.WriteAsync(musicData.Audio, 0, musicData.Audio.Length);
+                    }
+
+                    var pictureEntry = archive.CreateEntry($"{musicData.Id}_picture.jpg");
+                    using (var pictureStream = pictureEntry.Open())
+                    {
+                        await pictureStream.WriteAsync(musicData.Picture, 0, musicData.Picture.Length);
+                    }
+                }
+
+                memoryStream.Seek(0, SeekOrigin.Begin);
+
+                string objectName = $"{musicData.Id}.zip";
                 await _storageClient.UploadObjectAsync(_bucketName, objectName, null, memoryStream);
             }
         }
     }
 }
-    

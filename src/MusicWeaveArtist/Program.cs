@@ -4,6 +4,7 @@ using Datas.Cloud;
 using Datas.Sql;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Utilities.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,7 @@ builder.Services.AddScoped<JsonSerializationHelper>();
 builder.Services.AddScoped<LoginService>();
 builder.Services.AddScoped<VerifyService>();
 builder.Services.AddScoped<HttpHelper>();
+builder.Services.AddScoped<ByteConvertHelper>();
 builder.Services.AddScoped<EncryptService>();
 builder.Services.AddScoped<PictureService>();
 builder.Services.AddScoped<SearchService>();

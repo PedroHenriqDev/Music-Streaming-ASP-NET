@@ -62,6 +62,18 @@ namespace Datas.Sql
             }
         }
 
+        public async Task<T> GetUserByNameAsync<T>(string name)
+            where T : IEntityWithName<T>
+        {
+            using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
+            {
+                await connection.OpenAsync();
+                string tableName = typeof(T).Name + "s";
+                string sqlQuery = $"SELECT * FROM {tableName} WHERE Name = @name";
+                return await connection.QueryFirstOrDefaultAsync<T>(sqlQuery, new { name = name });
+            }
+        }
+
         public async Task<T> GetEntityByEmailAsync<T>(string email)
             where T : IEntityWithEmail<T>
         {
@@ -127,8 +139,8 @@ namespace Datas.Sql
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
             {
-                string sqlQuery = $@"INSERT INTO Artists (Id, Email, Name, Password, Description, BirthDate, PictureProfile, PhoneNumber, DateCreation) 
-                                     VALUES (@id, @email, @name, @password, @description, @birthDate, @pictureProfile, @phoneNumber, @dateCreation)";
+                string sqlQuery = @"INSERT INTO Artists (Id, Email, Name, Password, Description, BirthDate, PictureProfile, PhoneNumber, DateCreation) 
+                                    VALUES (@id, @email, @name, @password, @description, @birthDate, @pictureProfile, @phoneNumber, @dateCreation)";
 
                 await connection.QueryAsync(sqlQuery, new
                 {
@@ -141,6 +153,25 @@ namespace Datas.Sql
                     pictureProfile = artist.PictureProfile,
                     phoneNumber = artist.PhoneNumber,
                     dateCreation = artist.DateCreation,
+                });
+            }
+        }
+
+        public async Task RecordMusicAsync(Music music) 
+        {
+            using(NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
+            {
+                string sqlQuery = @"INSERT INTO Musics (Id, Name, ArtistId, GenreId, Date, DateCreation) 
+                                    VALUES(@id, @name, @artistId, @genreId, @date, @dateCreation)";
+
+                await connection.QueryAsync(sqlQuery, new
+                {
+                    id = music.Id,
+                    name = music.Name,
+                    artistId = music.ArtistId,
+                    genreId = music.GenreId,
+                    date = music.Date,
+                    dateCreation = music.DateCreation,
                 });
             }
         }
