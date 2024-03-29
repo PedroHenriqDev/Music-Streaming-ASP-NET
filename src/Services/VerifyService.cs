@@ -1,4 +1,6 @@
 ﻿using Datas.Sql;
+using Exceptions;
+using Models.ConcreteClasses;
 using Models.Interfaces;
 
 namespace Services
@@ -20,6 +22,20 @@ namespace Services
                 return true;
             }
             return false;
+        }
+
+        public async Task VerifyDuplicateNameOrEmailAsync(string name, string email)
+        {
+
+            if (await HasNameInDbAsync<Listener>(name) || await HasNameInDbAsync<Artist>(name))
+            {
+                throw new EqualException("This name exist");
+            }
+
+            if (await HasEmailInDbAsync<Artist>(email) || await HasEmailInDbAsync<Listener>(email))
+            {
+                throw new RecordException("Existing email.");
+            }
         }
 
         public async Task<bool> HasEmailInDbAsync<T>(string email)

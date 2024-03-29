@@ -108,27 +108,18 @@ namespace Datas.Sql
             }
         }
 
-        public async Task RecordUserGenresAsync(string userId, List<string> genreIds)
+        public async Task RecordEntityAssociationsAsync<T>(string entityId, List<string> entityIds) where T : class
         {
             using(NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
             {
                 await connection.OpenAsync();
-                string sqlQuery = "INSERT INTO UserGenres (UserId, GenreId) VALUES";
+                string tableName = typeof(T).Name + "s";
+                string sqlQuery = $"INSERT INTO {tableName} (UserId, GenreId) VALUES";
+                string valuesQuery = string.Join(",", entityIds.Select(id => $"(@entityId, '{id}')"));
 
-                for(int i = 0;  i < genreIds.Count; i++) 
-                {
-                    sqlQuery += $"('{userId}'), '{genreIds[i]}";
+                sqlQuery += valuesQuery;
 
-                    if(i < genreIds.Count() - 1) 
-                    {
-                        sqlQuery += ",";
-                    }
-                }
-
-                using(NpgsqlCommand command = new NpgsqlCommand(sqlQuery, connection))
-                {
-                    await command.ExecuteNonQueryAsync();
-                }
+                await connection.QueryAsync(sqlQuery, new { entityId  = entityId });
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Models.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,17 +7,15 @@ using System.Threading.Tasks;
 
 namespace Models.ConcreteClasses
 {
-    public class UserGenres
+    public class UserGenre
     {
-        public string Id { get; set; } 
         public string UserId { get; set; }
         public string GenreId { get; set;}
 
-        public UserGenres(string id,string userId, string genreId) 
+        public UserGenre(string userId, string genreId) 
         {
             UserId = userId;
             GenreId = genreId;
-            Id = id;
         }
     }
 }

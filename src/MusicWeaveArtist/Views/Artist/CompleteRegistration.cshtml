@@ -1,31 +1,41 @@
 ﻿@using ViewModels;
 @using Extensions;
 
-@model RegisterArtistViewModel;
+@model RegisterUserViewModel;
 
 <title>Choose Registration</title>
+<h5 class="text-center text-center">Step: 3/3</h5>
 <div class="container">
     <div class="post">
         <h1 class="text-black text-center">
             <i class="bi bi-music-note-list mx-2"></i>
             Perfect your account details, @Model.Name.CutName()
         </h1>
-        <h4 class="text-center text-center box-shadow-colo" style="padding: 10px; border-radius: 5px; color:black; border: none;">
-            <button asp-action="RegisterArtist" asp-controller="Artist" type="button" class="btn btn-outline-primary custom-btn" style="border-radius: 10px; border-color: transparent; transition: border-color 0.3s ease;">
-                Skip <i class="bi bi-arrow-right-circle"></i>
-            </button>
-        </h4>
-        <div class="options">
-            <div class="option">
-                <a asp-action="RegisterArtist" asp-controller="Artist"> Add Description <i class="bi bi-menu-down mx-2"></i> </a>
+        <form method="post" asp-action="RegisterArtist" asp-controller="Artist">
+            <input type="hidden" name="artistVM.Name" value="@Model.Name">
+            <input type="hidden" name="artistVM.Email" value="@Model.Email">
+            <input type="hidden" name="artistVM.PhoneNumber" value="@Model.PhoneNumber">
+            <input type="hidden" name="artistVM.BirthDate" value="@Model.BirthDate">
+            <input type="hidden" name="artistVM.Password" value="@Model.Password">
+            <input type="hidden" name="artistVM.GenreIds" value="@Model.GenreIds">
+
+            <h4 class="text-center text-center box-shadow-colo" style="padding: 10px; border-radius: 5px; color:black; border: none;">
+                <button type="submit" name="action" value="Login" class="btn btn-outline-primary custom-btn" style="border-radius: 10px; border-color: transparent; transition: border-color 0.3s ease;">
+                    Skip <i class="bi bi-arrow-right-circle"></i>
+                </button>
+            </h4>
+            <div class="options">
+                <div class="option">
+                    <button class="btn" type="submit" name="action" value="AddDescription"> Add Description <i class="bi bi-menu-down mx-2"></i> </button>
+                </div>
+                <div class="option">
+                    <button class="btn" type="submit" name="action" value="AddPictureProfile">  Add Picture Profile <i class="bi bi-person-square mx-2"></i></button>
+                </div>
+                <div class="option">
+                    <button class="btn" type="submit" name="action" value="RedirectToAddMusic"> Add Music <i class="bi bi-soundwave mx-2"></i></button>
+                </div>
             </div>
-            <div class="option">
-                <a asp-action="RegisterArtist" asp-controller="Artist">  Add Picture Profile <i class="bi bi-person-square mx-2"></i></a>
-            </div>
-            <div class="option">
-                <a asp-action="RegisterArtist" asp-controller="Artist"> Add Music <i class="bi bi-soundwave mx-2"></i></a>
-            </div>
-        </div>
+        </form>
     </div>
 </div>
 

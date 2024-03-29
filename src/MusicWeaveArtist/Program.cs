@@ -17,6 +17,7 @@ builder.Services.AddScoped<PictureService>();
 builder.Services.AddScoped<SearchService>();
 builder.Services.AddScoped<MusicService>();
 builder.Services.AddScoped<GoogleCloudService>();
+builder.Services.AddScoped<UserAuthenticationService>();
 builder.Services.AddScoped<ConnectionDb>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();

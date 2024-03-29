@@ -39,7 +39,7 @@ namespace Services
                 throw new RecordException("Error in record User Genre.");
             }
 
-            await _connectionDb.RecordUserGenresAsync(userId, genreIds);
+            await _connectionDb.RecordEntityAssociationsAsync<UserGenre>(userId, genreIds);
         }
 
         public async Task CreateListenerAsync(RegisterListenerViewModel listenerVM)
@@ -59,16 +59,16 @@ namespace Services
                 throw new RecordException("This name exist");
             }
 
-            if (await _verifyService.HasEmailInDbAsync<Listener>(listener.Email) || await _verifyService.HasEmailInDbAsync<Artist>(listener.Email))
+            if (await _verifyService.HasEmailInDbAsync<Artist>(listener.Email) || await _verifyService.HasEmailInDbAsync<Listener>(listener.Email))
             {
                 _logger.LogInformation("User creation attempt failed because the same email already exists in the database");
-                throw new RecordException("This email exist");
+                throw new RecordException("Existing email.");
             }
 
             await _connectionDb.RecordListenerAsync(listener);
         }
 
-        public async Task CreateArtistAsync(RegisterArtistViewModel artistVM)
+        public async Task CreateArtistAsync(RegisterUserViewModel artistVM)
         {
             Artist artist = new Artist(
                 Guid.NewGuid().ToString(),
@@ -79,20 +79,8 @@ namespace Services
                 artistVM.BirthDate,
                 DateTime.Now);
 
-            if (await _verifyService.HasNameInDbAsync<Listener>(artist.Name) || await _verifyService.HasNameInDbAsync<Artist>(artist.Name))
-            {
-                _logger.LogInformation("User creation attempt failed because the same name already exists in the database");
-                throw new RecordException("This name exist");
-            }
-
-            if (await _verifyService.HasEmailInDbAsync<Artist>(artist.Email) || await _verifyService.HasEmailInDbAsync<Listener>(artist.Email))
-            {
-                _logger.LogInformation("User creation attempt failed because the same email already exists in the database");
-                throw new RecordException("Existing email.");
-            }
-
-            await _connectionDb.RecordUserGenresAsync(artist.Id, artistVM.GenreIds);
             await _connectionDb.RecordArtistAsync(artist);
+            await _connectionDb.RecordEntityAssociationsAsync<UserGenre>(artist.Id, artistVM.GenreIds);
         }
     }
 }

@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Services;
 using Datas.Cloud;
 using Datas.Sql;
+using Models.ConcreteClasses;
+using Models.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
