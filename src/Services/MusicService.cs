@@ -9,21 +9,21 @@ namespace Services
 {
     public class MusicService
     {
-        private readonly GoogleCloudService _firestoreService;
+        private readonly GoogleCloudService _googleCloudService;
 
-        public MusicService(GoogleCloudService firestoreService)
+        public MusicService(GoogleCloudService googleCloudService)
         {
-            _firestoreService = firestoreService;
+            _googleCloudService = googleCloudService;
         }
 
-        public async Task AddMusicAsync(MusicViewModel musicVM)
+        public async Task AddMusicAsync(AddMusicViewModel musicVM)
         {
-            await _firestoreService.UploadMusicAsync(await ParseMusicDataAsync(musicVM, Guid.NewGuid().ToString()));
+            await _googleCloudService.UploadMusicAsync(await ParseMusicDataAsync(musicVM, Guid.NewGuid().ToString()));
         }
 
-        public async Task<MusicData> ParseMusicDataAsync(MusicViewModel musicVM, string Id)
+        public async Task<MusicData> ParseMusicDataAsync(AddMusicViewModel musicVM, string Id)
         {
-            if (musicVM.File == null && musicVM.File.Length > 0)
+            if (musicVM.MusicData == null && musicVM.MusicData.Length > 0)
             {
                 throw new MusicException("Error in record music data!");
             }
@@ -32,7 +32,7 @@ namespace Services
                 byte[] audioBytes;
                 using (var memoryStream = new MemoryStream())
                 {
-                    await musicVM.File.CopyToAsync(memoryStream);
+                    await musicVM.MusicData.CopyToAsync(memoryStream);
                     audioBytes = memoryStream.ToArray();
                 }
 

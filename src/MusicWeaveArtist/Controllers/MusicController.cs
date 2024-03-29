@@ -10,33 +10,19 @@ namespace MusicWeaveArtist.Controllers
     {
 
         private readonly MusicService _musicService;
+        private readonly SearchService _searchService;
 
-        public MusicController(MusicService musicService) 
+        public MusicController(MusicService musicService, SearchService searchService) 
         {
             _musicService = musicService;
+            _searchService = searchService;
         }
 
-        public IActionResult AddMusic()
+        public async Task<IActionResult> AddMusic()
         {
+            IEnumerable<Genre> genres = await _searchService.FindAllEntitiesAsync<Genre>();
+            ViewBag.Genres = genres;
             return View();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> AddMusic(MusicViewModel musicViewModel)
-        {
-            try
-            {
-                if (musicViewModel == null && musicViewModel.File == null && musicViewModel.File.Length <= 0)
-                {
-                    return RedirectToAction(nameof(Error), "Null file reference.");
-                }
-                await _musicService.AddMusicAsync(musicViewModel);
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ex)
-            {
-                return RedirectToAction(nameof(Error), new { message = ex.Message });
-            }
         }
     }
 }
