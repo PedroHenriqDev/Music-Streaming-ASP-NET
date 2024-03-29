@@ -69,7 +69,7 @@ namespace MusicWeaveArtist.Controllers
                 {
                     await _recordUserService.CreateArtistAsync(artistVM);
                     Artist currentArtist = await _searchService.FindEntityByEmailAsync<Artist>(artistVM.Email);
-                    await _authenticationService.SignInUserAsync(currentArtist, HttpContext);
+                    await _authenticationService.SignInUserAsync(currentArtist);
                     return RedirectToAction(action);
                 }
                 return View(artistVM);
@@ -108,7 +108,7 @@ namespace MusicWeaveArtist.Controllers
                 {
                     Artist artist = await _searchService.FindEntityByEmailAsync<Artist>(credentialsVM.Email);
                     _httpService.SetSessionValue("CurrentUser", artist);
-                    await _authenticationService.SignInUserAsync(artist, HttpContext);
+                    await _authenticationService.SignInUserAsync(artist);
                     return RedirectToAction("Index", "Home");
                 }
                 TempData["InvalidUser"] = "Email or password incorrect!";

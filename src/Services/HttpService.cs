@@ -10,32 +10,32 @@ namespace Services
 {
     public class HttpService
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IHttpContextAccessor _httpAccessor;
         private readonly JsonSerializationService _jsonService;
 
         public HttpService(
-            IHttpContextAccessor httpContextAccessor, 
+            IHttpContextAccessor httpAccessor, 
             JsonSerializationService jsonSerialization)
         {   
-            _httpContextAccessor = httpContextAccessor;
+            _httpAccessor = httpAccessor;
             _jsonService = jsonSerialization;
         }
 
         public T GetSessionValue<T>(string key) 
         {
-            string value = _httpContextAccessor.HttpContext.Session.GetString(key);
+            string value = _httpAccessor.HttpContext.Session.GetString(key);
             return value != null ? _jsonService.DeserializeObject<T>(value) : default(T);
         }
 
         public void SetSessionValue<T>(string key, T value) 
         {
             string serializeValue = _jsonService.SerializeObject(value);
-            _httpContextAccessor.HttpContext.Session.SetString(key, serializeValue);
+            _httpAccessor.HttpContext.Session.SetString(key, serializeValue);
         } 
 
         public void RemoveSessionValue(string key)
         {
-            _httpContextAccessor.HttpContext.Session.Remove(key);
+            _httpAccessor.HttpContext.Session.Remove(key);
         }
     }
 }
