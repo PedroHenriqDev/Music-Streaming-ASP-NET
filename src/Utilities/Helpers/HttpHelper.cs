@@ -8,28 +8,28 @@ using System.Threading.Tasks;
 
 namespace Services
 {
-    public class HttpService
+    public class HttpHelper
     {
         private readonly IHttpContextAccessor _httpAccessor;
-        private readonly JsonSerializationService _jsonService;
+        private readonly JsonSerializationHelper _jsonHelper;
 
-        public HttpService(
+        public HttpHelper(
             IHttpContextAccessor httpAccessor, 
-            JsonSerializationService jsonSerialization)
+            JsonSerializationHelper jsonHelper)
         {   
             _httpAccessor = httpAccessor;
-            _jsonService = jsonSerialization;
+            _jsonHelper = jsonHelper;
         }
 
         public T GetSessionValue<T>(string key) 
         {
             string value = _httpAccessor.HttpContext.Session.GetString(key);
-            return value != null ? _jsonService.DeserializeObject<T>(value) : default(T);
+            return value != null ? _jsonHelper.DeserializeObject<T>(value) : default(T);
         }
 
         public void SetSessionValue<T>(string key, T value) 
         {
-            string serializeValue = _jsonService.SerializeObject(value);
+            string serializeValue = _jsonHelper.SerializeObject(value);
             _httpAccessor.HttpContext.Session.SetString(key, serializeValue);
         } 
 

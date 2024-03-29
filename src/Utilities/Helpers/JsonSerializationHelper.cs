@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Services
 {
-    public class JsonSerializationService : IJsonSerializationService
+    public class JsonSerializationHelper : IJsonSerializationHelper
     {
         public T DeserializeObject<T>(string json)
         {

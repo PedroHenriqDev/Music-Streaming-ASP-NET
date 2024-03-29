@@ -26,7 +26,7 @@ namespace ViewModels
         [PhoneNumber(ErrorMessage = "The format of this number is incorrect")]
         public string? PhoneNumber { get; set; }
 
-        public bool UserIsValid
+        public bool Step1IsValid
         {
             get
             {
@@ -41,7 +41,7 @@ namespace ViewModels
             }
         }
 
-        public bool GenreIdsIsValid 
+        public bool Step2IsValid 
         {
             get 
             {
