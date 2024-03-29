@@ -13,9 +13,9 @@ namespace Services
             _connectionDb = connectionDb;
         }
 
-        public T FindUserByEmail<T>(string email) where T : class, IEntityWithEmail<T>
+        public T FindUserByName<T>(string name) where T : class,IEntityWithName<T>
         {
-            return _connectionDb.GetUserByEmail<T>(email);
+            return _connectionDb.GetUserByName<T>(name);
         }
 
         public async Task<IEnumerable<T>> FindAllEntitiesAsync<T>()

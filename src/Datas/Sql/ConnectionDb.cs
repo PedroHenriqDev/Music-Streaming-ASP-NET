@@ -50,15 +50,15 @@ namespace Datas.Sql
             }
         }
 
-        public T GetUserByEmail<T>(string email)
-            where T : IEntityWithEmail<T> 
+        public T GetUserByName<T>(string name)
+            where T : IEntityWithName<T> 
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
             {
                 connection.Open();
                 string tableName = typeof(T).Name + "s";
-                string sqlQuery = $"SELECT * FROM {tableName} WHERE Email = @email";
-                return connection.QueryFirst<T>(sqlQuery, new { email = email });
+                string sqlQuery = $"SELECT * FROM {tableName} WHERE Name = @name";
+                return connection.QueryFirst<T>(sqlQuery, new { name = name });
             }
         }
 

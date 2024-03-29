@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Services;
 using Datas.Cloud;
 using Datas.Sql;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,7 +31,7 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-builder.WebHost.ConfigureKestrel(options =>
+builder.WebHost.ConfigureKestrel(options => 
 {
     options.Limits.MaxRequestBodySize = 3145722800;
 });
@@ -46,8 +47,19 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+string profilePicturesDirectory = Path.Combine(app.Environment.ContentRootPath, "Profile-Pictures");
+if (!Directory.Exists(profilePicturesDirectory))
+{
+    Directory.CreateDirectory(profilePicturesDirectory);
+}
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(profilePicturesDirectory),
+    RequestPath = "/profile-pictures"
+});
 
 app.UseRouting();
 

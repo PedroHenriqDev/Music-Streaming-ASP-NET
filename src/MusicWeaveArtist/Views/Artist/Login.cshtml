@@ -6,12 +6,6 @@
     <h1 class="info-text"><i class="bi bi-music-note-list"></i></h1>
     <p>Create an account to listen to music and podcasts for free</p>
 </div>
-@if (TempData["InvalidUser"] != null)
-{
-    <div class="alert alert-danger strong-red" role="alert">
-        @TempData["InvalidUser"]
-    </div>
-}
 <form method="post" asp-controller="Artist" asp-action="Login" class="mt-5">
     <div class="container">
         <div class="row justify-content-center">

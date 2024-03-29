@@ -28,7 +28,8 @@ namespace Services
             _pictureService = pictureService;
         }
 
-        public async Task SignInUserAsync<T>(T user, HttpContext httpContext) where T : IUser<T>
+        public async Task SignInUserAsync<T>(T user, HttpContext httpContext) 
+            where T : IUser<T>
         {
             if (user == null)
             {
@@ -45,10 +46,7 @@ namespace Services
             if (user.PictureProfile != null)
             {
                 string pictureUrl = await _pictureService.SavePictureProfileAsync(user.PictureProfile, httpContext.Request.PathBase);
-                claims = new List<Claim>()
-                {
-                    new Claim("PictureProfile", pictureUrl),
-                };
+                claims.Add(new Claim("ProfilePictureUrl", pictureUrl));
             }
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

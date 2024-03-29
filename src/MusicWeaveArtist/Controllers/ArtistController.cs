@@ -23,8 +23,7 @@ namespace MusicWeaveArtist.Controllers
         private readonly PictureService _pictureService;
         private readonly JsonSerializationService _jsonService;
         private readonly VerifyService _verifyService;
-        private string _userEmail => User.FindFirst(ClaimTypes.Email)?.Value;
-        private Artist _currentUser => _searchService.FindUserByEmail<Artist>(_userEmail);
+        private Artist _currentUser => _searchService.FindUserByName<Artist>(User.Identity.Name);
 
         public ArtistController(
             RecordUserService recordUserService,
