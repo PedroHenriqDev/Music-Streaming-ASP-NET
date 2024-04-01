@@ -7,7 +7,7 @@
             <div class="col-md-6">
                 @if (TempData["ErrorMessage"] != null)
                 {
-                    <div class="alert alert-danger strong-red" role="alert">
+                    <div class="alert alert-danger strong-red rounded-pill" role="alert">
                         @TempData["ErrorMessage"]
                     </div>
                 }
@@ -52,7 +52,7 @@
                     <button type="submit" class="btn btn-success rounded-pill w-50">Register</button>
                 </div>
                     <div>
-                        <a asp-controller="User" asp-action="RegisterListener" class="text-decoration-none">Listener</a>
+                        <a asp-controller="Listener" asp-action="Login" class="text-decoration-none">Listener</a>
                     </div>
                 </div>
             </div>

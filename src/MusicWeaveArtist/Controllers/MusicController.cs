@@ -44,7 +44,7 @@ namespace MusicWeaveArtist.Controllers
                 musicVM.Picture = musicImage;
                 musicVM.Audio = musicAudio;
                 await _musicService.AddMusicAsync(musicVM);
-                return RedirectToAction("UserPage", "Artist");
+                return RedirectToAction("ArtistPage", "Artist");
             }
             catch(MusicException ex) 
             {

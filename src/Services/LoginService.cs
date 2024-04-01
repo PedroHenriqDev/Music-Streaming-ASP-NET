@@ -7,16 +7,13 @@ namespace Services
     public class LoginService
     {
         private readonly EncryptService _encryptService;
-        private readonly ConnectionDb _connectionDb;
         private readonly SearchService _searchService;
 
         public LoginService(
             EncryptService encryptService,
-            ConnectionDb connectionDb,
             SearchService searchService)
         {
             _encryptService = encryptService;
-            _connectionDb = connectionDb;
             _searchService = searchService;
         }
 

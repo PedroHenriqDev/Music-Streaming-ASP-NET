@@ -74,12 +74,7 @@ namespace Services
             _httpAcessor.HttpContext.Response.Cookies.Append(key, serializedValue, options);
         }
 
-        public Task SignOutAsync(HttpContext context, string scheme, Microsoft.AspNetCore.Authentication.AuthenticationProperties properties)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task SignOutUserAsync(HttpContext httpContext)
+        public async Task SignOutUserAsync()
         {
             await _httpAcessor.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         }

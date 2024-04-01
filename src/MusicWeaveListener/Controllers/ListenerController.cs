@@ -18,19 +18,20 @@ namespace MusicWeaveListener.Controllers
         private readonly LoginService _loginService;
         private readonly SearchService _searchService;
         private readonly PictureService _pictureService;
-        private string _userEmail => User.FindFirst(ClaimTypes.Email)?.Value;
-        private Listener _currentUser => _searchService.FindUserByEmail<Listener>(_userEmail);
+        private readonly UserAuthenticationService _authenticationService;
 
         public ListenerController(
             RecordUserService recordUserService,
             LoginService loginService,
             SearchService searchService,
-            PictureService pictureService) 
+            PictureService pictureService,
+            UserAuthenticationService authenticationService) 
         {
             _recordUserService = recordUserService;
             _loginService = loginService;
             _searchService = searchService;
             _pictureService = pictureService;
+            _authenticationService = authenticationService;
         }
 
         [HttpGet]
@@ -91,27 +92,8 @@ namespace MusicWeaveListener.Controllers
 
                 if (ModelState.IsValid && await _loginService.LoginAsync<Listener>(credentialsVM))
                 {
-                    Listener user = await _searchService.FindEntityByEmailAsync<Listener>(credentialsVM.Email);
-                    var claims = new List<Claim>();
-
-                    if (user.PictureProfile != null)
-                    {
-                        string pictureUrl = await _pictureService.SavePictureProfileAsync(user.PictureProfile, HttpContext.Request.PathBase);
-                        claims = new List<Claim>()
-                        {
-                            new Claim("PictureProfile", pictureUrl),
-                        };
-                    }
-                    claims = new List<Claim>()
-                    {
-                            new Claim(ClaimTypes.Name, user.Name),
-                            new Claim(ClaimTypes.Email, user.Email),
-                    };
-
-                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                    var authProperties = new AuthenticationProperties();
-
-                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+                    Listener listener = await _searchService.FindEntityByEmailAsync<Listener>(credentialsVM.Email);
+                    await _authenticationService.SignInUserAsync(listener);
                     return RedirectToAction("Index", "Home");
                 }
                 TempData["InvalidUser"] = "Email or password incorrect!";
@@ -142,7 +124,7 @@ namespace MusicWeaveListener.Controllers
                     return NotFound();
                 }
 
-                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                await _authenticationService.SignOutUserAsync();
                 return RedirectToAction(nameof(Login));
             }
             catch (BadHttpRequestException ex)
@@ -160,7 +142,7 @@ namespace MusicWeaveListener.Controllers
                 return NotFound();
             }
 
-            return View(_currentUser);
+            return View(await _searchService.FindCurrentUserAsync<Listener>());
         }
 
         [HttpGet]
@@ -182,7 +164,7 @@ namespace MusicWeaveListener.Controllers
                     return NotFound();
                 }
 
-                await _pictureService.AddPictureProfileAsync<Listener>(imageBase64, _currentUser);
+                await _pictureService.AddPictureProfileAsync(imageBase64, await _searchService.FindCurrentUserAsync<Listener>());
                 return RedirectToAction(nameof(UserPage));
             }
             catch (Exception ex)

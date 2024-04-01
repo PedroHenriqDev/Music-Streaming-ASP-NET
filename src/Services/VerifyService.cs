@@ -34,7 +34,7 @@ namespace Services
 
             if (await HasEmailInDbAsync<Artist>(email) || await HasEmailInDbAsync<Listener>(email))
             {
-                throw new RecordException("Existing email.");
+                throw new EqualException("Existing email.");
             }
         }
 

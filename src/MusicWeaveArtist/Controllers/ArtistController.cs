@@ -63,9 +63,8 @@ namespace MusicWeaveArtist.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
-        public async Task<IActionResult> RegisterArtist(string action)
+        public async Task<IActionResult> RegisterArtist(RegisterUserViewModel artistVM, string action)
         {
-            RegisterUserViewModel artistVM = _jsonHelper.DeserializeObject<RegisterUserViewModel>((string)TempData["ArtistVM"]);
             try
             {
                 if (Request.Method != "POST")
@@ -148,7 +147,7 @@ namespace MusicWeaveArtist.Controllers
                     return NotFound();
                 }
 
-                await _authenticationService.SignOutUserAsync(HttpContext);
+                await _authenticationService.SignOutUserAsync();
                 return RedirectToAction(nameof(Login));
             }
             catch (Exception ex)
@@ -216,12 +215,8 @@ namespace MusicWeaveArtist.Controllers
                 await _verifyService.VerifyDuplicateNameOrEmailAsync(artistVM.Name, artistVM.Email);
                 if (artistVM.Step1IsValid)
                 {
-                    IEnumerable<Genre> genres = await _searchService.FindAllEntitiesAsync<Genre>();
-                    ViewBag.Genres = genres;
-
-                    string artistVMJson = _jsonHelper.SerializeObject(artistVM);
-
-                    TempData["RegisterArtistViewModel"] = artistVMJson;
+                    artistVM.Genres = (List<Genre>)await _searchService.FindAllEntitiesAsync<Genre>();
+                    _httpHelper.SetSessionValue("ArtistVM", artistVM);
                     return View(artistVM);
                 }
                 return View("RegisterArtist", artistVM);
@@ -240,17 +235,19 @@ namespace MusicWeaveArtist.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
-        public async Task<IActionResult> ProcessRegistration(RegisterUserViewModel artistVM, List<string> genreIds)
+        public IActionResult ProcessSelectedGenres(List<string> selectedGenreIds)
         {
+            RegisterUserViewModel artistVM = _httpHelper.GetSessionValue<RegisterUserViewModel>("ArtistVM");
             try
             {
-                artistVM.GenreIds = genreIds;
+                artistVM.SelectedGenreIds = selectedGenreIds;
                 if (artistVM.Step2IsValid)
                 {
-                    TempData["ArtistVM"] = _jsonHelper.SerializeObject(artistVM);
+                    _httpHelper.SetSessionValue("ArtistVM", artistVM);
                     return RedirectToAction(nameof(CompleteRegistration));
                 }
-                return RedirectToAction(nameof(RegisterArtist));
+                TempData["InvalidGenres"] = "You must select at least one genre!";
+                return View("SelectGenres", artistVM);
             }
             catch(Exception ex) 
             {
@@ -262,10 +259,9 @@ namespace MusicWeaveArtist.Controllers
         [AllowAnonymous]
         public IActionResult CompleteRegistration() 
         {
-            if(TempData["ArtistVM"] is string artistVMJson) 
+            RegisterUserViewModel artistVM = _httpHelper.GetSessionValue<RegisterUserViewModel>("ArtistVM");
+            if(artistVM != null) 
             {
-                RegisterUserViewModel artistVM = _jsonHelper.DeserializeObject<RegisterUserViewModel>(artistVMJson);
-                TempData["ArtistVM"] = _jsonHelper.SerializeObject(artistVM);
                 return View(artistVM);
             }
             return RedirectToAction(nameof(SelectGenres));

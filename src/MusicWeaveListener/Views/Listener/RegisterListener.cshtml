@@ -1,6 +1,6 @@
 ﻿@using ViewModels;
 
-@model RegisterListenerViewModel;
+@model RegisterUserViewModel;
 
 <form method="post" asp-controller="Listener" asp-action="RegisterListener" onsubmit="return validateForm()" class="mt-5">
     <div class="container">
@@ -16,6 +16,7 @@
                     <h1 class="info-text"><i class="bi bi-earbuds"></i></h1>
                     <p>Create an account to listen to music and podcasts for free</p>
                 </div>
+                <hr/>
                 <div class="mb-3">
                     <label for="Name" class="form-label">Name:</label>
                     <input type="text" class="form-control rounded-pill" asp-for="Name" id="Name" placeholder="Enter your name">

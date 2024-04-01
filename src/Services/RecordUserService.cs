@@ -36,7 +36,7 @@ namespace Services
             await _connectionDb.RecordEntityAssociationsAsync<UserGenre>(userId, genreIds);
         }
 
-        public async Task CreateListenerAsync(RegisterListenerViewModel listenerVM)
+        public async Task CreateListenerAsync(RegisterUserViewModel listenerVM)
         {
             Listener listener = new Listener(
                 Guid.NewGuid().ToString(),
@@ -74,7 +74,7 @@ namespace Services
                 DateTime.Now);
 
             await _connectionDb.RecordArtistAsync(artist);
-            await _connectionDb.RecordEntityAssociationsAsync<UserGenre>(artist.Id, artistVM.GenreIds);
+            await _connectionDb.RecordEntityAssociationsAsync<UserGenre>(artist.Id, artistVM.SelectedGenreIds);
         }
     }
 }
