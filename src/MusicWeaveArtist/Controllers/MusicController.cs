@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Services;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using ViewModels;
 using Models.ConcreteClasses;
 using Microsoft.AspNetCore.Authorization;
 using System.Diagnostics;
+using Exceptions;
 
 namespace MusicWeaveArtist.Controllers
 {
@@ -39,6 +39,7 @@ namespace MusicWeaveArtist.Controllers
         public async Task<IActionResult> AddMusic(IFormFile musicImage, IFormFile musicAudio) 
         {
             AddMusicViewModel musicVM = _jsonHelper.DeserializeObject<AddMusicViewModel>((string)TempData["AddMusicViewModel"]);
+            TempData["AddMusicViewModel"] = _jsonHelper.SerializeObject(musicVM);
             try
             {
                 musicVM.Picture = musicImage;
@@ -46,10 +47,17 @@ namespace MusicWeaveArtist.Controllers
                 await _musicService.AddMusicAsync(musicVM);
                 return RedirectToAction("UserPage", "Artist");
             }
-            catch(ArgumentNullException ex)
+            catch(MusicException ex) 
             {
+                TempData["AddMusicViewModel"] = _jsonHelper.SerializeObject(musicVM);
                 TempData["InvalidMusic"] = ex.Message;
                 return View("AddMusicDatas", musicVM);
+            }
+            catch(ArgumentNullException ex)
+            {
+                TempData["AddMusicViewModel"] = _jsonHelper.SerializeObject(musicVM);
+                TempData["InvalidMusic"] = ex.Message;
+                return View("AddMusic", musicVM);
             }
             catch(Exception ex) 
             {
@@ -60,13 +68,15 @@ namespace MusicWeaveArtist.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
-        public IActionResult AddMusicDatas(AddMusicViewModel musicVM) 
+        public async Task<IActionResult> AddMusicDatas(AddMusicViewModel musicVM) 
         {
             if (musicVM.Step1IsValid) 
             {
                 TempData["AddMusicViewModel"] = _jsonHelper.SerializeObject(musicVM);
                 return View(musicVM);
             }
+            IEnumerable<Genre> genres = await _searchService.FindAllEntitiesAsync<Genre>();
+            ViewBag.Genres = genres;
             return View("AddMusic", musicVM);
         }
 

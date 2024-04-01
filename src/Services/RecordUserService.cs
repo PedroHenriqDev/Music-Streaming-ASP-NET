@@ -25,12 +25,6 @@ namespace Services
             _encryptService = encryptService;
         }
 
-        private int RamdomId()
-        {
-            Random random = new Random();
-            return random.Next();
-        }
-
         public async Task CreateUserGenresAsync(string userId, List<string> genreIds)
         {
             if (string.IsNullOrWhiteSpace(userId) || genreIds.Any())

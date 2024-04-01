@@ -7,17 +7,19 @@
         <p class="lead">Share your art.</p>
     </div>
     <h5 class="text-center text-center">Step: 1/2</h5>
-    <form method="post" asp-controller="Music" asp-action="AddMusicDatas">
+    <form method="post" asp-controller="Music" asp-action="AddMusicDatas" asp-validation-summary="All">
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <hr data-aos="fade-up" data-aos-duration="1000" data-aos-delay="800">
                 <div class="form-group mb-3" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200">
                     <label for="Name" class="form-label">Music Name:</label>
-                    <input type="text" class="form-control rounded-pill" id="Name" name="Name" placeholder="Enter the music name" required>
+                    <input type="text" class="form-control rounded-pill" asp-for="Name" id="Name" placeholder="Enter the music name" d>
+                    <span class="text-danger" asp-validation-for="Name"></span>
                 </div>
                 <div class="form-group mb-3" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="400">
                     <label for="Date" class="form-label">Date Music:</label>
-                    <input type="date" class="form-control rounded-pill" id="Date" name="Date" required>
+                    <input type="date" class="form-control rounded-pill" asp-for="Date" id="Date">
+                    <span class="text-danger" asp-validation-for="Date"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="@Model.GenreId" class="control-label">Genre:</label>

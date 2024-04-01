@@ -38,14 +38,22 @@ namespace Services
             string id = Guid.NewGuid().ToString();
             try
             {
+                if (musicVM.Audio == null || musicVM.Picture == null)
+                {
+                    throw new MusicException("Music must have audio and image");
+                }
+
                 await _connectionDb.RecordMusicAsync(await ParseMusicAsync(musicVM, id));
                 await _googleCloudService.UploadMusicAsync(await ParseMusicDataAsync(musicVM, id));
             }
-            catch(Exception ex) 
+            catch(MusicException) 
+            {
+                throw;
+            }
+            catch (Exception) 
             {
                 _logger.LogError("An error ocurred while recording music data!");
                 await _connectionDb.DeleteEntityByIdAsync<Music>(id);
-                throw;
             }
         }
 
@@ -62,10 +70,6 @@ namespace Services
 
         public async Task<MusicData> ParseMusicDataAsync(AddMusicViewModel musicVM, string Id)
         {
-            if (musicVM.Audio == null && musicVM.Picture == null)
-            {
-                throw new MusicException("Music must have audio and image");
-            }
             byte[] audioBytes = await _byteHelper.ConvertIFormFileInByte(musicVM.Audio);
             byte[] pictureBytes = await _byteHelper.ConvertIFormFileInByte(musicVM.Picture);
             return new MusicData(Id, audioBytes, pictureBytes);

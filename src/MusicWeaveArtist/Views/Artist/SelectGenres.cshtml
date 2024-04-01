@@ -8,13 +8,12 @@
 <style>
     .container {
         max-width: 500px;
-        margin: 50px auto;
+        margin: 10px auto;
         background-color: #fff;
         border-radius: 10px;
-        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
         padding: 30px;
     }
-
+        
     .form-group {
         margin-bottom: 30px;
         text-align: center;
@@ -44,13 +43,20 @@
         .genre-item label {
             cursor: pointer;
             padding: 10px 15px;
-            background-color: #e9ecef;
+            background-color: #fff;
             border-radius: 20px;
             color: #333;
             transition: all 0.3s ease;
             font-size: 1rem;
             border: 2px solid transparent;
         }
+
+    .post {
+        border: 1px solid black;
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: -20px;
+    }
 
         .genre-item input[type="checkbox"]:checked + label {
             background-color: #007bff;
@@ -83,6 +89,7 @@
     }
 
 </style>
+<div class="post">
 <h4 class="text-center">Step: 2/3</h4>
 <hr />
 <h2 class="text-center info-text"><i class="bi bi-music-note-beamed"></i> </h2>
@@ -113,6 +120,8 @@
         <button type="submit" class="btn-submit">Submit</button>
     </form>
 </div>
+</div>
+
 <script>
     function updateGenresId() {
         var selectedGenres = [];

@@ -31,7 +31,7 @@ namespace ViewModels
         {
             get 
             {
-                if(!string.IsNullOrEmpty(Name) && !(Date > DateTime.Now) && !string.IsNullOrEmpty(GenreId)) 
+                if(!string.IsNullOrEmpty(Name) && Date <= DateTime.Now && !string.IsNullOrEmpty(GenreId)) 
                 {
                     return true;
                 }
