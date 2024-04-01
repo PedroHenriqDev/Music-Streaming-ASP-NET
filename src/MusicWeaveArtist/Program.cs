@@ -23,7 +23,9 @@ builder.Services.AddScoped<SearchService>();
 builder.Services.AddScoped<MusicService>();
 builder.Services.AddScoped<GoogleCloudService>();
 builder.Services.AddScoped<UserAuthenticationService>();
+builder.Services.AddScoped<UserPageService>();
 builder.Services.AddScoped<ConnectionDb>();
+builder.Services.AddScoped<UpdateService>();
 
 builder.Services.AddHttpContextAccessor();
 

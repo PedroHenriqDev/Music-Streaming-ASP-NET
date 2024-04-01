@@ -6,13 +6,13 @@ namespace Services
 {
     public class PictureService
     {
-        private readonly ConnectionDb _connectionDb;
         private readonly EncryptService _encryptService;
+        private readonly UpdateService _updateService;
 
-        public PictureService(ConnectionDb connectionDb, EncryptService encryptService)
+        public PictureService(UpdateService updateService, EncryptService encryptService)
         {
-            _connectionDb = connectionDb;
             _encryptService = encryptService;
+            _updateService = updateService;
         }
 
         public async Task AddPictureProfileAsync<T>(string imageFile, T user) where T : IUser<T>
@@ -31,7 +31,7 @@ namespace Services
 
             string base64WithoutPrefix = imageFile.Replace("data:image/jpeg;base64,", "");
             user.PictureProfile = Convert.FromBase64String(base64WithoutPrefix);
-            await _connectionDb.AddUserProfilePictureAsync(user);
+            await _updateService.UpdateUserPictureProfileAsync(user);
         }
 
         public async Task<string> SavePictureProfileAsync(byte[] pictureData, string webRootPath)

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Models.Interfaces
 {
-    public interface IUser<T> : IEntityWithEmail<T> 
+    public interface IUser<T> : IEntityWithEmail<T>, IEntityWithDescription<T>
     {
         string Id { get; set; }
         string Name { get; set; }

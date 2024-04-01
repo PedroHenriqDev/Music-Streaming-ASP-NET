@@ -176,7 +176,7 @@ namespace Datas.Sql
             }
         }
 
-        public async Task AddUserProfilePictureAsync<T>(T user) 
+        public async Task UpdateUserProfilePictureAsync<T>(T user) 
             where T : IUser<T> 
         {
             using(NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString())) 
@@ -185,6 +185,18 @@ namespace Datas.Sql
                 string tableName = typeof(T).Name + "s";
                 string sqlQuery = $"UPDATE {tableName} SET PictureProfile = @pictureProfile WHERE Id = @id";
                 await connection.QueryAsync(sqlQuery, new { pictureProfile = user.PictureProfile, id = user.Id });
+            }
+        }
+
+        public async Task UpdateDescriptionAsync<T>(T entity)
+            where T : IEntityWithDescription<T> 
+        {
+            using(NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString())) 
+            {
+                await connection.OpenAsync();
+                string tableName = typeof(T).Name + "s";
+                string sqlQuery = $"UPDATE {tableName} SET Description = @description WHERE Id = @id";
+                await connection.QueryAsync<T>(sqlQuery, new { description = entity.Description, id = entity.Id });
             }
         }
 

@@ -11,6 +11,8 @@ using System.Net;
 using ViewModels;
 using Models.ConcreteClasses;
 using Newtonsoft.Json;
+using Utilities.Helpers;
+using System.Management;
 
 namespace MusicWeaveArtist.Controllers
 {
@@ -24,6 +26,8 @@ namespace MusicWeaveArtist.Controllers
         private readonly JsonSerializationHelper _jsonHelper;
         private readonly VerifyService _verifyService;
         private readonly HttpHelper _httpHelper;
+        private readonly UserPageService _userPageService;
+        private readonly UpdateService _updateService;
 
         public ArtistController(
             RecordUserService recordUserService,
@@ -33,7 +37,9 @@ namespace MusicWeaveArtist.Controllers
             JsonSerializationHelper jsonHelper,
             UserAuthenticationService authenticationService,
             VerifyService verifyService,
-            HttpHelper httpHelper)
+            HttpHelper httpHelper,
+            UserPageService userPageService,
+            UpdateService updateService)
         {
             _recordUserService = recordUserService;
             _loginService = loginService;
@@ -43,6 +49,8 @@ namespace MusicWeaveArtist.Controllers
             _authenticationService = authenticationService;
             _verifyService = verifyService;
             _httpHelper = httpHelper;
+            _userPageService = userPageService;
+            _updateService = updateService;
         }
 
         [HttpGet]
@@ -109,7 +117,6 @@ namespace MusicWeaveArtist.Controllers
                 if (ModelState.IsValid && await _loginService.LoginAsync<Artist>(credentialsVM))
                 {
                     Artist artist = await _searchService.FindEntityByEmailAsync<Artist>(credentialsVM.Email);
-                    _httpHelper.SetSessionValue("CurrentUser", artist);
                     await _authenticationService.SignInUserAsync(artist);
                     return RedirectToAction("Index", "Home");
                 }
@@ -152,13 +159,22 @@ namespace MusicWeaveArtist.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> UserPage()
+        public async Task<IActionResult> ArtistPage()
         {
-            if (Request.Method != "GET")
+            try
             {
-                return NotFound();
+                if (Request.Method != "GET")
+                {
+                    return NotFound();
+                }
+                ArtistPageViewModel artistPageVM = _userPageService.BuildArtistViewModelAsync(await _searchService.FindCurrentUserAsync<Artist>());
+
+                return View(artistPageVM);
             }
-            return View(await _searchService.FindCurrentUserAsync<Artist>());
+            catch(Exception ex) 
+            {
+                return RedirectToAction(nameof(Error), new { message = ex.Message});
+            }
         }
 
         [HttpGet]
@@ -180,9 +196,9 @@ namespace MusicWeaveArtist.Controllers
                     return NotFound();
                 }
 
-                Artist currentArtist = _httpHelper.GetSessionValue<Artist>("CurrentUser");
+                Artist currentArtist = await _searchService.FindCurrentUserAsync<Artist>();
                 await _pictureService.AddPictureProfileAsync(imageBase64, currentArtist);
-                return RedirectToAction(nameof(UserPage));
+                return RedirectToAction(nameof(ArtistPage));
             }
             catch (Exception ex)
             {
@@ -253,6 +269,31 @@ namespace MusicWeaveArtist.Controllers
                 return View(artistVM);
             }
             return RedirectToAction(nameof(SelectGenres));
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> Description() 
+        {
+            if(Request.Method != "GET") 
+            {
+                return NotFound();
+            }
+            
+            return View(await _searchService.FindCurrentUserAsync<Artist>());
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> AddDescription(Artist artist) 
+        {
+            if(Request.Method != "POST") 
+            {
+                return NotFound();
+            }
+
+            await _updateService.UpdateDescriptionAsync(artist);
+            return RedirectToAction(nameof(ArtistPage));
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

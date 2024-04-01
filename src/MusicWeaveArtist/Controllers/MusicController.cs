@@ -36,9 +36,8 @@ namespace MusicWeaveArtist.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
-        public async Task<IActionResult> AddMusic(IFormFile musicImage, IFormFile musicAudio) 
+        public async Task<IActionResult> AddMusic(AddMusicViewModel musicVM, IFormFile musicImage, IFormFile musicAudio) 
         {
-            AddMusicViewModel musicVM = _jsonHelper.DeserializeObject<AddMusicViewModel>((string)TempData["AddMusicViewModel"]);
             TempData["AddMusicViewModel"] = _jsonHelper.SerializeObject(musicVM);
             try
             {
@@ -49,13 +48,11 @@ namespace MusicWeaveArtist.Controllers
             }
             catch(MusicException ex) 
             {
-                TempData["AddMusicViewModel"] = _jsonHelper.SerializeObject(musicVM);
                 TempData["InvalidMusic"] = ex.Message;
                 return View("AddMusicDatas", musicVM);
             }
             catch(ArgumentNullException ex)
             {
-                TempData["AddMusicViewModel"] = _jsonHelper.SerializeObject(musicVM);
                 TempData["InvalidMusic"] = ex.Message;
                 return View("AddMusic", musicVM);
             }

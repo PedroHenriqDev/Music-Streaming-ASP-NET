@@ -15,6 +15,9 @@
                 <h2 class="text-center mb-4">@Model.Name</h2>
                 <h5 class="text-center text-center">Step: 2/2</h5>
                 <form id="postForm" asp-action="AddMusic" asp-controller="Music" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="musicVM.Name" value="@Model.Name">
+                    <input type="hidden" name="musicVM.Date" value="@Model.Date">
+                    <input type="hidden" name="musicVM.GenreId" value="@Model.GenreId">
                     <div class="mb-3 text-center">
                         <div class="custom-file">
                             <input type="file" class="form-control custom-file-input" id="formImage" name="musicImage" accept="image/*" onchange="previewImage(event)">

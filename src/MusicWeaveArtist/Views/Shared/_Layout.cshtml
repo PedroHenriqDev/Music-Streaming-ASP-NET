@@ -60,7 +60,6 @@
                             background-color: rgba(255, 255, 255, 0.1);
                             border-radius: 5px;
                         }
-
         .content {
             margin-left: 250px;
             padding: 20px;
@@ -88,13 +87,13 @@
             @if (User.HasClaim(c => c.Type == "ProfilePictureUrl"))
             {
                 var profilePictureUrl = User.FindFirst("ProfilePictureUrl").Value;
-                <a class="mt-auto text-light" asp-area="" asp-controller="Artist" asp-action="UserPage">
+                <a class="mt-auto text-light" asp-area="" asp-controller="Artist" asp-action="ArtistPage">
                     <img src="@profilePictureUrl" alt="Profile Picture" class="img-fluid rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover; margin-bottom:10px" />
                 </a>
             }
             else
             {
-                <a class="mt-auto text-light" asp-area="" asp-controller="Artist" asp-action="UserPage">
+                <a class="mt-auto text-light" asp-area="" asp-controller="Artist" asp-action="ArtistPage">
                     <strong class="text-light"><i class="bi bi-person-circle me-2"></i></strong>
                 </a>
             }
