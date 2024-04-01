@@ -60,36 +60,9 @@ namespace MusicWeaveArtist.Controllers
             return View();
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [AllowAnonymous]
-        public async Task<IActionResult> RegisterArtist(RegisterUserViewModel artistVM, string action)
-        {
-            try
-            {
-                if (Request.Method != "POST")
-                {
-                    return NotFound();
-                }
-
-                if (ModelState.IsValid)
-                {
-                    await _recordUserService.CreateArtistAsync(artistVM);
-                    Artist currentArtist = await _searchService.FindEntityByEmailAsync<Artist>(artistVM.Email);
-                    await _authenticationService.SignInUserAsync(currentArtist);
-                    return RedirectToAction(action);
-                }
-                return View(artistVM);
-            }
-            catch (Exception ex)
-            {
-                return RedirectToAction(nameof(Error), new { message = ex.Message });
-            }
-        }
-
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult RedirectToAddMusic() 
+        public IActionResult RedirectToAddMusic()
         {
             return RedirectToAction("AddMusic", "Music");
         }
@@ -170,9 +143,9 @@ namespace MusicWeaveArtist.Controllers
 
                 return View(artistPageVM);
             }
-            catch(Exception ex) 
+            catch (Exception ex)
             {
-                return RedirectToAction(nameof(Error), new { message = ex.Message});
+                return RedirectToAction(nameof(Error), new { message = ex.Message });
             }
         }
 
@@ -216,12 +189,12 @@ namespace MusicWeaveArtist.Controllers
                 if (artistVM.Step1IsValid)
                 {
                     artistVM.Genres = (List<Genre>)await _searchService.FindAllEntitiesAsync<Genre>();
-                    _httpHelper.SetSessionValue("ArtistVM", artistVM);
+                    _httpHelper.SetSessionValue("Genres", artistVM.Genres);
                     return View(artistVM);
                 }
                 return View("RegisterArtist", artistVM);
             }
-            catch (EqualException ex) 
+            catch (EqualException ex)
             {
                 TempData["ErrorMessage"] = ex.Message;
                 return View("RegisterArtist", artistVM);
@@ -232,24 +205,33 @@ namespace MusicWeaveArtist.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost]  
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
-        public IActionResult ProcessSelectedGenres(List<string> selectedGenreIds)
+        public async Task<IActionResult> RegisterArtist(RegisterUserViewModel artistVM)
         {
-            RegisterUserViewModel artistVM = _httpHelper.GetSessionValue<RegisterUserViewModel>("ArtistVM");
-            try
+            if (!artistVM.Step2IsValid)
             {
-                artistVM.SelectedGenreIds = selectedGenreIds;
-                if (artistVM.Step2IsValid)
-                {
-                    _httpHelper.SetSessionValue("ArtistVM", artistVM);
-                    return RedirectToAction(nameof(CompleteRegistration));
-                }
                 TempData["InvalidGenres"] = "You must select at least one genre!";
+                artistVM.Genres = _httpHelper.GetSessionValue<List<Genre>>("Genres");
                 return View("SelectGenres", artistVM);
             }
-            catch(Exception ex) 
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    _httpHelper.RemoveSessionValue("Genres");
+                    await _recordUserService.CreateArtistAsync(artistVM);
+
+                    Artist currentArtist = await _searchService.FindEntityByEmailAsync<Artist>(artistVM.Email);
+                    await _authenticationService.SignInUserAsync(currentArtist);
+
+                    return RedirectToAction(nameof(CompleteRegistration));
+                }
+                TempData["ErrorMessage"] = "Error creating object, some null parameter exists";
+                return RedirectToAction(nameof(RegisterArtist));
+            }
+            catch (Exception ex)
             {
                 return RedirectToAction(nameof(Error), new { message = ex.Message });
             }
@@ -257,33 +239,48 @@ namespace MusicWeaveArtist.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult CompleteRegistration() 
+        public IActionResult CompleteRegistration()
         {
-            RegisterUserViewModel artistVM = _httpHelper.GetSessionValue<RegisterUserViewModel>("ArtistVM");
-            if(artistVM != null) 
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AllowAnonymous]
+        public IActionResult CompleteRegistration(string action)
+        {
+            try
             {
-                return View(artistVM);
+                if (Request.Method != "POST")
+                {
+                    return NotFound();
+                }
+
+                return RedirectToAction(action);
             }
-            return RedirectToAction(nameof(SelectGenres));
+            catch (Exception ex)
+            {
+                return RedirectToAction(nameof(Error), new { message = ex.Message });
+            }
         }
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> Description() 
+        public async Task<IActionResult> Description()
         {
-            if(Request.Method != "GET") 
+            if (Request.Method != "GET")
             {
                 return NotFound();
             }
-            
+
             return View(await _searchService.FindCurrentUserAsync<Artist>());
         }
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> AddDescription(Artist artist) 
+        public async Task<IActionResult> AddDescription(Artist artist)
         {
-            if(Request.Method != "POST") 
+            if (Request.Method != "POST")
             {
                 return NotFound();
             }

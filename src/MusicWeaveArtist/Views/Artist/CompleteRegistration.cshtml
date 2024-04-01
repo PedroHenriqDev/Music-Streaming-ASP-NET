@@ -1,23 +1,16 @@
 ﻿@using ViewModels;
 @using Extensions;
 
-@model RegisterUserViewModel;
-
 <title>Choose Registration</title>
 <div class="container">
     <div class="post">
         <h5 class="text-center text-center">Step: 3/3</h5>
         <h1 class="text-black text-center">
             <i class="bi bi-music-note-list mx-2"></i>
-            Perfect your account details, @Model.Name.CutName()
+            Perfect your account details.
         </h1>
-        <form method="post" asp-action="RegisterArtist" asp-controller="Artist">
-            <input type="hidden" name="artistVM.Name" value="@Model.Name">
-            <input type="hidden" name="artistVM.Email" value="@Model.Email">
-            <input type="hidden" name="artistVM.PhoneNumber" value="@Model.PhoneNumber">
-            <input type="hidden" name="artistVM.BirthDate" value="@Model.BirthDate">
-            <input type="hidden" name="artistVM.Password" value="@Model.Password">
-            <input type="hidden" name="artistVM.SelectedGenreIds" value="@Model.SelectedGenreIds">
+        <form method="post" asp-action="CompleteRegistration" asp-controller="Artist">
+           
 
             <h4 class="text-center text-center box-shadow-colo" style="padding: 10px; border-radius: 5px; color:black; border: none;">
                 <button type="submit" name="action" value="Login" class="btn btn-outline-primary custom-btn" style="border-radius: 10px; border-color: transparent; transition: border-color 0.3s ease;">
@@ -26,7 +19,7 @@
             </h4>
             <div class="options">
                 <div class="option">
-                    <button class="btn btn-lg" type="submit" name="action" value="AddDescription"> Add Description <i class="bi bi-menu-down mx-2"></i> </button>
+                    <button class="btn btn-lg" type="submit" name="action" value="Description"> Add Description <i class="bi bi-menu-down mx-2"></i> </button>
                 </div>
                 <div class="option">
                     <button class="btn btn-lg" type="submit" name="action" value="AddPictureProfile">  Add Picture Profile <i class="bi bi-person-square mx-2"></i></button>
