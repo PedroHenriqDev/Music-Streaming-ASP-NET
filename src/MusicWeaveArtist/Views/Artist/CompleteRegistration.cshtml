@@ -4,9 +4,9 @@
 @model RegisterUserViewModel;
 
 <title>Choose Registration</title>
-<h5 class="text-center text-center">Step: 3/3</h5>
 <div class="container">
     <div class="post">
+        <h5 class="text-center text-center">Step: 3/3</h5>
         <h1 class="text-black text-center">
             <i class="bi bi-music-note-list mx-2"></i>
             Perfect your account details, @Model.Name.CutName()
@@ -26,13 +26,13 @@
             </h4>
             <div class="options">
                 <div class="option">
-                    <button class="btn" type="submit" name="action" value="AddDescription"> Add Description <i class="bi bi-menu-down mx-2"></i> </button>
+                    <button class="btn btn-lg" type="submit" name="action" value="AddDescription"> Add Description <i class="bi bi-menu-down mx-2"></i> </button>
                 </div>
                 <div class="option">
-                    <button class="btn" type="submit" name="action" value="AddPictureProfile">  Add Picture Profile <i class="bi bi-person-square mx-2"></i></button>
+                    <button class="btn btn-lg" type="submit" name="action" value="AddPictureProfile">  Add Picture Profile <i class="bi bi-person-square mx-2"></i></button>
                 </div>
                 <div class="option">
-                    <button class="btn" type="submit" name="action" value="RedirectToAddMusic"> Add Music <i class="bi bi-soundwave mx-2"></i></button>
+                    <button class="btn btn-lg" type="submit" name="action" value="RedirectToAddMusic"> Add Music <i class="bi bi-soundwave mx-2"></i></button>
                 </div>
             </div>
         </form>

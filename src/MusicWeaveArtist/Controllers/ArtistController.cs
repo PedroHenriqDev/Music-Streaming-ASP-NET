@@ -84,7 +84,7 @@ namespace MusicWeaveArtist.Controllers
         [AllowAnonymous]
         public IActionResult RedirectToAddMusic() 
         {
-            return View("AddMusic", "Music");
+            return RedirectToAction("AddMusic", "Music");
         }
 
         [HttpGet]
