@@ -3,8 +3,9 @@ using Services;
 using Datas.Cloud;
 using Datas.Sql;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Utilities.Helpers;
+using Facades;
+using Models.ConcreteClasses;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,11 +26,13 @@ builder.Services.AddScoped<GoogleCloudService>();
 builder.Services.AddScoped<UserAuthenticationService>();
 builder.Services.AddScoped<UserPageService>();
 builder.Services.AddScoped<ConnectionDb>();
+builder.Services.AddScoped<UserServicesFacade<Artist>>();
 builder.Services.AddScoped<UpdateService>();
 
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
+builder.Services.AddRazorPages();
 
 builder.Services.AddSession(options =>
 {
@@ -39,7 +42,7 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-builder.WebHost.ConfigureKestrel(options => 
+builder.WebHost.ConfigureKestrel(options =>
 {
     options.Limits.MaxRequestBodySize = 3145722800;
 });

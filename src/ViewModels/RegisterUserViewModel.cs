@@ -34,7 +34,7 @@ namespace ViewModels
             {
                 DateTime birthDate = BirthDate;
                 TimeSpan duration = DateTime.Now.Subtract(birthDate);
-
+                
                 if (!string.IsNullOrEmpty(Name) && !string.IsNullOrEmpty(Email) && !string.IsNullOrEmpty(Password) && duration.TotalDays >= 3650)
                 {
                     return true;

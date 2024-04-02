@@ -13,44 +13,17 @@ using Models.ConcreteClasses;
 using Newtonsoft.Json;
 using Utilities.Helpers;
 using System.Management;
+using Facades;
 
 namespace MusicWeaveArtist.Controllers
 {
     public class ArtistController : Controller
     {
-        private readonly RecordUserService _recordUserService;
-        private readonly LoginService _loginService;
-        private readonly SearchService _searchService;
-        private readonly UserAuthenticationService _authenticationService;
-        private readonly PictureService _pictureService;
-        private readonly JsonSerializationHelper _jsonHelper;
-        private readonly VerifyService _verifyService;
-        private readonly HttpHelper _httpHelper;
-        private readonly UserPageService _userPageService;
-        private readonly UpdateService _updateService;
+        private readonly UserServicesFacade<Artist> _servicesFacade;
 
-        public ArtistController(
-            RecordUserService recordUserService,
-            LoginService loginService,
-            SearchService searchService,
-            PictureService pictureService,
-            JsonSerializationHelper jsonHelper,
-            UserAuthenticationService authenticationService,
-            VerifyService verifyService,
-            HttpHelper httpHelper,
-            UserPageService userPageService,
-            UpdateService updateService)
+        public ArtistController(UserServicesFacade<Artist> servicesFacade)
         {
-            _recordUserService = recordUserService;
-            _loginService = loginService;
-            _searchService = searchService;
-            _pictureService = pictureService;
-            _jsonHelper = jsonHelper;
-            _authenticationService = authenticationService;
-            _verifyService = verifyService;
-            _httpHelper = httpHelper;
-            _userPageService = userPageService;
-            _updateService = updateService;
+            _servicesFacade = servicesFacade;
         }
 
         [HttpGet]
@@ -69,7 +42,7 @@ namespace MusicWeaveArtist.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> Login()
+        public IActionResult Login()
         {
             return View();
         }
@@ -81,15 +54,10 @@ namespace MusicWeaveArtist.Controllers
         {
             try
             {
-                if (Request.Method != "POST")
+                if (ModelState.IsValid && await _servicesFacade.LoginAsync(credentialsVM))
                 {
-                    return NotFound();
-                }
-
-                if (ModelState.IsValid && await _loginService.LoginAsync<Artist>(credentialsVM))
-                {
-                    Artist artist = await _searchService.FindEntityByEmailAsync<Artist>(credentialsVM.Email);
-                    await _authenticationService.SignInUserAsync(artist);
+                    Artist artist = await _servicesFacade.FindEntityByEmailAsync<Artist>(credentialsVM.Email);
+                    await _servicesFacade.SignInUserAsync(artist);
                     return RedirectToAction("Index", "Home");
                 }
                 TempData["InvalidUser"] = "Email or password incorrect!";
@@ -115,12 +83,7 @@ namespace MusicWeaveArtist.Controllers
         {
             try
             {
-                if (Request.Method != "POST")
-                {
-                    return NotFound();
-                }
-
-                await _authenticationService.SignOutUserAsync();
+                await _servicesFacade.SignOutUserAsync();
                 return RedirectToAction(nameof(Login));
             }
             catch (Exception ex)
@@ -135,11 +98,7 @@ namespace MusicWeaveArtist.Controllers
         {
             try
             {
-                if (Request.Method != "GET")
-                {
-                    return NotFound();
-                }
-                ArtistPageViewModel artistPageVM = _userPageService.BuildArtistViewModelAsync(await _searchService.FindCurrentUserAsync<Artist>());
+                ArtistPageViewModel artistPageVM = _servicesFacade.BuildArtistViewModel(await _servicesFacade.FindCurrentUserAsync());
 
                 return View(artistPageVM);
             }
@@ -163,13 +122,8 @@ namespace MusicWeaveArtist.Controllers
         {
             try
             {
-                if (Request.Method != "POST")
-                {
-                    return NotFound();
-                }
-
-                Artist currentArtist = await _searchService.FindCurrentUserAsync<Artist>();
-                await _pictureService.AddPictureProfileAsync(imageBase64, currentArtist);
+                Artist currentArtist = await _servicesFacade.FindCurrentUserAsync();
+                await _servicesFacade.AddPictureProfileAsync(imageBase64, currentArtist);
                 return RedirectToAction(nameof(ArtistPage));
             }
             catch (Exception ex)
@@ -185,11 +139,11 @@ namespace MusicWeaveArtist.Controllers
         {
             try
             {
-                await _verifyService.VerifyDuplicateNameOrEmailAsync(artistVM.Name, artistVM.Email);
+                await _servicesFacade.VerifyDuplicateNameOrEmailAsync(artistVM.Name, artistVM.Email);
                 if (artistVM.Step1IsValid)
                 {
-                    artistVM.Genres = (List<Genre>)await _searchService.FindAllEntitiesAsync<Genre>();
-                    _httpHelper.SetSessionValue("Genres", artistVM.Genres);
+                    artistVM.Genres = (List<Genre>)await _servicesFacade.FindAllEntitiesAsync<Genre>();
+                    _servicesFacade.SetSessionValue("Genres", artistVM.Genres);
                     return View(artistVM);
                 }
                 return View("RegisterArtist", artistVM);
@@ -213,18 +167,18 @@ namespace MusicWeaveArtist.Controllers
             if (!artistVM.Step2IsValid)
             {
                 TempData["InvalidGenres"] = "You must select at least one genre!";
-                artistVM.Genres = _httpHelper.GetSessionValue<List<Genre>>("Genres");
+                artistVM.Genres = _servicesFacade.GetSessionValue<List<Genre>>("Genres");
                 return View("SelectGenres", artistVM);
             }
             try
             {
                 if (ModelState.IsValid)
                 {
-                    _httpHelper.RemoveSessionValue("Genres");
-                    await _recordUserService.CreateArtistAsync(artistVM);
+                    _servicesFacade.RemoveSessionValue("Genres");
+                    await _servicesFacade.CreateArtistAsync(artistVM);
 
-                    Artist currentArtist = await _searchService.FindEntityByEmailAsync<Artist>(artistVM.Email);
-                    await _authenticationService.SignInUserAsync(currentArtist);
+                    Artist currentArtist = await _servicesFacade.FindEntityByEmailAsync<Artist>(artistVM.Email);
+                    await _servicesFacade.SignInUserAsync(currentArtist);
 
                     return RedirectToAction(nameof(CompleteRegistration));
                 }
@@ -251,11 +205,6 @@ namespace MusicWeaveArtist.Controllers
         {
             try
             {
-                if (Request.Method != "POST")
-                {
-                    return NotFound();
-                }
-
                 return RedirectToAction(action);
             }
             catch (Exception ex)
@@ -273,19 +222,14 @@ namespace MusicWeaveArtist.Controllers
                 return NotFound();
             }
 
-            return View(await _searchService.FindCurrentUserAsync<Artist>());
+            return View(await _servicesFacade.FindCurrentUserAsync());
         }
 
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> AddDescription(Artist artist)
         {
-            if (Request.Method != "POST")
-            {
-                return NotFound();
-            }
-
-            await _updateService.UpdateDescriptionAsync(artist);
+            await _servicesFacade.UpdateDescriptionAsync(artist);
             return RedirectToAction(nameof(ArtistPage));
         }
 

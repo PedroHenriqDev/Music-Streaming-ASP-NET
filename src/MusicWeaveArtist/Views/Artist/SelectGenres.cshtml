@@ -11,7 +11,7 @@
         border-radius: 10px;
         padding: 30px;
     }
-        
+
     .form-group {
         margin-bottom: 30px;
         text-align: center;
@@ -56,11 +56,11 @@
         margin-bottom: -20px;
     }
 
-        .genre-item input[type="checkbox"]:checked + label {
-            background-color: #007bff;
-            color: #fff;
-            border-color: #007bff;
-        }
+    .genre-item input[type="checkbox"]:checked + label {
+        background-color: #007bff;
+        color: #fff;
+        border-color: #007bff;
+    }
 
     .btn-submit {
         width: 100%;
@@ -101,12 +101,12 @@
 }
 
 <div class="post">
-<h4 class="text-center">Step: 2/3</h4>
-<hr />
-<h2 class="text-center info-text"><i class="bi bi-music-note-beamed"></i> </h2>
-<div class="container" style="margin-top: -20px">
-    <h2 class="text-center mb-4">@Model.Name.CutName(), which music genres do you produce?</h2>
-    <form asp-action="RegisterArtist" asp-controller="Artist" method="post">
+    <h4 class="text-center">Step: 2/3</h4>
+    <hr />
+    <h2 class="text-center info-text"><i class="bi bi-music-note-beamed"></i> </h2>
+    <div class="container" style="margin-top: -20px">
+        <h2 class="text-center mb-4">@Model.Name.CutName(), which music genres do you produce?</h2>
+        <form asp-action="RegisterArtist" asp-controller="Artist" method="post">
             <input type="hidden" name="artistVM.Name" value="@Model.Name">
             <input type="hidden" name="artistVM.Email" value="@Model.Email">
             <input type="hidden" name="artistVM.PhoneNumber" value="@Model.PhoneNumber">
@@ -114,23 +114,23 @@
             <input type="hidden" name="artistVM.Password" value="@Model.Password">
             <input type="hidden" name="artistVM.Genres" value="@Model.Genres">
 
-        <div class="form-group">
-            <label class="genre-label">Genres:</label>
-            <div class="row justify-content-center">
-                @foreach (var genre in Model.Genres)
-                {
-                    <div class="col-auto mb-3">
-                        <div class="genre-item">
-                            <input type="checkbox" id="@genre.Id" name="artistVM.SelectedGenreIds" value="@genre.Id">
-                            <label for="@genre.Id">@genre.Name<i class="bi bi-music-note"></i></label>
+            <div class="form-group">
+                <label class="genre-label">Genres:</label>
+                <div class="row justify-content-center">
+                    @foreach (var genre in Model.Genres)
+                    {
+                        <div class="col-auto mb-3">
+                            <div class="genre-item">
+                                <input type="checkbox" id="@genre.Id" name="artistVM.SelectedGenreIds" value="@genre.Id">
+                                <label for="@genre.Id">@genre.Name<i class="bi bi-music-note"></i></label>
+                            </div>
                         </div>
-                    </div>
-                }
+                    }
+                </div>
             </div>
-        </div>
-        <button type="submit" class="btn-submit">Create</button>
-    </form>
-</div>
+            <button type="submit" class="btn-submit">Create</button>
+        </form>
+    </div>
 </div>
 
 <script>

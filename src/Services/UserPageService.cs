@@ -13,7 +13,7 @@ namespace Services
 {
     public class UserPageService
     {
-        public ArtistPageViewModel BuildArtistViewModelAsync(Artist artist) 
+        public ArtistPageViewModel BuildArtistViewModel(Artist artist) 
         {
             if(artist == null) 
             {
