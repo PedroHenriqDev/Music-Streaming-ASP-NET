@@ -77,8 +77,8 @@ namespace MusicWeaveArtist.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
         [ValidateAntiForgeryToken]
+        [AllowAnonymous]
         public async Task<IActionResult> LogoutPost()
         {
             try
@@ -226,6 +226,7 @@ namespace MusicWeaveArtist.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [AllowAnonymous]
         public async Task<IActionResult> AddDescription(Artist artist)
         {
