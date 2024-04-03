@@ -5,49 +5,37 @@ using Services;
 using Utilities.Factories;
 using ViewModels;
 
-namespace Facades
+namespace Facades.Services
 {
-    public class UserServicesFacade<T> where T : class, IUser<T>, new()
+    public class UserServicesFacade<T> where T : class, IUser<T>
     {
         private readonly RecordUserService _recordUserService;
         private readonly LoginService _loginService;
         private readonly SearchService _searchService;
         private readonly UserAuthenticationService _authenticationService;
         private readonly PictureService _pictureService;
-        private readonly JsonSerializationHelper _jsonHelper;
         private readonly VerifyService _verifyService;
-        private readonly HttpHelper _httpHelper;
         private readonly UpdateService _updateService;
         private readonly UserPageService _userPageService;
-        private readonly ViewModelFactory _viewModelFactory;
-        private readonly ModelFactory _modelFactory;
 
         public UserServicesFacade(
             RecordUserService recordUserService,
             LoginService loginService,
             SearchService searchService,
             PictureService pictureService,
-            JsonSerializationHelper jsonHelper,
             UserAuthenticationService authenticationService,
             VerifyService verifyService,
-            HttpHelper httpHelper,
             UserPageService userPageService,
-            UpdateService updateService,
-            ViewModelFactory viewModelFactory,
-            ModelFactory modelFactory)
+            UpdateService updateService)
         {
             _recordUserService = recordUserService;
             _loginService = loginService;
             _searchService = searchService;
             _pictureService = pictureService;
-            _jsonHelper = jsonHelper;
             _authenticationService = authenticationService;
             _verifyService = verifyService;
-            _httpHelper = httpHelper;
             _userPageService = userPageService;
             _updateService = updateService;
-            _viewModelFactory = viewModelFactory;
-            _modelFactory = modelFactory;
         }
 
         public async Task<bool> LoginAsync(LoginViewModel loginVM)
@@ -97,46 +85,20 @@ namespace Facades
             return await _searchService.FindAllEntitiesAsync<TR>();
         }
 
-        public void SetSessionValue<TR>(string key, TR value)
-        {
-            _httpHelper.SetSessionValue(key, value);
-        }
-
-        public TR GetSessionValue<TR>(string key)
-        {
-            return _httpHelper.GetSessionValue<TR>(key);
-        }
-
-        public void RemoveSessionValue(string key)
-        {
-            _httpHelper.RemoveSessionValue(key);
-        }
-
         public async Task<EntityQuery<Artist>> CreateArtistAsync(RegisterUserViewModel artistVM)
         {
             return await _recordUserService.CreateArtistAsync(artistVM);
         }
 
-        public async Task<EntityQuery<Listener>> CreateListenerAsync(RegisterUserViewModel userVM) 
+        public async Task<EntityQuery<Listener>> CreateListenerAsync(RegisterUserViewModel userVM)
         {
             return await _recordUserService.CreateListenerAsync(userVM);
         }
-        
-        public async Task UpdateDescriptionAsync<TR>(TR user) 
+
+        public async Task UpdateDescriptionAsync<TR>(TR user)
             where TR : class, IEntityWithDescription<TR>
         {
             await _updateService.UpdateDescriptionAsync(user);
-        }
-
-        public DescriptionViewModel FactoryDescriptionViewModel<TR>(T entity) 
-            where TR : class, IEntityWithDescription<TR>
-        {
-            return _viewModelFactory.FactoryDescriptionViewModel(entity);
-        }
-
-        public T FactoryUser(string id, string description) 
-        {
-            return _modelFactory.FactoryUser<T>(id, description);
         }
     }
 }

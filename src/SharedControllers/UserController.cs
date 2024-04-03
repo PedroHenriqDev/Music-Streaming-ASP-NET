@@ -1,5 +1,7 @@
 ﻿using Exceptions;
-using Facades;
+using Facades.Factories;
+using Facades.Helpers;
+using Facades.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models.Entities;
@@ -13,11 +15,18 @@ namespace SharedControllers
     {
 
         private readonly UserServicesFacade<T> _servicesFacade;
+        private readonly UserHelpersFacade<T> _helpersFacade;
+        private readonly UserFactoriesFacade<T> _factoriesFacade;
         private string UserPageName => typeof(T).Name + "Page";
 
-        public UserController(UserServicesFacade<T> servicesFacade)
+        public UserController(
+            UserServicesFacade<T> servicesFacade,
+            UserHelpersFacade<T> helpersFacade,
+            UserFactoriesFacade<T> factoriesFacade)
         {
             _servicesFacade = servicesFacade;
+            _helpersFacade = helpersFacade;
+            _factoriesFacade = factoriesFacade;
         }
 
         [HttpGet]
@@ -60,7 +69,7 @@ namespace SharedControllers
                 if (userVM.UserIsValid)
                 {
                     userVM.Genres = (List<Genre>)await _servicesFacade.FindAllEntitiesAsync<Genre>();
-                    _servicesFacade.SetSessionValue("Genres", userVM.Genres);
+                    _helpersFacade.SetSessionValue("Genres", userVM.Genres);
                     return View(userVM);
                 }
                 return View("RegisterArtist", userVM);
@@ -153,7 +162,7 @@ namespace SharedControllers
             {
                 return NotFound();
             }
-            var descriptionVM = _servicesFacade.FactoryDescriptionViewModel<T>(await _servicesFacade.FindCurrentUserAsync());
+            var descriptionVM = _factoriesFacade.FactoryDescriptionViewModel<T>(await _servicesFacade.FindCurrentUserAsync());
             return View(descriptionVM);
         }
 
@@ -162,7 +171,7 @@ namespace SharedControllers
         [AllowAnonymous]
         public async Task<IActionResult> AddDescription(DescriptionViewModel entity)
         {
-            await _servicesFacade.UpdateDescriptionAsync(_servicesFacade.FactoryUser(entity.Id, entity.Description));
+            await _servicesFacade.UpdateDescriptionAsync(_factoriesFacade.FactoryUser(entity.Id, entity.Description));
             return RedirectToAction(UserPageName);
         }
 

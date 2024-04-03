@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Diagnostics;
 using Exceptions;
 using Models.Entities;
+using Utilities.Helpers;
 
 namespace MusicWeaveArtist.Controllers
 {

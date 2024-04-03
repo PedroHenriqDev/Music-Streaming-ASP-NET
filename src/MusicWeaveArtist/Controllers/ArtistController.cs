@@ -12,22 +12,30 @@ using ViewModels;
 using Newtonsoft.Json;
 using Utilities.Helpers;
 using System.Management;
-using Facades;
 using SharedControllers;
 using Models.Entities;
 using Models.Queries;
+using Facades.Helpers;
+using Facades.Factories;
+using Facades.Services;
 
 namespace MusicWeaveArtist.Controllers
 {
     public class ArtistController : UserController<Artist>
     {
         private readonly UserServicesFacade<Artist> _servicesFacade;
-        private readonly ILogger<ArtistController> _logger;
+        private readonly UserHelpersFacade<Artist> _helpersFacade;
+        private readonly UserFactoriesFacade<Artist> _factoriesFacade;
 
-        public ArtistController(UserServicesFacade<Artist> servicesFacade, ILogger<ArtistController> logger) : base(servicesFacade)
+        public ArtistController(
+            UserServicesFacade<Artist> servicesFacade, 
+            UserHelpersFacade<Artist> helpersFacade, 
+            UserFactoriesFacade<Artist> factoriesFacade)
+            : base(servicesFacade, helpersFacade, factoriesFacade)
         {
             _servicesFacade = servicesFacade;
-            _logger = logger;
+            _helpersFacade = helpersFacade;
+            _factoriesFacade = factoriesFacade;
         }
 
         [HttpGet]
@@ -68,14 +76,14 @@ namespace MusicWeaveArtist.Controllers
             if (!artistVM.UserHaveGenres)
             {
                 TempData["InvalidGenres"] = "You must select at least one genre!";
-                artistVM.Genres = _servicesFacade.GetSessionValue<List<Genre>>("Genres");
+                artistVM.Genres = _helpersFacade.GetSessionValue<List<Genre>>("Genres");
                 return View("SelectGenres", artistVM);
             }
             try
             {
                 if (artistVM.UserIsValid)
                 {
-                    _servicesFacade.RemoveSessionValue("Genres");
+                    _helpersFacade.RemoveSessionValue("Genres");
                     EntityQuery<Artist> entityQuery = await _servicesFacade.CreateArtistAsync(artistVM);
                     await _servicesFacade.SignInUserAsync(entityQuery.Entity);
                     return RedirectToAction(nameof(CompleteRegistration));

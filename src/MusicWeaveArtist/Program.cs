@@ -4,9 +4,11 @@ using Datas.Cloud;
 using Datas.Sql;
 using Microsoft.Extensions.FileProviders;
 using Utilities.Helpers;
-using Facades;
 using Utilities.Factories;
 using Models.Entities;
+using Facades.Services;
+using Facades.Helpers;
+using Facades.Factories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +31,8 @@ builder.Services.AddScoped<UserAuthenticationService>();
 builder.Services.AddScoped<UserPageService>();
 builder.Services.AddScoped<ConnectionDb>();
 builder.Services.AddScoped<UserServicesFacade<Artist>>();
+builder.Services.AddScoped<UserHelpersFacade<Artist>>();
+builder.Services.AddScoped<UserFactoriesFacade<Artist>>();
 builder.Services.AddScoped<ModelFactory>();
 builder.Services.AddScoped<ViewModelFactory>();
 builder.Services.AddScoped<UpdateService>();

@@ -6,8 +6,10 @@ using Models.Interfaces;
 using Utilities.Helpers;
 using Microsoft.Extensions.FileProviders;
 using Utilities.Factories;
-using Facades;
+using Facades.Factories;
+using Facades.Helpers;
 using Models.Entities;
+using Facades.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +32,8 @@ builder.Services.AddScoped<UserAuthenticationService>();
 builder.Services.AddScoped<UserPageService>();
 builder.Services.AddScoped<ConnectionDb>();
 builder.Services.AddScoped<UserServicesFacade<Listener>>();
+builder.Services.AddScoped<UserHelpersFacade<Listener>>();
+builder.Services.AddScoped<UserFactoriesFacade<Listener>>();
 builder.Services.AddScoped<ModelFactory>();
 builder.Services.AddScoped<ViewModelFactory>();
 builder.Services.AddScoped<UpdateService>();

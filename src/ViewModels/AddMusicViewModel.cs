@@ -14,13 +14,12 @@ namespace ViewModels
         [Required]
         public IFormFile Picture { get; set; }
 
-        [Required]
         public IFormFile Audio { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Music name is a required field")]
         public string Name { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Music date is a required field")]
         [FutureDate(ErrorMessage = "The date cannot be in the future!")]
         public DateTime Date { get; set; }
 
