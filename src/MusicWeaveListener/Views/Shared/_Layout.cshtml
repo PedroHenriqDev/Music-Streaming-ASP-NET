@@ -88,7 +88,7 @@
             @if (User.HasClaim(c => c.Type == "ProfilePictureUrl"))
             {
                 var profilePictureUrl = User.FindFirst("ProfilePictureUrl").Value;
-                <a class="mt-auto text-light" asp-area="" asp-controller="Listener" asp-action="UserPage">
+                <a class="mt-auto text-light" asp-area="" asp-controller="Listener" asp-action="ListenerPage">
                     <a href="@Url.Action("UserPage", "User")" class="nav-link text-light">
                         <img src="@profilePictureUrl" alt="Profile Picture" class="img-fluid rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;" />
                     </a>
@@ -96,7 +96,7 @@
             }
             else
             {
-                <a class="mt-auto text-light" asp-area="" asp-controller="Listener" asp-action="UserPage">
+                <a class="mt-auto text-light" asp-area="" asp-controller="Listener" asp-action="ListenerPage">
                     <strong class="text-light"><i class="bi bi-person-circle me-2"></i></strong>
                 </a>
             }

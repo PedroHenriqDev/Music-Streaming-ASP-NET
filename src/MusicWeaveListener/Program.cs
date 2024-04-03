@@ -6,6 +6,8 @@ using Models.Interfaces;
 using Utilities.Helpers;
 using Microsoft.Extensions.FileProviders;
 using Utilities.Factories;
+using Facades;
+using Models.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,8 +29,10 @@ builder.Services.AddScoped<GoogleCloudService>();
 builder.Services.AddScoped<UserAuthenticationService>();
 builder.Services.AddScoped<UserPageService>();
 builder.Services.AddScoped<ConnectionDb>();
-builder.Services.AddScoped<UpdateService>();
+builder.Services.AddScoped<UserServicesFacade<Listener>>();
+builder.Services.AddScoped<ModelFactory>();
 builder.Services.AddScoped<ViewModelFactory>();
+builder.Services.AddScoped<UpdateService>();
 
 builder.Services.AddHttpContextAccessor();
 

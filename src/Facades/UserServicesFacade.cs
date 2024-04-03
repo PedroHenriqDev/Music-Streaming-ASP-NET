@@ -60,60 +60,65 @@ namespace Facades
             return await _searchService.FindEntityByEmailAsync<TR>(email);
         }
 
-        public async Task SignInUserAsync(T user) 
+        public async Task SignInUserAsync(T user)
         {
             await _authenticationService.SignInUserAsync(user);
         }
 
-        public async Task SignOutUserAsync() 
+        public async Task SignOutUserAsync()
         {
             await _authenticationService.SignOutUserAsync();
         }
-        
-        public ArtistPageViewModel BuildArtistViewModel(Artist artist) 
+
+        public ArtistPageViewModel BuildArtistViewModel(Artist artist)
         {
             return _userPageService.BuildArtistViewModel(artist);
         }
 
-        public async Task<T> FindCurrentUserAsync() 
+        public async Task<T> FindCurrentUserAsync()
         {
             return await _searchService.FindCurrentUserAsync<T>();
         }
 
-        public async Task AddPictureProfileAsync(string imageFile, T user) 
+        public async Task AddPictureProfileAsync(string imageFile, T user)
         {
             await _pictureService.AddPictureProfileAsync(imageFile, user);
         }
 
-        public async Task VerifyDuplicateNameOrEmailAsync(string name, string email) 
+        public async Task VerifyDuplicateNameOrEmailAsync(string name, string email)
         {
             await _verifyService.VerifyDuplicateNameOrEmailAsync(name, email);
         }
 
-        public async Task<IEnumerable<TR>> FindAllEntitiesAsync<TR>() 
+        public async Task<IEnumerable<TR>> FindAllEntitiesAsync<TR>()
             where TR : class, IEntity
         {
             return await _searchService.FindAllEntitiesAsync<TR>();
         }
 
-        public void SetSessionValue<TR>(string key, TR value)  
+        public void SetSessionValue<TR>(string key, TR value)
         {
             _httpHelper.SetSessionValue(key, value);
         }
 
-        public TR GetSessionValue<TR>(string key) 
+        public TR GetSessionValue<TR>(string key)
         {
             return _httpHelper.GetSessionValue<TR>(key);
         }
 
-        public void RemoveSessionValue(string key) 
+        public void RemoveSessionValue(string key)
         {
             _httpHelper.RemoveSessionValue(key);
         }
 
-        public async Task CreateArtistAsync(RegisterUserViewModel artistVM) 
+        public async Task CreateArtistAsync(RegisterUserViewModel artistVM)
         {
             await _recordUserService.CreateArtistAsync(artistVM);
+        }
+
+        public async Task CreateListenerAsync(RegisterUserViewModel userVM) 
+        {
+            await _recordUserService.CreateListenerAsync(userVM);
         }
 
         public async Task UpdateDescriptionAsync<TR>(TR user) 
