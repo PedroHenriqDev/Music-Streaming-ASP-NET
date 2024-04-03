@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Models.ConcreteClasses
+namespace Models.Entities
 {
     public class Genre : IEntityWithName<Genre>
     {
-        public string Id {  get; set; }
+        public string Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public string Date { get; set; }
@@ -22,7 +22,7 @@ namespace Models.ConcreteClasses
             Date = date;
         }
 
-        public Genre() 
+        public Genre()
         {
         }
     }

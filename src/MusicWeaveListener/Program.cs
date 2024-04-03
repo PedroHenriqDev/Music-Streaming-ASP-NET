@@ -2,16 +2,17 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Services;
 using Datas.Cloud;
 using Datas.Sql;
-using Models.ConcreteClasses;
 using Models.Interfaces;
 using Utilities.Helpers;
 using Microsoft.Extensions.FileProviders;
+using Utilities.Factories;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddLogging();
+
 builder.Services.AddScoped<RecordUserService>();
 builder.Services.AddScoped<JsonSerializationHelper>();
 builder.Services.AddScoped<LoginService>();
@@ -27,6 +28,8 @@ builder.Services.AddScoped<UserAuthenticationService>();
 builder.Services.AddScoped<UserPageService>();
 builder.Services.AddScoped<ConnectionDb>();
 builder.Services.AddScoped<UpdateService>();
+builder.Services.AddScoped<ViewModelFactory>();
+
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();

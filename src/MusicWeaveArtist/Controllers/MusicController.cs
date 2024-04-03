@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Services;
 using ViewModels;
-using Models.ConcreteClasses;
 using Microsoft.AspNetCore.Authorization;
 using System.Diagnostics;
 using Exceptions;
+using Models.Entities;
 
 namespace MusicWeaveArtist.Controllers
 {

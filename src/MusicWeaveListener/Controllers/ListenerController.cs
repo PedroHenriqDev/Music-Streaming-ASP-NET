@@ -7,7 +7,7 @@ using Services;
 using System.Diagnostics;
 using System.Security.Claims;
 using ViewModels;
-using Models.ConcreteClasses;
+using Models.Entities;
 
 namespace MusicWeaveListener.Controllers
 {
@@ -19,19 +19,25 @@ namespace MusicWeaveListener.Controllers
         private readonly SearchService _searchService;
         private readonly PictureService _pictureService;
         private readonly UserAuthenticationService _authenticationService;
+        private readonly VerifyService _verifyService;
+        private readonly HttpHelper _httpHelper;
 
         public ListenerController(
             RecordUserService recordUserService,
             LoginService loginService,
             SearchService searchService,
             PictureService pictureService,
-            UserAuthenticationService authenticationService) 
+            UserAuthenticationService authenticationService, 
+            VerifyService verifyService,
+            HttpHelper httpHelper) 
         {
             _recordUserService = recordUserService;
             _loginService = loginService;
             _searchService = searchService;
             _pictureService = pictureService;
             _authenticationService = authenticationService;
+            _verifyService = verifyService;
+            _httpHelper = httpHelper;
         }
 
         [HttpGet]
@@ -44,7 +50,7 @@ namespace MusicWeaveListener.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
-        public async Task<IActionResult> RegisterListener(RegisterListenerViewModel listenerVM)
+        public async Task<IActionResult> RegisterListener(RegisterUserViewModel listenerVM)
         {
             try
             {
@@ -73,7 +79,7 @@ namespace MusicWeaveListener.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Login()
+        public IActionResult Login()
         {
             return View();
         }
@@ -98,6 +104,33 @@ namespace MusicWeaveListener.Controllers
                 }
                 TempData["InvalidUser"] = "Email or password incorrect!";
                 return View(credentialsVM);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction(nameof(Error), new { message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AllowAnonymous]
+        public async Task<IActionResult> SelectGenres(RegisterUserViewModel listenerVM)
+        {
+            try
+            {
+                await _verifyService.VerifyDuplicateNameOrEmailAsync(listenerVM.Name, listenerVM.Email);
+                if (listenerVM.UserIsValid)
+                {
+                    listenerVM.Genres = (List<Genre>)await _searchService.FindAllEntitiesAsync<Genre>();
+                    _httpHelper.SetSessionValue("Genres", listenerVM.Genres);
+                    return View(listenerVM);
+                }
+                return View("RegisterArtist", listenerVM);
+            }
+            catch (EqualException ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return View("RegisterArtist", listenerVM);
             }
             catch (Exception ex)
             {

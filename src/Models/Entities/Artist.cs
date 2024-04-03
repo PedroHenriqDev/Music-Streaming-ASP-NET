@@ -1,6 +1,6 @@
 ﻿using Models.Interfaces;
 
-namespace Models.ConcreteClasses
+namespace Models.Entities
 {
     public class Artist : IUser<Artist>
     {
@@ -10,9 +10,9 @@ namespace Models.ConcreteClasses
         public string Email { get; set; }
         public string? PhoneNumber { get; set; }
         public string? Description { get; set; }
-        public byte[] PictureProfile {  get; set; }
+        public byte[] PictureProfile { get; set; }
         public DateTime BirthDate { get; set; }
-        public DateTime DateCreation {  get; set; }
+        public DateTime DateCreation { get; set; }
         public List<UserGenre>? ArtistsGenres;
 
         public Artist()
@@ -20,12 +20,12 @@ namespace Models.ConcreteClasses
         }
 
         public Artist(
-            string id, 
-            string name, 
-            string password, 
-            string email, 
-            string phoneNumber, 
-            DateTime birthDate, 
+            string id,
+            string name,
+            string password,
+            string email,
+            string phoneNumber,
+            DateTime birthDate,
             DateTime dateCreation)
         {
             Id = id;

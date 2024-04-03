@@ -1,8 +1,8 @@
 ﻿using Datas.Sql;
 using Microsoft.Extensions.Logging;
 using Exceptions;
-using Models.ConcreteClasses;
 using ViewModels;
+using Models.Entities;
 
 namespace Services
 {

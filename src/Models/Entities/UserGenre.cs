@@ -5,14 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Models.ConcreteClasses
+namespace Models.Entities
 {
     public class UserGenre
     {
         public string UserId { get; set; }
-        public string GenreId { get; set;}
+        public string GenreId { get; set; }
 
-        public UserGenre(string userId, string genreId) 
+        public UserGenre(string userId, string genreId)
         {
             UserId = userId;
             GenreId = genreId;

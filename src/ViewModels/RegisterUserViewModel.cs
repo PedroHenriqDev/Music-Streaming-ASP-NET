@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Models.ConcreteClasses;
 using Extensions;
 using Attributes;
+using Models.Entities;
 
 namespace ViewModels
 {
@@ -32,7 +32,7 @@ namespace ViewModels
         [PhoneNumber(ErrorMessage = "The format of this number is incorrect")]
         public string PhoneNumber { get; set; }
 
-        public bool Step1IsValid
+        public bool UserIsValid
         {
             get
             {
@@ -46,7 +46,7 @@ namespace ViewModels
             }
         }
 
-        public bool Step2IsValid
+        public bool UserHaveGenres
         {
             get
             {

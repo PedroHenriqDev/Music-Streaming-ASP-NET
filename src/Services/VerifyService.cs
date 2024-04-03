@@ -1,6 +1,6 @@
 ﻿using Datas.Sql;
 using Exceptions;
-using Models.ConcreteClasses;
+using Models.Entities;
 using Models.Interfaces;
 
 namespace Services

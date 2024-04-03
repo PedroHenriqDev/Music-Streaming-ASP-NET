@@ -4,7 +4,7 @@ using Exceptions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Models.Interfaces;
-using Models.ConcreteClasses;
+using Models.Entities;
 
 namespace Datas.Sql
 {
@@ -189,7 +189,7 @@ namespace Datas.Sql
         }
 
         public async Task UpdateDescriptionAsync<T>(T entity)
-            where T : IEntityWithDescription<T> 
+            where T : class, IEntityWithDescription<T>
         {
             using(NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString())) 
             {

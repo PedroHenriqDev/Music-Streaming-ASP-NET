@@ -28,7 +28,10 @@
                             <a asp-action="Description" asp-controller="Artist"><i class="bi bi-pen text-primary" style="font-size: 0.89em;"></i></a>
                         </div>
                         <div style="margin-bottom: 40px">
-                            <p class="card-text my-auto">@System.Text.Encodings.Web.HtmlEncoder.Default.Encode(Model.Description)</p>
+                            @if (Model.Description != null)
+                            {
+                                <p class="card-text my-auto">@Html.Raw(System.Text.Encodings.Web.HtmlEncoder.Default.Encode(Model.Description))</p>
+                            }
                         </div>
                     </div>
                 </div>

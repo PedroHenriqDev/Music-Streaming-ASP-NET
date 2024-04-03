@@ -1,6 +1,6 @@
 ﻿using Models.Interfaces;
 
-namespace Models.ConcreteClasses
+namespace Models.Entities
 {
     public class Listener : IUser<Listener>
     {
@@ -12,14 +12,14 @@ namespace Models.ConcreteClasses
         public string? Description { get; set; }
         public byte[] PictureProfile { get; set; }
         public DateTime BirthDate { get; set; }
-        public DateTime DateCreation {  get; set; }
+        public DateTime DateCreation { get; set; }
 
         public Listener()
         {
         }
 
         public Listener(
-            string id, 
+            string id,
             string name,
             string password,
             string email,

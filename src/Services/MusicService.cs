@@ -1,14 +1,13 @@
 ﻿using Datas.Cloud;
-using MusicWeaveArtist.Cloud.CloudClasses;
 using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Http;
 using Exceptions;
 using ViewModels;
 using Utilities.Helpers;
 using Datas.Sql;
-using Models.ConcreteClasses;
 using Microsoft.Extensions.Logging;
 using System.Management;
+using Models.Entities;
 
 namespace Services
 {

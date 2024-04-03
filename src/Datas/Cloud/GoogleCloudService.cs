@@ -1,12 +1,12 @@
 ﻿using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
 using Microsoft.Extensions.Configuration;
-using MusicWeaveArtist.Cloud.CloudClasses;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.IO;
 using System.Threading.Tasks;
 using System.IO.Compression;
+using Models.Entities;
 
 namespace Datas.Cloud
 {

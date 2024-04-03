@@ -8,7 +8,6 @@ namespace Services
 {
     public class EncryptService
     {
-
         private readonly ILogger<EncryptService> _logger;
 
         public EncryptService(ILogger<EncryptService> logger)

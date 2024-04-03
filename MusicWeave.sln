@@ -21,7 +21,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Attributes", "src\Attribute
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Utilities", "src\Utilities\Utilities.csproj", "{0C59E64B-1FFB-4BE0-8B7B-D12AEAD3279B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exceptions", "src\Exceptions\Exceptions.csproj", "{82A440E0-9996-4DE8-8205-75990055F7CA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Exceptions", "src\Exceptions\Exceptions.csproj", "{82A440E0-9996-4DE8-8205-75990055F7CA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Facades", "src\Facades\Facades.csproj", "{E869C118-D716-433B-BE9C-1C6B31371D50}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedControllers", "SharedControllers\SharedControllers.csproj", "{DB47FF85-873A-4BD8-A28D-D9B9E4FC6A15}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +73,14 @@ Global
 		{82A440E0-9996-4DE8-8205-75990055F7CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{82A440E0-9996-4DE8-8205-75990055F7CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{82A440E0-9996-4DE8-8205-75990055F7CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E869C118-D716-433B-BE9C-1C6B31371D50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E869C118-D716-433B-BE9C-1C6B31371D50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E869C118-D716-433B-BE9C-1C6B31371D50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E869C118-D716-433B-BE9C-1C6B31371D50}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB47FF85-873A-4BD8-A28D-D9B9E4FC6A15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB47FF85-873A-4BD8-A28D-D9B9E4FC6A15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB47FF85-873A-4BD8-A28D-D9B9E4FC6A15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB47FF85-873A-4BD8-A28D-D9B9E4FC6A15}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
