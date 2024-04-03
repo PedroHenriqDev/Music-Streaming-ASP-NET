@@ -10,6 +10,7 @@ using ViewModels;
 using Models.Entities;
 using Facades;
 using SharedControllers;
+using Models.Queries;
 
 namespace MusicWeaveListener.Controllers
 {
@@ -36,27 +37,27 @@ namespace MusicWeaveListener.Controllers
         {
             try
             {
-                if (Request.Method != "POST")
+                if (!listenerVM.UserHaveGenres)
                 {
-                    return NotFound();
+                    TempData["InvalidGenres"] = "You must select at least one genre!";
+                    listenerVM.Genres = _servicesFacade.GetSessionValue<List<Genre>>("Genres");
+                    return View("SelectGenres", listenerVM);
                 }
 
-                if (ModelState.IsValid)
+                if (listenerVM.UserIsValid)
                 {
-                    await _servicesFacade.CreateListenerAsync(listenerVM);
-                    TempData["SuccessMessage"] = "User created successfully";
-                    return RedirectToAction("Login");
+                    _servicesFacade.RemoveSessionValue("Genres");
+                    EntityQuery<Listener> listenerQuery = await _servicesFacade.CreateListenerAsync(listenerVM);
+                    await _servicesFacade.SignInUserAsync(listenerQuery.Entity);
+                    return RedirectToAction(nameof(CompleteRegistration));
                 }
+                TempData["ErrorMessage"] = "Error creating object, some null parameter exists";
                 return View(listenerVM);
             }
-            catch (RecordException ex)
+            catch (RecordException<EntityQuery<Listener>> ex)
             {
-                TempData["ErrorMessage"] = ex.Message;
-                return View(listenerVM);
-            }
-            catch (Exception ex)
-            {
-                return RedirectToAction(nameof(Error), new { message = ex.Message });
+                string message = $"Exception: {ex.Message}, result: {ex.EntityQuery.Result}, Query: {ex.EntityQuery.Message}, Moment: {ex.EntityQuery.Moment}";
+                return RedirectToAction(nameof(Error), new { message = message });
             }
         }
 

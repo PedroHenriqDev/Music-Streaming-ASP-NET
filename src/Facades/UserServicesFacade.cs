@@ -1,5 +1,6 @@
 ﻿using Models.Entities;
 using Models.Interfaces;
+using Models.Queries;
 using Services;
 using Utilities.Factories;
 using ViewModels;
@@ -111,16 +112,16 @@ namespace Facades
             _httpHelper.RemoveSessionValue(key);
         }
 
-        public async Task CreateArtistAsync(RegisterUserViewModel artistVM)
+        public async Task<EntityQuery<Artist>> CreateArtistAsync(RegisterUserViewModel artistVM)
         {
-            await _recordUserService.CreateArtistAsync(artistVM);
+            return await _recordUserService.CreateArtistAsync(artistVM);
         }
 
-        public async Task CreateListenerAsync(RegisterUserViewModel userVM) 
+        public async Task<EntityQuery<Listener>> CreateListenerAsync(RegisterUserViewModel userVM) 
         {
-            await _recordUserService.CreateListenerAsync(userVM);
+            return await _recordUserService.CreateListenerAsync(userVM);
         }
-
+        
         public async Task UpdateDescriptionAsync<TR>(TR user) 
             where TR : class, IEntityWithDescription<TR>
         {

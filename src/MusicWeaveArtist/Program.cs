@@ -13,6 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddLogging();
+
 builder.Services.AddScoped<RecordUserService>();
 builder.Services.AddScoped<JsonSerializationHelper>();
 builder.Services.AddScoped<LoginService>();

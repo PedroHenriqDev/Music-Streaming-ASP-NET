@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Exceptions;
 using ViewModels;
 using Models.Entities;
+using Models.Queries;
 
 namespace Services
 {
@@ -30,51 +31,43 @@ namespace Services
             if (string.IsNullOrWhiteSpace(userId) || genreIds.Any())
             {
                 _logger.LogInformation("An error ocurred while record User Genre");
-                throw new RecordException("Error in record User Genre.");
+                throw new ArgumentNullException("Error in record User Genre.");
             }
 
             await _connectionDb.RecordEntityAssociationsAsync<UserGenre>(userId, genreIds);
         }
 
-        public async Task CreateListenerAsync(RegisterUserViewModel listenerVM)
+        public async Task<EntityQuery<Listener>> CreateListenerAsync(RegisterUserViewModel listenerVM)
         {
-            Listener listener = new Listener(
-                Guid.NewGuid().ToString(),
-                listenerVM.Name,
-                _encryptService.EncryptPasswordSHA512(listenerVM.Password),
-                listenerVM.Email,
-                listenerVM.PhoneNumber,
-                listenerVM.BirthDate,
-                DateTime.Now);
-
-            if (await _verifyService.HasNameInDbAsync<Listener>(listener.Name) || await _verifyService.HasNameInDbAsync<Artist>(listener.Name))
+            Listener listener = new Listener(Guid.NewGuid().ToString(), listenerVM.Name, _encryptService.EncryptPasswordSHA512(listenerVM.Password), listenerVM.Email, listenerVM.PhoneNumber, listenerVM.BirthDate, DateTime.Now);
+            try
             {
-                _logger.LogInformation("User creation attempt failed because the same name already exists in the database");
-                throw new RecordException("This name exist");
+                await _connectionDb.RecordListenerAsync(listener);
+                await _connectionDb.RecordEntityAssociationsAsync<UserGenre>(listener.Id, listenerVM.SelectedGenreIds);
+                return new EntityQuery<Listener>(true, "Listener created successfully", listener, DateTime.Now);
             }
-
-            if (await _verifyService.HasEmailInDbAsync<Artist>(listener.Email) || await _verifyService.HasEmailInDbAsync<Listener>(listener.Email))
+            catch (Exception ex)
             {
-                _logger.LogInformation("User creation attempt failed because the same email already exists in the database");
-                throw new RecordException("Existing email.");
+                _logger.LogError("Brutal error in method CreateListenerAsync");
+                throw new RecordException<EntityQuery<Listener>>($"This error occurred while registration was happening, {ex.Message}", new EntityQuery<Listener>(false, "Unable to create a listener", listener, DateTime.Now));
             }
-
-            await _connectionDb.RecordListenerAsync(listener);
         }
 
-        public async Task CreateArtistAsync(RegisterUserViewModel artistVM)
+        public async Task<EntityQuery<Artist>> CreateArtistAsync(RegisterUserViewModel artistVM)
         {
-            Artist artist = new Artist(
-                Guid.NewGuid().ToString(),
-                artistVM.Name,
-                _encryptService.EncryptPasswordSHA512(artistVM.Password),
-                artistVM.Email,
-                artistVM.PhoneNumber,
-                artistVM.BirthDate,
-                DateTime.Now);
+            Artist artist = new Artist(Guid.NewGuid().ToString(), artistVM.Name, _encryptService.EncryptPasswordSHA512(artistVM.Password), artistVM.Email, artistVM.PhoneNumber, artistVM.BirthDate, DateTime.Now);
+            try
+            {
+                await _connectionDb.RecordArtistAsync(artist);
+                await _connectionDb.RecordEntityAssociationsAsync<UserGenre>(artist.Id, artistVM.SelectedGenreIds);
+                return new EntityQuery<Artist>(true, "Artist created successfully", artist, DateTime.Now);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Brutal error in method CreateArtistAsync");
+                throw new RecordException<EntityQuery<Artist>>($"This error occurred while registration was happening, {ex.Message}", new EntityQuery<Artist>(false, "Unable to create a artist", artist, DateTime.Now));
+            }
 
-            await _connectionDb.RecordArtistAsync(artist);
-            await _connectionDb.RecordEntityAssociationsAsync<UserGenre>(artist.Id, artistVM.SelectedGenreIds);
         }
     }
 }

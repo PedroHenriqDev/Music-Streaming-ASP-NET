@@ -15,16 +15,19 @@ using System.Management;
 using Facades;
 using SharedControllers;
 using Models.Entities;
+using Models.Queries;
 
 namespace MusicWeaveArtist.Controllers
 {
     public class ArtistController : UserController<Artist>
     {
         private readonly UserServicesFacade<Artist> _servicesFacade;
+        private readonly ILogger<ArtistController> _logger;
 
-        public ArtistController(UserServicesFacade<Artist> servicesFacade) : base(servicesFacade)
+        public ArtistController(UserServicesFacade<Artist> servicesFacade, ILogger<ArtistController> logger) : base(servicesFacade)
         {
             _servicesFacade = servicesFacade;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -73,19 +76,17 @@ namespace MusicWeaveArtist.Controllers
                 if (artistVM.UserIsValid)
                 {
                     _servicesFacade.RemoveSessionValue("Genres");
-                    await _servicesFacade.CreateArtistAsync(artistVM);
-
-                    Artist currentArtist = await _servicesFacade.FindEntityByEmailAsync<Artist>(artistVM.Email);
-                    await _servicesFacade.SignInUserAsync(currentArtist);
-
+                    EntityQuery<Artist> entityQuery = await _servicesFacade.CreateArtistAsync(artistVM);
+                    await _servicesFacade.SignInUserAsync(entityQuery.Entity);
                     return RedirectToAction(nameof(CompleteRegistration));
                 }
                 TempData["ErrorMessage"] = "Error creating object, some null parameter exists";
-                return RedirectToAction(nameof(RegisterArtist));
+                return View(artistVM);
             }
-            catch (Exception ex)
+            catch (RecordException<EntityQuery<Artist>> ex)
             {
-                return RedirectToAction(nameof(Error), new { message = ex.Message });
+                string message = $"Exception: {ex.Message}, result: {ex.EntityQuery.Result}, Query: {ex.EntityQuery.Message}, Moment: {ex.EntityQuery.Moment}";
+                return RedirectToAction(nameof(Error), new { message = message });
             }
         }
     }
