@@ -13,7 +13,7 @@ namespace Models.Entities
         public byte[] PictureProfile { get; set; }
         public DateTime BirthDate { get; set; }
         public DateTime DateCreation { get; set; }
-        public List<UserGenre>? ArtistsGenres;
+        public List<UserGenre<Artist>>? ArtistsGenres;
 
         public Artist()
         {

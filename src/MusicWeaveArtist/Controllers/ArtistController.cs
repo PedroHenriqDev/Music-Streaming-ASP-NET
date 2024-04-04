@@ -84,7 +84,7 @@ namespace MusicWeaveArtist.Controllers
                 if (artistVM.UserIsValid)
                 {
                     _helpersFacade.RemoveSessionValue("Genres");
-                    EntityQuery<Artist> entityQuery = await _servicesFacade.CreateArtistAsync(artistVM);
+                    EntityQuery<Artist> entityQuery = await _servicesFacade.CreateUserAsync(artistVM);
                     await _servicesFacade.SignInUserAsync(entityQuery.Entity);
                     return RedirectToAction(nameof(CompleteRegistration));
                 }

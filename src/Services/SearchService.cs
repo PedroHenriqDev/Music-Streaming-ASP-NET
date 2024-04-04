@@ -16,9 +16,20 @@ namespace Services
             _httpAcessor = httpAcessor;
         }
 
-        public T FindUserByName<T>(string name) where T : class,IEntityWithName<T>
+        public T FindUserByName<T>(string name) where T : class, IEntityWithName<T>
         {
             return _connectionDb.GetUserByName<T>(name);
+        }
+
+        public async Task<T> FindUserByNameAsync<T>(string name) where T : class, IEntityWithName<T>
+        {
+            return await _connectionDb.GetUserByNameAsync<T>(name);
+        }
+
+        public async Task<T> FindEntityByIdAsync<T>(string id) 
+            where T : class, IEntity 
+        {
+            return await _connectionDb.GetEntityByIdAsync<T>(id);
         }
 
         public async Task<T> FindCurrentUserAsync<T>() where T : IUser<T> 

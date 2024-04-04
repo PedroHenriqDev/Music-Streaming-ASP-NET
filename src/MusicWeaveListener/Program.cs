@@ -17,7 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddLogging();
 
-builder.Services.AddScoped<RecordUserService>();
+builder.Services.AddScoped<RecordService>();
 builder.Services.AddScoped<JsonSerializationHelper>();
 builder.Services.AddScoped<LoginService>();
 builder.Services.AddScoped<VerifyService>();

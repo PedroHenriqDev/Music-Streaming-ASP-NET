@@ -7,9 +7,9 @@ using ViewModels;
 
 namespace Facades.Services
 {
-    public class UserServicesFacade<T> where T : class, IUser<T>
+    public class UserServicesFacade<T> where T : class, IUser<T>, new()
     {
-        private readonly RecordUserService _recordUserService;
+        private readonly RecordService _recordService;
         private readonly LoginService _loginService;
         private readonly SearchService _searchService;
         private readonly UserAuthenticationService _authenticationService;
@@ -19,7 +19,7 @@ namespace Facades.Services
         private readonly UserPageService _userPageService;
 
         public UserServicesFacade(
-            RecordUserService recordUserService,
+            RecordService recordUserService,
             LoginService loginService,
             SearchService searchService,
             PictureService pictureService,
@@ -28,7 +28,7 @@ namespace Facades.Services
             UserPageService userPageService,
             UpdateService updateService)
         {
-            _recordUserService = recordUserService;
+            _recordService = recordUserService;
             _loginService = loginService;
             _searchService = searchService;
             _pictureService = pictureService;
@@ -85,14 +85,9 @@ namespace Facades.Services
             return await _searchService.FindAllEntitiesAsync<TR>();
         }
 
-        public async Task<EntityQuery<Artist>> CreateArtistAsync(RegisterUserViewModel artistVM)
+        public async Task<EntityQuery<T>> CreateUserAsync(RegisterUserViewModel userVM) 
         {
-            return await _recordUserService.CreateArtistAsync(artistVM);
-        }
-
-        public async Task<EntityQuery<Listener>> CreateListenerAsync(RegisterUserViewModel userVM)
-        {
-            return await _recordUserService.CreateListenerAsync(userVM);
+           return await _recordService.CreateUserAsync<T>(userVM);
         }
 
         public async Task UpdateDescriptionAsync<TR>(TR user)

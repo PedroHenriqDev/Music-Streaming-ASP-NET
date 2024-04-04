@@ -7,17 +7,27 @@ namespace Services
 {
     public class VerifyService
     {
-        private readonly ConnectionDb _connectionDb;
+        private readonly SearchService _searchService;
 
-        public VerifyService(ConnectionDb connectionDb)
+        public VerifyService(SearchService searchService)
         {
-            _connectionDb = connectionDb;
+            _searchService = searchService;
         }
 
         public async Task<bool> HasNameInDbAsync<T>(string name)
             where T : class, IEntityWithName<T>
         {
-            if (await _connectionDb.GetEntityByNameAsync<T>(name) != null)
+            if (await _searchService.FindUserByNameAsync<T>(name) != null)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<bool> HasEmailInDbAsync<T>(string email)
+            where T : class, IEntityWithEmail<T>
+        {
+            if (await _searchService.FindEntityByEmailAsync<T>(email) != null)
             {
                 return true;
             }
@@ -38,14 +48,9 @@ namespace Services
             }
         }
 
-        public async Task<bool> HasEmailInDbAsync<T>(string email)
-            where T : class, IEntityWithEmail<T>
+        public async Task<bool> HasEntityInDbAsync<T>(string id)  where T : class, IEntity
         {
-            if (await _connectionDb.GetEntityByEmailAsync<T>(email) != null)
-            {
-                return true;
-            }
-            return false;
+           return await _searchService.FindEntityByIdAsync<T>(id) != null;  
         }
     }
 }

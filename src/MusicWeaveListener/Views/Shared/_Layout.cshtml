@@ -89,7 +89,7 @@
             {
                 var profilePictureUrl = User.FindFirst("ProfilePictureUrl").Value;
                 <a class="mt-auto text-light" asp-area="" asp-controller="Listener" asp-action="ListenerPage">
-                    <a href="@Url.Action("UserPage", "User")" class="nav-link text-light">
+                    <a href="@Url.Action("ListenerPage", "Listener")" class="nav-link text-light">
                         <img src="@profilePictureUrl" alt="Profile Picture" class="img-fluid rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;" />
                     </a>
                 </a>

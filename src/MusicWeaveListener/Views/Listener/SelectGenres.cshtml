@@ -111,12 +111,12 @@
         <h2 class="text-center mb-4">@HtmlEncoder.Encode(Model.Name.CutName()), What is your musical style?</h2>
         }
         <form asp-action="RegisterListener" asp-controller="Listener" method="post">
-            <input type="hidden" name="artistVM.Name" value="@Model.Name">
-            <input type="hidden" name="artistVM.Email" value="@Model.Email">
-            <input type="hidden" name="artistVM.PhoneNumber" value="@Model.PhoneNumber">
-            <input type="hidden" name="artistVM.BirthDate" value="@Model.BirthDate">
-            <input type="hidden" name="artistVM.Password" value="@Model.Password">
-            <input type="hidden" name="artistVM.Genres" value="@Model.Genres">
+            <input type="hidden" name="listenerVM.Name" value="@Model.Name">
+            <input type="hidden" name="listenerVM.Email" value="@Model.Email">
+            <input type="hidden" name="listenerVM.PhoneNumber" value="@Model.PhoneNumber">
+            <input type="hidden" name="listenerVM.BirthDate" value="@Model.BirthDate">
+            <input type="hidden" name="listenerVM.Password" value="@Model.Password">
+            <input type="hidden" name="listenerVM.Genres" value="@Model.Genres">
 
             <div class="form-group">
                 <label class="genre-label">Genres:</label>
@@ -125,7 +125,7 @@
                     {
                         <div class="col-auto mb-3">
                             <div class="genre-item">
-                                <input type="checkbox" id="@genre.Id" name="artistVM.SelectedGenreIds" value="@genre.Id">
+                                <input type="checkbox" id="@genre.Id" name="listenerVM.SelectedGenreIds" value="@genre.Id">
                                 <label for="@genre.Id">@genre.Name<i class="bi bi-music-note"></i></label>
                             </div>
                         </div>

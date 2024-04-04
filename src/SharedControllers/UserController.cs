@@ -18,6 +18,7 @@ namespace SharedControllers
         private readonly UserHelpersFacade<T> _helpersFacade;
         private readonly UserFactoriesFacade<T> _factoriesFacade;
         private string UserPageName => typeof(T).Name + "Page";
+        private string RegisterUser => $"Register{typeof(T).Name}";
 
         public UserController(
             UserServicesFacade<T> servicesFacade,
@@ -72,12 +73,12 @@ namespace SharedControllers
                     _helpersFacade.SetSessionValue("Genres", userVM.Genres);
                     return View(userVM);
                 }
-                return View("RegisterArtist", userVM);
+                return View(RegisterUser, userVM);
             }
             catch (EqualException ex)
             {
                 TempData["ErrorMessage"] = ex.Message;
-                return View("RegisterArtist", userVM);
+                return View(RegisterUser, userVM);
             }
             catch (Exception ex)
             {

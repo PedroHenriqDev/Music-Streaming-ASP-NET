@@ -58,7 +58,7 @@ namespace MusicWeaveListener.Controllers
                 if (listenerVM.UserIsValid)
                 {
                     _helpersFacade.RemoveSessionValue("Genres");
-                    EntityQuery<Listener> listenerQuery = await _servicesFacade.CreateListenerAsync(listenerVM);
+                    EntityQuery<Listener> listenerQuery = await _servicesFacade.CreateUserAsync(listenerVM);
                     await _servicesFacade.SignInUserAsync(listenerQuery.Entity);
                     return RedirectToAction(nameof(CompleteRegistration));
                 }
