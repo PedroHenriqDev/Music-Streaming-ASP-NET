@@ -21,7 +21,8 @@ namespace ApplicationLayer.Services
             return _connectionDb.GetUserByName<T>(name);
         }
 
-        public async Task<T> FindUserByNameAsync<T>(string name) where T : class, IEntityWithName<T>
+        public async Task<T> FindUserByNameAsync<T>(string name)
+            where T : class, IEntityWithName<T>
         {
             return await _connectionDb.GetUserByNameAsync<T>(name);
         }
@@ -35,6 +36,16 @@ namespace ApplicationLayer.Services
         public async Task<T> FindCurrentUserAsync<T>() where T : IUser<T> 
         {
             return await _connectionDb.GetUserByNameAsync<T>(_httpAcessor.HttpContext.User.Identity.Name);
+        }
+
+        public async IAsyncEnumerable<T> FindAllEntitiesAsyncStream<T>()
+            where T : class, IEntity
+        {
+            var entities = await _connectionDb.GetAllEntitiesAsync<T>();
+            foreach (var entity in entities)
+            {
+                yield return entity;
+            }
         }
 
         public async Task<IEnumerable<T>> FindAllEntitiesAsync<T>()
