@@ -1,0 +1,101 @@
+﻿@using ApplicationLayer.ViewModels;
+
+@model RegisterUserViewModel;
+
+<form method="post" asp-controller="Listener" asp-action="SelectGenres" onsubmit="return validateForm()" class="mt-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger strong-red" role="alert">
+                        @TempData["ErrorMessage"]
+                    </div>
+                }
+                <div class="text-center mb-4">
+                    <h1 class="info-text"><i class="bi bi-earbuds"></i></h1>
+                    <p>Create an account to listen to music and podcasts for free</p>
+                </div>
+                <hr/>
+                <div class="mb-3">
+                    <label for="Name" class="form-label">Name:</label>
+                    <input type="text" class="form-control rounded-pill" asp-for="Name" id="Name" placeholder="Enter your name">
+                    <span class="text-danger" asp-validation-for="Name"></span>
+                </div>
+                <div class="mb-3">
+                    <label for="Email" class="form-label">Email:</label>
+                    <input type="email" class="form-control rounded-pill" asp-for="Email" id="Email" placeholder="Enter your email">
+                    <span class="text-danger" asp-validation-for="Email"></span>
+                </div>
+                <div class="mb-3">
+                    <label for="BirthDate" class="form-label">Birth Date:</label>
+                    <input type="date" class="form-control rounded-pill" asp-for="BirthDate" id="BirthDate">
+                    <span class="text-danger" asp-validation-for="BirthDate"></span>
+                </div>
+                <div class="mb-3">
+                    <label for="Password" class="form-label">Password:</label>
+                    <input type="password" class="form-control rounded-pill" asp-for="Password" id="Password" placeholder="Enter your password">
+                    <span class="text-danger" asp-validation-for="Password"></span>
+                </div>
+                <div class="mb-3">
+                    <label for="ConfirmPassword" class="form-label">Confirm Password: </label>
+                    <input type="password" class="form-control rounded-pill" id="ConfirmPassword" placeholder="Confirm your password">
+                    <span class="text-danger" id="confirmPasswordError"></span>
+                </div>
+                <div class="mb-3">
+                    <label for="PhoneNumber" class="form-label">Phone Number:</label>
+                    <input type="tel" class="form-control rounded-pill" asp-for="PhoneNumber" id="PhoneNumber" placeholder="Optional">
+                    <span class="text-danger" asp-validation-for="PhoneNumber"></span>
+                </div>
+                <div class="text-center" style="margin-top: 60px">
+                    <button type="submit" class="btn btn-success rounded-pill w-50">Register</button>
+                </div>
+                <div class="d-flex justify-content-between mt-3">
+                    <div>
+                        <a asp-controller="Listener" asp-action="Login" class="text-decoration-none">Login</a>
+                    </div>
+                    <div>
+                        <a asp-controller="User" asp-action="RegisterArtist" class="text-decoration-none">Artist</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<style>
+    .strong-green {
+        background-color: #28a745;
+        color: #fff;
+    }
+
+    .strong-red {
+        background-color: #dc3545;
+        color: #fff;
+    }
+
+    .info-text {
+        background: linear-gradient(to right, #ff5733, #d90000);
+        -webkit-background-clip: text;
+        color: transparent;
+        padding: 10px 20px;
+        margin-bottom: 20px;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        function validateForm() {
+            var password = document.getElementById("Password").value;
+            var confirmPassword = document.getElementById("ConfirmPassword").value;
+
+            if (password !== confirmPassword) {
+                document.getElementById("confirmPasswordError").innerText = "Passwords do not match.";
+                return false;
+            }
+
+            document.getElementById("confirmPasswordError").innerText = "";
+            return true;
+        }
+    </script>
+}

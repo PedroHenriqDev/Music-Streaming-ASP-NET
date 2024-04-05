@@ -399,5 +399,5 @@ FodyWeavers.xsd
 appsettings.json
 /SharedControllers/
 src/music-weave-7d399c1e0e40.json
-src/MusicWeaveArtist/Profile-Pictures/*
-src/MusicWeaveListener/Profile-Pictures/*
+src/PresentationLayer/MusicWeaveArtist/Profile-Pictures/*
+src/PresentationLayer/MusicWeaveListener/Profile-Pictures/*

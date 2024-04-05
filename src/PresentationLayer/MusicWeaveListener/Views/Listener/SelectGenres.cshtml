@@ -1,0 +1,154 @@
+﻿@using UtilitiesLayer.Extensions;
+@using ApplicationLayer.ViewModels;
+
+@model RegisterUserViewModel
+
+<title>Choose Music Genres</title>
+<style>
+    .container {
+        max-width: 500px;
+        margin: 10px auto;
+        background-color: #fff;
+        border-radius: 10px;
+        padding: 30px;
+    }
+
+    .form-group {
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+    .genre-label {
+        font-weight: bold;
+        color: #333;
+        display: block;
+        font-size: 1.2rem;
+        margin-bottom: 20px;
+    }
+
+    .genre-item {
+        display: inline-block;
+        margin-right: 10px;
+    }
+
+        .genre-item:last-child {
+            margin-right: 0;
+        }
+
+        .genre-item input[type="checkbox"] {
+            display: none;
+        }
+
+        .genre-item label {
+            cursor: pointer;
+            padding: 10px 15px;
+            background-color: #fff;
+            border-radius: 20px;
+            color: #333;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            border: 2px solid transparent;
+        }
+
+    .post {
+        border: 1px solid black;
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: -20px;
+    }
+
+    .genre-item input[type="checkbox"]:checked + label {
+        background-color: #007bff;
+        color: #fff;
+        border-color: #007bff;
+    }
+
+    .btn-submit {
+        width: 100%;
+        padding: 10px;
+        border-radius: 20px;
+        background-color: transparent;
+        color: #007bff;
+        border: 2px solid #007bff;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+        .btn-submit:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+    .info-text {
+        background: linear-gradient(to right, #ff5733, #d90000);
+        -webkit-background-clip: text;
+        color: transparent;
+        padding: 10px 20px;
+        margin-bottom: 20px;
+    }
+
+    .strong-red {
+        background-color: #dc3545;
+        color: #fff;
+    }
+
+</style>
+
+@if (TempData["InvalidGenres"] != null)
+{
+    <div class="alert alert-danger strong-red rounded-pill" role="alert">
+        @TempData["InvalidGenres"]
+    </div>
+}
+
+<div class="post">
+    <h4 class="text-center">Step: 2/3</h4>
+    <hr />
+    <h2 class="text-center info-text"><i class="bi bi-music-note-beamed"></i> </h2>
+    <div class="container" style="margin-top: -20px">
+        @if(Model.Name != null)
+        {
+        <h2 class="text-center mb-4">@HtmlEncoder.Encode(Model.Name.CutName()), What is your musical style?</h2>
+        }
+        <form asp-action="RegisterListener" asp-controller="Listener" method="post">
+            <input type="hidden" name="listenerVM.Name" value="@Model.Name">
+            <input type="hidden" name="listenerVM.Email" value="@Model.Email">
+            <input type="hidden" name="listenerVM.PhoneNumber" value="@Model.PhoneNumber">
+            <input type="hidden" name="listenerVM.BirthDate" value="@Model.BirthDate">
+            <input type="hidden" name="listenerVM.Password" value="@Model.Password">
+            <input type="hidden" name="listenerVM.Genres" value="@Model.Genres">
+
+            <div class="form-group">
+                <label class="genre-label">Genres:</label>
+                <div class="row justify-content-center">
+                    @foreach (var genre in Model.Genres)
+                    {
+                        <div class="col-auto mb-3">
+                            <div class="genre-item">
+                                <input type="checkbox" id="@genre.Id" name="listenerVM.SelectedGenreIds" value="@genre.Id">
+                                <label for="@genre.Id">@genre.Name<i class="bi bi-music-note"></i></label>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <button type="submit" class="btn-submit">Create</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function updateGenresId() {
+        var selectedGenres = [];
+        var checkboxes = document.querySelectorAll('input[name="genres"]:checked');
+        checkboxes.forEach(function (checkbox) {
+            selectedGenres.push(checkbox.value);
+        });
+        document.getElementById('genresId').value = selectedGenres.join(',');
+    }
+
+    var checkboxes = document.querySelectorAll('input[name="genres"]');
+    checkboxes.forEach(function (checkbox) {
+        checkbox.addEventListener('change', updateGenresId);
+    });
+</script>

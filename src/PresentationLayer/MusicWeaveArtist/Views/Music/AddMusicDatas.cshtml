@@ -1,0 +1,221 @@
+﻿@using ApplicationLayer.ViewModels;
+
+@model AddMusicViewModel
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 mx-auto">
+            @if (TempData["InvalidMusic"] != null)
+            {
+                <div class="alert alert-danger strong-red" role="alert">
+                    @TempData["InvalidMusic"]
+                </div>
+            }
+            <div class="body">
+                <h2 class="text-center mb-4">@Model.Name</h2>
+                <h5 class="text-center text-center">Step: 2/2</h5>
+                <form id="postForm" asp-action="AddMusic" asp-controller="Music" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="musicVM.Name" value="@Model.Name">
+                    <input type="hidden" name="musicVM.Date" value="@Model.Date">
+                    <input type="hidden" name="musicVM.GenreId" value="@Model.GenreId">
+                    <div class="mb-3 text-center">
+                        <div class="custom-file">
+                            <input type="file" class="form-control custom-file-input" id="formImage" name="musicImage" accept="image/*" onchange="previewImage(event)">
+                            <label class="custom-file-label text-primary" for="formImage"><i class="bi bi-images"></i></label>
+                        </div>
+                        <div class="text-xxl-center" style="margin-left: 232px" id="imagePreview"></div>
+                    </div>
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <hr />
+                    <div class="mb-3 text-center">
+                        <div class="custom-file">
+                            <input type="file" class="form-control custom-file-input" id="formAudio" name="musicAudio" accept="audio/*" onchange="previewAudio(event)">
+                            <label class="custom-file-label text-primary" style="margin-top:20px" for="formAudio"><i class="bi bi-soundwave"></i></label>
+                        </div>
+                        <div class="text-xxl-center" style="margin-left:110px" id="audioPreview"></div>
+                    </div>
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-outline-primary rounded-pill">Add Music <i class="bi bi-plus-lg"></i></button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    #audioPreview {
+        margin-top: 20px;
+        max-width: 400px;
+        height: 80px;
+        border-radius: 5px;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: transform 0.3s;
+    }
+
+        #audioPreview audio {
+            width: 100%;
+            outline: none;
+        }
+
+        #audioPreview:hover {
+            transform: scale(1.1);
+        }
+
+            #audioPreview audio::-webkit-media-controls-panel {
+                background-color: white;
+                border-radius: 5px;
+            }
+
+    .container {
+        margin-top: 100px;
+    }
+
+    .strong-red {
+        background-color: #dc3545;
+        color: #fff;
+    }
+
+    .card {
+        border: none;
+        border-radius: 15px;
+        background: linear-gradient(135deg, #6a0dad, #000000);
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+    }
+
+    .form-label {
+        color: #fff;
+    }
+
+    .form-control {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 12px;
+        margin-bottom: 20px;
+    }
+
+        .form-control:focus {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+    .custom-file-label {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 12px;
+        cursor: pointer;
+    }
+
+    .custom-file-input {
+        display: none;
+    }
+
+    .body {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        padding-left: 5px;
+        padding-right: 5px;
+        margin-bottom: 80px;
+    }
+
+    .btn-primary:hover {
+        background-color: #7B1FA2;
+    }
+
+    .btn-primary:focus {
+        box-shadow: none;
+    }
+
+    .text-danger {
+        color: #FF5252;
+    }
+
+    #imagePreview {
+        margin-top: 10px;
+        margin-left: 50px;
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: transform 0.3s;
+    }
+
+        #imagePreview:hover {
+            transform: scale(1.1);
+        }
+
+        #imagePreview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+</style>
+
+<script>
+    function previewImage(event) {
+        var file = event.target.files[0];
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function () {
+                var output = document.getElementById('imagePreview');
+                output.innerHTML = '<img src="' + reader.result + '" class="img-fluid" alt="Preview">';
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function previewAudio(event) {
+        var file = event.target.files[0];
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function () {
+                var output = document.getElementById('audioPreview');
+                output.innerHTML = '<audio controls><source src="' + reader.result + '" type="audio/mpeg">Your browser does not support the audio element.</audio>';
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function submitForm() {
+        var imageInput = document.getElementById('formImage');
+        var audioInput = document.getElementById('formAudio');
+
+        if (imageInput.files.length > 0 && audioInput.files.length > 0) {
+            var imageFile = imageInput.files[0];
+            var audioFile = audioInput.files[0];
+
+            var imageReader = new FileReader();
+            imageReader.onload = function () {
+                var imageBase64String = imageReader.result.split(',')[1];
+                document.getElementById('imageBase64').value = imageBase64String;
+
+                var audioReader = new FileReader();
+                audioReader.onload = function () {
+                    var audioBase64String = audioReader.result.split(',')[1];
+                    document.getElementById('audioBase64').value = audioBase64String;
+
+                    document.getElementById('postForm').submit();
+                };
+                audioReader.readAsDataURL(audioFile);
+            };
+            imageReader.readAsDataURL(imageFile);
+        } else {
+            var errorMessageElement = document.getElementById('errorMessage');
+            errorMessageElement.innerText = 'Please select an image and an audio file.';
+        }
+    }
+</script>

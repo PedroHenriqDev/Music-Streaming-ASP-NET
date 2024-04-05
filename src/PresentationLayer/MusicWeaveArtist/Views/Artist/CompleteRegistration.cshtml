@@ -1,0 +1,91 @@
+﻿@using ApplicationLayer.ViewModels;
+@using UtilitiesLayer.Extensions;
+
+<title>Choose Registration</title>
+<div class="container">
+    <div class="post">
+        <h5 class="text-center text-center">Step: 3/3</h5>
+        <h1 class="text-black text-center">
+            <i class="bi bi-music-note-list mx-2"></i>
+            Perfect your account details.
+        </h1>
+        <form method="post" asp-action="CompleteRegistration" asp-controller="Artist">
+           
+
+            <h4 class="text-center text-center box-shadow-colo" style="padding: 10px; border-radius: 5px; color:black; border: none;">
+                <button type="submit" name="action" value="ArtistPage" class="btn btn-outline-primary custom-btn" style="border-radius: 10px; border-color: transparent; transition: border-color 0.3s ease;">
+                    Skip <i class="bi bi-arrow-right-circle"></i>
+                </button>
+            </h4>
+            <div class="options">
+                <div class="option">
+                    <button class="btn btn-lg" type="submit" name="action" value="Description"> Add Description <i class="bi bi-menu-down mx-2"></i> </button>
+                </div>
+                <div class="option">
+                    <button class="btn btn-lg" type="submit" name="action" value="AddPictureProfile">  Add Picture Profile <i class="bi bi-person-square mx-2"></i></button>
+                </div>
+                <div class="option">
+                    <button class="btn btn-lg" type="submit" name="action" value="RedirectToAddMusic"> Add Music <i class="bi bi-soundwave mx-2"></i></button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .info-text {
+        background: linear-gradient(to right, #ff5733, #d90000);
+        -webkit-background-clip: text;
+        color: transparent;
+        padding: 10px 20px;
+        margin-bottom: 20px;
+    }
+
+    .post {
+        border: 1px solid black;
+        border-radius: 8px;
+        padding: 60px;
+        margin-bottom: 20px;
+    }
+
+    .options {
+        display: flex;
+        justify-content: space-around;
+        width: 80;
+        height: 80;
+    }
+
+
+    .option {
+        text-align: center;
+        background-color: #fff;
+        border-radius: 20px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        transition: transform 1.0s ease, border-color 1.0s ease;
+    }
+
+        .option:hover {
+            transform: scale(1.1);
+            border: 3px solid transparent;
+            animation: animateBorder 2.0s infinite alternate;
+        }
+
+        .option a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            font-size: 18px;
+            display: block;
+            padding: 10px 20px;
+        }
+
+</style>
