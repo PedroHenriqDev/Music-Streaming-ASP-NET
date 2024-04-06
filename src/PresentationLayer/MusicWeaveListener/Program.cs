@@ -17,11 +17,9 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddLogging();
 
 builder.Services.AddScoped<RecordService>();
-builder.Services.AddScoped<JsonSerializationHelper>();
 builder.Services.AddScoped<LoginService>();
 builder.Services.AddScoped<VerifyService>();
-builder.Services.AddScoped<HttpHelper>();
-builder.Services.AddScoped<ByteConvertHelper>();
+builder.Services.AddScoped<GenerateIntelliTextService>();
 builder.Services.AddScoped<EncryptService>();
 builder.Services.AddScoped<PictureService>();
 builder.Services.AddScoped<SearchService>();
@@ -29,13 +27,16 @@ builder.Services.AddScoped<MusicService>();
 builder.Services.AddScoped<GoogleCloudService>();
 builder.Services.AddScoped<UserAuthenticationService>();
 builder.Services.AddScoped<UserPageService>();
-builder.Services.AddScoped<ConnectionDb>();
+builder.Services.AddScoped<UpdateService>();
 builder.Services.AddScoped<UserServicesFacade<Listener>>();
 builder.Services.AddScoped<UserHelpersFacade<Listener>>();
 builder.Services.AddScoped<UserFactoriesFacade<Listener>>();
 builder.Services.AddScoped<ModelFactory>();
 builder.Services.AddScoped<ViewModelFactory>();
-builder.Services.AddScoped<UpdateService>();
+builder.Services.AddScoped<ConnectionDb>();
+builder.Services.AddScoped<HttpHelper>();
+builder.Services.AddScoped<ByteConvertHelper>();
+builder.Services.AddScoped<JsonSerializationHelper>();
 
 builder.Services.AddHttpContextAccessor();
 

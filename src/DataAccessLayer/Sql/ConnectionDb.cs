@@ -38,6 +38,28 @@ namespace DataAccessLayer.Sql
             }
         }
 
+        public async Task<IEnumerable<T>> GetEntitiesByIdAsync<T>(string id)
+            where T : class, IEntity
+        {
+            using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString())) 
+            {
+                await connection.OpenAsync();
+                string sqlQuery = $"SELECT * FROM {TableNameSanitization.GetPluralTableName<T>()} WHERE Id = @id";
+                return await connection.QueryAsync<T>(sqlQuery, new { id = id });
+            }
+        }
+
+        public async Task<IEnumerable<T>> GetEntitiesByIdsAsync<T>(List<string> ids) 
+            where T : class, IEntity
+        {
+            using(NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString())) 
+            {
+                await connection.OpenAsync();
+                var sqlQuery = $"SELECT * FROM {TableNameSanitization.GetPluralTableName<T>()} WHERE Id IN ({FieldSanitization.JoinIds(ids)})";
+                return await connection.QueryAsync<T>(sqlQuery);
+            }
+        }
+
         public async Task<T> GetEntityByCredentialsAsync<T>(string email, string password)
             where T : IUser<T>
         {
@@ -101,6 +123,17 @@ namespace DataAccessLayer.Sql
                 await connection.OpenAsync();
                 string sqlQuery = $"SELECT * FROM {TableNameSanitization.GetPluralTableName<T>()} WHERE Name = @name";
                 return await connection.QueryFirstOrDefaultAsync<T>(sqlQuery, new { name = name });
+            }
+        }
+
+        public async Task<IEnumerable<UserGenre<T>>> GetUserGenresAsync<T>(string id)
+            where T : class, IUser<T>
+        {
+            using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
+            {
+                await connection.OpenAsync();
+                string sqlQuery = $"SELECT * FROM {TableNameSanitization.GetAssociationTableGenre<T>()} WHERE Id = @id";
+                return await connection.QueryAsync<UserGenre<T>>(sqlQuery, new { id = id });
             }
         }
 
@@ -209,7 +242,7 @@ namespace DataAccessLayer.Sql
             }
         }
 
-        public async Task DeleteEntityByIdAsync<T>(string id) 
+        public async Task DeleteEntityByIdAsync<T>(string id)
             where T : IEntity
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))

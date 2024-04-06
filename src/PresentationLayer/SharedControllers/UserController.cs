@@ -155,24 +155,12 @@ namespace PresentationLayer.SharedControllers
             }
         }
 
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> Description()
-        {
-            if (Request.Method != "GET")
-            {
-                return NotFound();
-            }
-            var descriptionVM = _factoriesFacade.FactoryDescriptionViewModel<T>(await _servicesFacade.FindCurrentUserAsync());
-            return View(descriptionVM);
-        }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
-        public async Task<IActionResult> AddDescription(DescriptionViewModel entity)
+        public async Task<IActionResult> AddDescription(DescriptionViewModel descriptionVM)
         {
-            await _servicesFacade.UpdateDescriptionAsync(_factoriesFacade.FactoryUser(entity.Id, entity.Description));
+            await _servicesFacade.UpdateDescriptionAsync(_factoriesFacade.FacUser(descriptionVM.Id, descriptionVM.Description));
             return RedirectToAction(UserPageName);
         }
 

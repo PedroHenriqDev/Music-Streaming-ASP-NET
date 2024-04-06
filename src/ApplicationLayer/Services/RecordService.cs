@@ -34,10 +34,10 @@ namespace ApplicationLayer.Services
             where T : class, IUser<T>, new()
         {
             string userType = typeof(T).Name;
-            T user = _modelFactory.FactoryUser<T>(Guid.NewGuid().ToString(), userVM.Name, userVM.Email, _encryptService.EncryptPasswordSHA512(userVM.Password), userVM.PhoneNumber, userVM.BirthDate, DateTime.Now);
+            T user = _modelFactory.FacUser<T>(Guid.NewGuid().ToString(), userVM.Name, userVM.Email, _encryptService.EncryptPasswordSHA512(userVM.Password), userVM.PhoneNumber, userVM.BirthDate, DateTime.Now);
             try
             {
-                await _connectionDb.RecordUserAndUserGenresAsync<T>(user, _modelFactory.FactoryUserGenres<T>(user.Id, userVM.SelectedGenreIds));
+                await _connectionDb.RecordUserAndUserGenresAsync(user, _modelFactory.FacUserGenres<T>(user.Id, userVM.SelectedGenreIds));
                 return new EntityQuery<T>(true, $"{userType} created successfully", user, DateTime.Now);
             }
             catch (RecordAssociationException ex)

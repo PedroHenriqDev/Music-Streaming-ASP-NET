@@ -1,5 +1,6 @@
 ﻿using ApplicationLayer.Factories;
 using ApplicationLayer.ViewModels;
+using DomainLayer.Entities;
 using DomainLayer.Interfaces;
 
 namespace ApplicationLayer.Facades.FactoriesFacade
@@ -16,15 +17,19 @@ namespace ApplicationLayer.Facades.FactoriesFacade
             _modelFactory = modelFactory;
         }
 
-        public DescriptionViewModel FactoryDescriptionViewModel<TR>(T entity)
-          where TR : class, IEntityWithDescription<TR>
+        public async Task<DescriptionViewModel> FacListenerDescriptionViewModel(Listener listener)
         {
-            return _viewModelFactory.FactoryDescriptionViewModel(entity);
+            return await _viewModelFactory.FacListenerDescriptionViewModelAsync(listener);
         }
 
-        public T FactoryUser(string id, string description)
+        public async Task<DescriptionViewModel> FacArtistDescriptionViewModel(Artist artist) 
         {
-            return _modelFactory.FactoryUser<T>(id, description);
+            return await _viewModelFactory.FacArtistDescriptionViewModelAsync(artist);
+        }
+
+        public T FacUser(string id, string description)
+        {
+            return _modelFactory.FacUser<T>(id, description);
         }
     }
 }

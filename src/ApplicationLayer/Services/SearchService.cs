@@ -2,6 +2,7 @@
 using DomainLayer.Interfaces;
 using DomainLayer.Exceptions;
 using Microsoft.AspNetCore.Http;
+using DomainLayer.Entities;
 
 namespace ApplicationLayer.Services
 {
@@ -27,15 +28,24 @@ namespace ApplicationLayer.Services
             return await _connectionDb.GetUserByNameAsync<T>(name);
         }
 
-        public async Task<T> FindEntityByIdAsync<T>(string id) 
-            where T : class, IEntity 
+        public async Task<T> FindEntityByIdAsync<T>(string id)
+            where T : class, IEntity
         {
             return await _connectionDb.GetEntityByIdAsync<T>(id);
         }
 
-        public async Task<T> FindCurrentUserAsync<T>() where T : IUser<T> 
+        public async Task<T> FindCurrentUserAsync<T>()
+            where T : IUser<T>
         {
             return await _connectionDb.GetUserByNameAsync<T>(_httpAcessor.HttpContext.User.Identity.Name);
+        }
+
+        public async Task<IEnumerable<Genre>> FindUserGenresAsync<T>(T user)
+            where T : class, IUser<T>
+        {
+            var userGenres = await _connectionDb.GetUserGenresAsync<T>(user.Id);
+            var genres = await _connectionDb.GetEntitiesByIdsAsync<Genre>(userGenres.Select(g => g.GenreId).ToList());
+            return genres;
         }
 
         public async IAsyncEnumerable<T> FindAllEntitiesAsyncStream<T>()

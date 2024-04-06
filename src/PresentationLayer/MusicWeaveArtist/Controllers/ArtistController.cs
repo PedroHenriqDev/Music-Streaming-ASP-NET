@@ -86,5 +86,13 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
                 return RedirectToAction(nameof(Error), new { message = message });
             }
         }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> Description()
+        {
+            var descriptionVM = await _factoriesFacade.FacArtistDescriptionViewModel(await _servicesFacade.FindCurrentUserAsync());
+            return View(descriptionVM);
+        }
     }
 }

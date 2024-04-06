@@ -8,7 +8,7 @@
             <div class="card shadow-lg">
                 <div class="card-body">
                     <h2 class="text-center mb-4">Enter Your Description</h2>
-                    <form id="descriptionForm" method="post" asp-action="AddDescription" asp-controller="Artist">
+                    <form id="descriptionForm" method="post" asp-action="AddDescription" asp-controller="Listener">
                         <input type="hidden" name="descriptionVM.Id" value="@Model.Id">
                         <div class="mb-3">
                             <label for="description" class="form-label">Description:</label>
@@ -17,7 +17,7 @@
                         <div class="d-flex justify-content-center align-items-center">
                             <button type="button" class="btn btn-outline-primary btn-lg rounded-pill" onclick="generateDescription()">Generate</button>
                             <button type="submit" class="btn btn-primary btn-lg rounded-pill ms-3">Save</button>
-                        </div>
+                        </div> 
                     </form>
                 </div>
             </div>
@@ -31,7 +31,7 @@
 
     function generateDescription() {
         document.getElementById('description').value = descriptions[currentIndex];
-        currentIndex = (currentIndex + 1) % descriptions.length;
+        currentIndex = (currentIndex + 1) % descriptions.length; 
     }
 </script>
 
@@ -42,7 +42,7 @@
     }
 
     .btn-primary {
-        background-color: #4CAF50;  
+        background-color: #4CAF50;
         border: none;
     }
 

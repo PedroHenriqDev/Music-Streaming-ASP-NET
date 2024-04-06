@@ -70,12 +70,15 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ListenerPage()
         {
-            if (Request.Method != "GET")
-            {
-                return NotFound();
-            }
-
             return View(await _servicesFacade.FindCurrentUserAsync());
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> Description()
+        {
+            var descriptionVM = await _factoriesFacade.FacListenerDescriptionViewModel(await _servicesFacade.FindCurrentUserAsync());
+            return View(descriptionVM);
         }
     }
 }
