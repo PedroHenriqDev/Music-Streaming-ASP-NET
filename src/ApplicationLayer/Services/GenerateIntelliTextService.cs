@@ -1,4 +1,7 @@
 ﻿using DomainLayer.Entities;
+using DomainLayer.Interfaces;
+using System.Linq;
+using System.Text;
 
 namespace ApplicationLayer.Services
 {
@@ -11,56 +14,35 @@ namespace ApplicationLayer.Services
             _searchService = searchService;
         }
 
-        public async Task<string[]> GenerateListenerDescriptionAsync(Listener listener)
+        private async Task<string[]> GenerateDescriptionAsync<T>(T user, string action) where T : class, IUser<T>
         {
-            string allGenres = string.Empty;
-            var genres = await _searchService.FindUserGenresAsync(listener);
-            int amountGenres = genres.Count() + 1;
-            string[] descriptions = new string[amountGenres];
+            var genres = await _searchService.FindUserGenresAsync(user);
+            StringBuilder allGenres = new StringBuilder();
+            int numberOfGenres = genres.Count();
+            string[] descriptions = new string[numberOfGenres + 1];
             int i = 0;
 
             foreach (var genre in genres)
             {
-                descriptions[i] = $"I appreciate the {genre.Name} musical style.";
+                descriptions[i] = $"I {action} {genre.Name} music style.";
+                allGenres.Append(genre.Name);
+                if (i < numberOfGenres - 1)
+                    allGenres.Append(", ");
                 i++;
-
-                if (i == genres.Count())
-                {
-                    allGenres += $"and {genre.Name}.";
-                }
-                else
-                {
-                    allGenres += $"{genre.Name}, ";
-                }
             }
-            descriptions[amountGenres - 1] = $"I appreciate these musical style, {allGenres}";
+
+            descriptions[numberOfGenres] = $"I {action} {allGenres} musical styles.";
             return descriptions;
+        }
+
+        public async Task<string[]> GenerateListenerDescriptionAsync(Listener listener)
+        {
+            return await GenerateDescriptionAsync(listener, "appreciate");
         }
 
         public async Task<string[]> GenerateArtistDescriptionAsync(Artist artist)
         {
-            string allGenres = string.Empty;
-            var genres = await _searchService.FindUserGenresAsync(artist);
-            int amountGenres = genres.Count() + 1;
-            string[] descriptions = new string[amountGenres];
-            int i = 0;
-
-            foreach (var genre in genres)
-            {
-                descriptions[i] = $"I produce {genre.Name} music style";
-                i++;
-
-                if (i == genres.Count())
-                {
-                    allGenres += $"and {genre.Name}.";
-                }
-                else
-                {
-                    allGenres += $"{genre.Name}, ";
-                }
-            }
-            descriptions[amountGenres - 1] = $"I produce {allGenres} musical styles";
-            return descriptions;
+            return await GenerateDescriptionAsync(artist, "produce");
         }
     }
 }
