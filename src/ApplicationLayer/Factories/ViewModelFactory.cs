@@ -8,10 +8,14 @@ namespace ApplicationLayer.Factories
     public class ViewModelFactory
     {
         private readonly GenerateIntelliTextService _generateTextService;
+        private readonly SearchService _searchService;
 
-        public ViewModelFactory(GenerateIntelliTextService generateTextService)
+        public ViewModelFactory(
+            GenerateIntelliTextService generateTextService, 
+            SearchService searchService)
         {
             _generateTextService = generateTextService;
+            _searchService = searchService;
         }
 
         public async Task<DescriptionViewModel> FacListenerDescriptionViewModelAsync(Listener listener)
@@ -33,6 +37,5 @@ namespace ApplicationLayer.Factories
 
             return new DescriptionViewModel(artist.Description, artist.Name, artist.Id, await _generateTextService.GenerateArtistDescriptionAsync(artist));
         }
-
     }
 }

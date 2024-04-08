@@ -8,12 +8,10 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly MusicService _musicService;
 
-        public HomeController(ILogger<HomeController> logger, MusicService musicService)
+        public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
-            _musicService = musicService;
         }
 
         public IActionResult Index()

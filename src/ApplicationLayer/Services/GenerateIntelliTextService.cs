@@ -1,6 +1,5 @@
 ﻿using DomainLayer.Entities;
 using DomainLayer.Interfaces;
-using System.Linq;
 using System.Text;
 
 namespace ApplicationLayer.Services

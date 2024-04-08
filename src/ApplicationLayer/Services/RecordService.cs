@@ -15,19 +15,22 @@ namespace ApplicationLayer.Services
         private readonly VerifyService _verifyService;
         private readonly EncryptService _encryptService;
         private readonly ModelFactory _modelFactory;
+        private readonly CloudStorageService _storageService;
 
         public RecordService(
             ILogger<RecordService> logger,
             ConnectionDb connectionDb,
             VerifyService verifyService,
             EncryptService encryptService,
-            ModelFactory modelFactory)
+            ModelFactory modelFactory, 
+            CloudStorageService storageService)
         {
             _logger = logger;
             _connectionDb = connectionDb;
             _verifyService = verifyService;
             _encryptService = encryptService;
             _modelFactory = modelFactory;
+            _storageService = storageService;
         }
 
         public async Task<EntityQuery<T>> CreateUserAsync<T>(RegisterUserViewModel userVM)
@@ -49,6 +52,26 @@ namespace ApplicationLayer.Services
             {
                 _logger.LogError("Brutal error in method CreateUserAsync");
                 throw new RecordException<EntityQuery<T>>($"This error occurred while registration was happening, {ex.Message}", new EntityQuery<T>(false, "Unable to create a artist", user, DateTime.Now));
+            }
+        }
+
+        public async Task<EntityQuery<Music>> CreateMusicAsync(AddMusicViewModel musicVM)
+        {
+            string id = Guid.NewGuid().ToString();
+            var music = await _modelFactory.FacMusicAsync(musicVM, id);
+            try 
+            {
+                await _connectionDb.RecordMusicAsync(music);
+                await _storageService.UploadMusicAsync(await _modelFactory.FacMusicDataAsync(musicVM, id));
+                return new EntityQuery<Music>(true, "Create music successfully", music, DateTime.Now);
+            }
+            catch(Exception ex) 
+            {
+                if(ex is MusicException) 
+                {
+                    await _connectionDb.DeleteEntityByIdAsync<Music>(id);
+                }
+                return new EntityQuery<Music>(false, $"Unable to create song, because this error: {ex.Message}", music, DateTime.Now);
             }
         }
     }

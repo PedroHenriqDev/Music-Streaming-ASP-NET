@@ -6,30 +6,29 @@ using Microsoft.AspNetCore.Authorization;
 using System.Diagnostics;
 using DomainLayer.Entities;
 using DomainLayer.Exceptions;
+using ApplicationLayer.Facades.ServicesFacade;
+using ApplicationLayer.Facades.HelpersFacade;
 
 namespace PresentationLayer.MusicWeaveArtist.Controllers
 {
     public class MusicController : Controller
     {
 
-        private readonly MusicService _musicService;
-        private readonly SearchService _searchService;
-        private readonly JsonSerializationHelper _jsonHelper;
+        private readonly MusicServicesFacade _servicesFacade;
+        private readonly MusicHelpersFacade _helpersFacade;
 
-        public MusicController(MusicService musicService,
-            SearchService searchService,
-            JsonSerializationHelper jsonHelper) 
+        public MusicController(
+            MusicServicesFacade servicesFacade, MusicHelpersFacade helpersFacade)
         {
-            _musicService = musicService;
-            _searchService = searchService;
-            _jsonHelper = jsonHelper;
+            _servicesFacade = servicesFacade;
+            _helpersFacade = helpersFacade;
         }
 
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> AddMusic()
         {
-            IEnumerable<Genre> genres = await _searchService.FindAllEntitiesAsync<Genre>();
+            IEnumerable<Genre> genres = await _servicesFacade.FindAllEntitiesAsync<Genre>();
             ViewBag.Genres = genres;
             return View();
         }
@@ -39,12 +38,12 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> AddMusic(AddMusicViewModel musicVM, IFormFile musicImage, IFormFile musicAudio) 
         {
-            TempData["AddMusicViewModel"] = _jsonHelper.SerializeObject(musicVM);
+            TempData["AddMusicViewModel"] = _helpersFacade.SerializeObject(musicVM);
             try
             {
                 musicVM.Picture = musicImage;
                 musicVM.Audio = musicAudio;
-                await _musicService.AddMusicAsync(musicVM);
+                await _servicesFacade.CreateMusicAsync(musicVM);
                 return RedirectToAction("ArtistPage", "Artist");
             }
             catch(MusicException ex) 
@@ -70,10 +69,10 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
         {
             if (musicVM.Step1IsValid) 
             {
-                TempData["AddMusicViewModel"] = _jsonHelper.SerializeObject(musicVM);
+                TempData["AddMusicViewModel"] = _helpersFacade.SerializeObject(musicVM);
                 return View(musicVM);
             }
-            IEnumerable<Genre> genres = await _searchService.FindAllEntitiesAsync<Genre>();
+            IEnumerable<Genre> genres = await _servicesFacade.FindAllEntitiesAsync<Genre>();
             ViewBag.Genres = genres;
             return View("AddMusic", musicVM);
         }

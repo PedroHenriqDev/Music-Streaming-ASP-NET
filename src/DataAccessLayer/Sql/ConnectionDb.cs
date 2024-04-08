@@ -37,7 +37,7 @@ namespace DataAccessLayer.Sql
                 return await connection.QueryAsync<T>(sqlQuery);
             }
         }
-
+         
         public async Task<IEnumerable<T>> GetEntitiesByIdAsync<T>(string id)
             where T : class, IEntity
         {
@@ -49,7 +49,7 @@ namespace DataAccessLayer.Sql
             }
         }
 
-        public async Task<IEnumerable<T>> GetEntitiesByIdsAsync<T>(List<string> ids) 
+        public async Task<IEnumerable<T>> GetEntitiesByIdsAsync<T>(IEnumerable<string> ids) 
             where T : class, IEntity
         {
             using(NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString())) 

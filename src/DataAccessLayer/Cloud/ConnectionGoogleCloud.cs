@@ -3,15 +3,16 @@ using Google.Cloud.Storage.V1;
 using Microsoft.Extensions.Configuration;
 using System.IO.Compression;
 using DomainLayer.Entities;
+using DomainLayer.Exceptions;
 
 namespace DataAccessLayer.Cloud
 {
-    public class GoogleCloudService
+    public class ConnectionGoogleCloud
     {
         private readonly StorageClient _storageClient;
         private readonly string _bucketName;
 
-        public GoogleCloudService(IConfiguration configuration)
+        public ConnectionGoogleCloud(IConfiguration configuration)
         {
             var googleCloudCredentialPath = configuration["GoogleCloudCredentialPath"];
             _bucketName = configuration["GoogleCloudStorageBucketName"];
@@ -49,6 +50,41 @@ namespace DataAccessLayer.Cloud
                 string objectName = $"{musicData.Id}.zip";
                 await _storageClient.UploadObjectAsync(_bucketName, objectName, null, memoryStream);
             }
+        }
+
+        public async Task<MusicData> DownloadMusicAsync(string musicId)
+        {
+            string objectName = $"{musicId}.zip";
+            var downloadStream = new MemoryStream();
+
+            await _storageClient.DownloadObjectAsync(_bucketName, objectName, downloadStream);
+            downloadStream.Seek(0, SeekOrigin.Begin);
+
+            using (var archive = new ZipArchive(downloadStream, ZipArchiveMode.Read))
+            {
+                var audioEntry = archive.GetEntry($"{musicId}_audio.mp3");
+                var pictureEntry = archive.GetEntry($"{musicId}_picture.jpg");
+
+                if (audioEntry == null || pictureEntry == null)
+                    throw new MusicException("Music data not found in the archive.");
+
+                using (var audioStream = audioEntry.Open())
+                using (var pictureStream = pictureEntry.Open())
+                {
+                    var audioMemoryStream = new MemoryStream();
+                    await audioStream.CopyToAsync(audioMemoryStream);
+                    var pictureMemoryStream = new MemoryStream();
+                    await pictureStream.CopyToAsync(pictureMemoryStream);
+
+                    return new MusicData(musicId, audioMemoryStream.ToArray(), pictureMemoryStream.ToArray());
+                }
+            }
+        }
+
+        public async Task<IEnumerable<MusicData>> DownloadMusicsAsync(IEnumerable<string> musicIds)
+        {
+            var tasks = musicIds.Select(id => DownloadMusicAsync(id));
+            return await Task.WhenAll(tasks);
         }
     }
 }
