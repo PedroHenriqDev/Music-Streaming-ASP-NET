@@ -1,20 +1,29 @@
 using Microsoft.AspNetCore.Mvc;
 using ApplicationLayer.ViewModels;
 using System.Diagnostics;
+using ApplicationLayer.Facades.FactoriesFacade;
+using DomainLayer.Entities;
 
 namespace PresentationLayer.MusicWeaveListener.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly HomeFactoriesFacades _factoriesFacades;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, HomeFactoriesFacades factoriesFacades)
         {
             _logger = logger;
+            _factoriesFacades = factoriesFacades;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            if (User.Identity.IsAuthenticated) 
+            {
+                var displayMusicVM = await _factoriesFacades.FacDisplayMusicVMAsync<Listener>();
+                return View(displayMusicVM);
+            }
             return View();
         }
 

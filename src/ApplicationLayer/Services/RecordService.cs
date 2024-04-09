@@ -62,7 +62,7 @@ namespace ApplicationLayer.Services
             try 
             {
                 await _connectionDb.RecordMusicAsync(music);
-                await _storageService.UploadMusicAsync(await _modelFactory.FacMusicDataAsync(musicVM, id));
+                await _storageService.UploadMusicAsync(await _modelFactory.FacMusicDataAsync(musicVM, music.Id));
                 return new EntityQuery<Music>(true, "Create music successfully", music, DateTime.Now);
             }
             catch(Exception ex) 

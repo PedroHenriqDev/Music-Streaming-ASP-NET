@@ -44,8 +44,7 @@ namespace ApplicationLayer.Services
             where T : class, IUser<T>
         {
             var userGenres = await _connectionDb.GetUserGenresAsync<T>(user.Id);
-            var genres = await _connectionDb.GetEntitiesByIdsAsync<Genre>(userGenres.Select(g => g.GenreId).ToList());
-            return genres;
+            return await _connectionDb.GetEntitiesByIdsAsync<Genre>(userGenres.Select(g => g.GenreId).ToList());
         }
 
         public async IAsyncEnumerable<T> FindAllEntitiesAsyncStream<T>()
@@ -80,11 +79,9 @@ namespace ApplicationLayer.Services
             return await _connectionDb.GetEntityByCredentialsAsync<T>(email, password);
         }
 
-        public async Task<IEnumerable<Music>> FindCurrentUserMusicsAsync<T>() 
-            where T : class, IUser<T> 
+        public async Task<IEnumerable<Music>> FindMusicsByGenreIdsAsync(IEnumerable<string> genreIds) 
         {
-            var genres = await FindUserGenresAsync(await FindCurrentUserAsync<T>());
-            return await _connectionDb.GetEntitiesByIdsAsync<Music>(genres.Select(g => g.Id));
+            return await _connectionDb.GetEntitiesByForeignKeyAsync<Music, Genre>(genreIds);
         }
     }
 }

@@ -11,7 +11,9 @@ namespace ApplicationLayer.Services
         private readonly ConnectionGoogleCloud _connectionCloud;
         private readonly ModelFactory _modelFactory;
 
-        public CloudStorageService(ConnectionGoogleCloud connectionCloud, ModelFactory modelFactory) 
+        public CloudStorageService(
+            ConnectionGoogleCloud connectionCloud, 
+            ModelFactory modelFactory) 
         {
             _connectionCloud = connectionCloud;
             _modelFactory = modelFactory;
@@ -23,15 +25,20 @@ namespace ApplicationLayer.Services
             {
                 if(musicData.Audio == null || musicData.Picture == null) 
                 {
-                    throw new MusicException("Music must have audio and image");
+                    throw new MusicException("Music must have audio and image!");
                 }
-
+                
                 await _connectionCloud.UploadMusicAsync(musicData);
             }
             catch (Exception)
             {
                 throw new MusicException("Error in upload music!");
             }
+        }
+
+        public async Task<IEnumerable<MusicData>> DownloadMusicsAsync(IEnumerable<string> musicIds)
+        {
+           return await _connectionCloud.DownloadMusicsAsync(musicIds);
         }
     }
 }

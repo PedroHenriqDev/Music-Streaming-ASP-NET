@@ -58,7 +58,7 @@ namespace ApplicationLayer.Factories
             if (artist == null)
             {
                 _logger.LogWarning("Error occurred due to a null user reference");
-                throw new ArgumentNullException("Errsor occurred when searching for the user");
+                throw new ArgumentNullException("Error occurred when searching for the user");
             }
             return new Music(id, musicVM.Name, artist.Id, musicVM.GenreId, musicVM.Date, DateTime.Now);
         }

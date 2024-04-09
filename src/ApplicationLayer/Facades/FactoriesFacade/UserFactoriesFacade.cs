@@ -19,12 +19,12 @@ namespace ApplicationLayer.Facades.FactoriesFacade
 
         public async Task<DescriptionViewModel> FacListenerDescriptionViewModel(Listener listener)
         {
-            return await _viewModelFactory.FacListenerDescriptionViewModelAsync(listener);
+            return await _viewModelFactory.FacListenerDescriptionVMAsync(listener);
         }
 
         public async Task<DescriptionViewModel> FacArtistDescriptionViewModel(Artist artist) 
         {
-            return await _viewModelFactory.FacArtistDescriptionViewModelAsync(artist);
+            return await _viewModelFactory.FacArtistDescriptionVMAsync(artist);
         }
 
         public T FacUser(string id, string description)

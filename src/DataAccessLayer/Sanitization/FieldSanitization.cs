@@ -15,5 +15,10 @@ namespace DataAccessLayer.Sanitization
             var sanitizedIds = ids.Select(SanitizeId);
             return string.Join(",", sanitizedIds.Select(id => $"'{id}'"));
         }
+
+        public static string ForeignKeyName(string name) 
+        {
+            return $"{name}Id";
+        }
     }
 }
