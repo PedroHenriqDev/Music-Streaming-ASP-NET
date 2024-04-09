@@ -37,11 +37,11 @@ namespace DataAccessLayer.Sql
                 return await connection.QueryAsync<T>(sqlQuery);
             }
         }
-         
+
         public async Task<IEnumerable<T>> GetEntitiesByIdAsync<T>(string id)
             where T : class, IEntity
         {
-            using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString())) 
+            using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
             {
                 await connection.OpenAsync();
                 string sqlQuery = $"SELECT * FROM {TableNameSanitization.GetPluralTableName<T>()} WHERE Id = @id";
@@ -49,10 +49,10 @@ namespace DataAccessLayer.Sql
             }
         }
 
-        public async Task<IEnumerable<T>> GetEntitiesByIdsAsync<T>(IEnumerable<string> ids) 
+        public async Task<IEnumerable<T>> GetEntitiesByIdsAsync<T>(IEnumerable<string> ids)
             where T : class, IEntity
         {
-            using(NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString())) 
+            using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
             {
                 await connection.OpenAsync();
                 var sqlQuery = $"SELECT * FROM {TableNameSanitization.GetPluralTableName<T>()} WHERE Id IN ({FieldSanitization.JoinIds(ids)})";
@@ -147,6 +147,43 @@ namespace DataAccessLayer.Sql
                 await connection.OpenAsync();
                 string sqlQuery = $"SELECT * FROM {TableNameSanitization.GetAssociationTableGenre<T>()} WHERE Id = @id";
                 return await connection.QueryAsync<UserGenre<T>>(sqlQuery, new { id = id });
+            }
+        }
+
+        public async Task<IEnumerable<Music>> GetMusicsByGenreIdsAsync(IEnumerable<string> genreIds)
+        {
+            using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
+            {
+                await connection.OpenAsync();
+                string sqlQuery = @$"
+                                   SELECT
+                                       m.Id,
+                                       m.Name,
+                                       m.ArtistId,
+                                       m.GenreId,
+                                       m.Date,
+                                       m.DateCreation,
+                                       a.Id AS ArtistId,
+                                       a.Name AS Name
+                                   FROM
+                                       Musics m
+                                   INNER JOIN
+                                       Artists a ON m.ArtistId = a.Id
+                                   WHERE
+                                      m.GenreId = ANY(@genreIds)";
+
+                var result = await connection.QueryAsync<Music, Artist, Music>(
+                        sqlQuery,
+                        (music, artist) =>
+                        {
+                            if (artist != null)
+                                music.Artist = artist;
+                            return music;
+                        },
+                        splitOn: "ArtistId",
+                        param: new { genreIds });
+
+                return result;
             }
         }
 

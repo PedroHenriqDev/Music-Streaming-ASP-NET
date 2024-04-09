@@ -13,6 +13,10 @@ namespace DomainLayer.Entities
         public Artist Artist { get; set; }
         public Genre Genre { get; set; }
 
+        public Music() 
+        {
+        }
+
         public Music(string id, string name, string artistId, string genreId, DateTime date, DateTime dateCreation)
         {
             Id = id;
