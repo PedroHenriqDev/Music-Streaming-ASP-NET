@@ -1,17 +1,43 @@
 ﻿@using ApplicationLayer.ViewModels
 @model DisplayMusicViewModel
 
+<style>
+    .music-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        overflow-y: auto;
+    }
+
+    .music-item {
+        text-align: center;
+        margin: 10px;
+    }
+
+    .music-name {
+        font-weight: bold;
+        color: white;
+    }
+
+    .artist-name {
+        color: #888;
+    }
+</style>
+
 <div class="music-container">
     @foreach (var music in Model.CompleteMusics)
     {
         <div class="music-item">
-            <form asp-action="" asp-controller="" method="get">
-                <input type="hidden" name="id" value="@music.Music.Id" />
-                <button class="btn btn-dark">
+            <button type="button" class="btn btn-dark text-black rounded-3 play-button" onclick="playMusic('@music.Music.Name', '@Convert.ToBase64String(music.MusicData.Audio)')">
+                <div class="music-info">
                     <img src="data:image/png;base64,@(Convert.ToBase64String(music.MusicData.Picture))" class="img-fluid rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;" />
-                    @music.Music.Name
-                </button>
-            </form>
+                    <div class="music-details">
+                        <span class="music-name">@music.Music.Name</span><br>
+                        <span class="artist-name">@music.Music.Artist.Name</span>
+                    </div>
+                </div>
+            </button>
         </div>
     }
 </div>
