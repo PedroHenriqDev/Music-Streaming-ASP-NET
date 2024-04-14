@@ -25,7 +25,6 @@ builder.Services.AddScoped<EncryptService>();
 builder.Services.AddScoped<PictureService>();
 builder.Services.AddScoped<SearchService>();
 builder.Services.AddScoped<UserAuthenticationService>();
-builder.Services.AddScoped<UserPageService>();
 builder.Services.AddScoped<UpdateService>();
 builder.Services.AddScoped<UserServicesFacade<Artist>>();
 builder.Services.AddScoped<UserHelpersFacade<Artist>>();

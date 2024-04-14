@@ -12,7 +12,7 @@ namespace ApplicationLayer.Factories
         private readonly CloudStorageService _storageService;
 
         public ViewModelFactory(
-            GenerateIntelliTextService generateTextService, 
+            GenerateIntelliTextService generateTextService,
             SearchService searchService,
             CloudStorageService storageService)
         {
@@ -51,6 +51,20 @@ namespace ApplicationLayer.Factories
             return new DisplayMusicViewModel
             {
                 CompleteMusics = musics.Zip(musicDatas, (music, musicData) => new CompleteMusicViewModel(music, musicData)).ToList()
+            };
+        }
+
+        public async Task<ArtistPageViewModel> FacArtistPageVMAsync(Artist artist)
+        {
+            IEnumerable<Music> musics = await _searchService.FindMusicsByArtistIdAsync(artist.Id);
+            IEnumerable<MusicData> musicDatas = await _storageService.DownloadMusicsAsync(musics.Select(m => m.Id).ToList());
+
+            return new ArtistPageViewModel
+            {
+                Name = artist.Name,
+                Description = artist.Description,
+                PictureProfile = artist.PictureProfile,
+                Musics = musics.Zip(musicDatas, (music, musicData) => new CompleteMusicViewModel(music, musicData)).ToList()
             };
         }
     }

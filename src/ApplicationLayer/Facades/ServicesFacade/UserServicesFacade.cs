@@ -1,7 +1,8 @@
-﻿using DomainLayer.Entities;
-using DomainLayer.Interfaces;
-using ApplicationLayer.Services;
+﻿using ApplicationLayer.Services;
 using ApplicationLayer.ViewModels;
+using DomainLayer.Entities;
+using DomainLayer.Interfaces;
+
 
 namespace ApplicationLayer.Facades.ServicesFacade
 {
@@ -14,7 +15,6 @@ namespace ApplicationLayer.Facades.ServicesFacade
         private readonly PictureService _pictureService;
         private readonly VerifyService _verifyService;
         private readonly UpdateService _updateService;
-        private readonly UserPageService _userPageService;
 
         public UserServicesFacade(
             RecordService recordUserService,
@@ -23,7 +23,6 @@ namespace ApplicationLayer.Facades.ServicesFacade
             PictureService pictureService,
             UserAuthenticationService authenticationService,
             VerifyService verifyService,
-            UserPageService userPageService,
             UpdateService updateService)
         {
             _recordService = recordUserService;
@@ -32,7 +31,6 @@ namespace ApplicationLayer.Facades.ServicesFacade
             _pictureService = pictureService;
             _authenticationService = authenticationService;
             _verifyService = verifyService;
-            _userPageService = userPageService;
             _updateService = updateService;
         }
 
@@ -55,11 +53,6 @@ namespace ApplicationLayer.Facades.ServicesFacade
         public async Task SignOutUserAsync()
         {
             await _authenticationService.SignOutUserAsync();
-        }
-
-        public ArtistPageViewModel BuildArtistViewModel(Artist artist)
-        {
-            return _userPageService.BuildArtistViewModel(artist);
         }
 
         public async Task<T> FindCurrentUserAsync()

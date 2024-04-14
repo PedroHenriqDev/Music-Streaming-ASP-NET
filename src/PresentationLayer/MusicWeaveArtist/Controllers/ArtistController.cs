@@ -40,7 +40,7 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
         {
             try
             {
-                ArtistPageViewModel artistPageVM = _servicesFacade.BuildArtistViewModel(await _servicesFacade.FindCurrentUserAsync());
+                ArtistPageViewModel artistPageVM = await _factoriesFacade.FacArtistPageVMAsync(await _servicesFacade.FindCurrentUserAsync());
 
                 return View(artistPageVM);
             }
@@ -91,7 +91,7 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Description()
         {
-            var descriptionVM = await _factoriesFacade.FacArtistDescriptionViewModel(await _servicesFacade.FindCurrentUserAsync());
+            var descriptionVM = await _factoriesFacade.FacArtistDescriptionVMAsync(await _servicesFacade.FindCurrentUserAsync());
             return View(descriptionVM);
         }
     }

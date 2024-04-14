@@ -13,7 +13,6 @@ namespace PresentationLayer.SharedControllers
 {
     public class UserController<T> : Controller where T : class, IUser<T>, new()
     {
-
         private readonly UserServicesFacade<T> _servicesFacade;
         private readonly UserHelpersFacade<T> _helpersFacade;
         private readonly UserFactoriesFacade<T> _factoriesFacade;

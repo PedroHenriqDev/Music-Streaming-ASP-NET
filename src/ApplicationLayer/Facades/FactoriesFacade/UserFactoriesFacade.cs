@@ -17,14 +17,19 @@ namespace ApplicationLayer.Facades.FactoriesFacade
             _modelFactory = modelFactory;
         }
 
-        public async Task<DescriptionViewModel> FacListenerDescriptionViewModel(Listener listener)
+        public async Task<DescriptionViewModel> FacListenerDescriptionVMAsync(Listener listener)
         {
             return await _viewModelFactory.FacListenerDescriptionVMAsync(listener);
         }
 
-        public async Task<DescriptionViewModel> FacArtistDescriptionViewModel(Artist artist) 
+        public async Task<DescriptionViewModel> FacArtistDescriptionVMAsync(Artist artist) 
         {
             return await _viewModelFactory.FacArtistDescriptionVMAsync(artist);
+        }
+
+        public async Task<ArtistPageViewModel> FacArtistPageVMAsync(Artist artist) 
+        {
+            return await _viewModelFactory.FacArtistPageVMAsync(artist);
         }
 
         public T FacUser(string id, string description)

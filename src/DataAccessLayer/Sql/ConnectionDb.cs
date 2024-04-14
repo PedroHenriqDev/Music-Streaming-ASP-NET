@@ -60,7 +60,7 @@ namespace DataAccessLayer.Sql
             }
         }
 
-        public async Task<IEnumerable<T>> GetEntitiesByForeignKeyAsync<T, TR>(IEnumerable<string> ids)
+        public async Task<IEnumerable<T>> GetEntitiesByForeignKeysAsync<T, TR>(IEnumerable<string> fkIds)
             where T : class, IEntity where TR : class, IEntity
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
@@ -68,7 +68,7 @@ namespace DataAccessLayer.Sql
                 await connection.OpenAsync();
                 string tableName = TableNameSanitization.GetPluralTableName<T>();
                 string fieldFKName = FieldSanitization.ForeignKeyName(typeof(TR).Name);
-                var sqlQuery = $"SELECT * FROM {tableName} WHERE {fieldFKName} IN ({FieldSanitization.JoinIds(ids)})";
+                var sqlQuery = $"SELECT * FROM {tableName} WHERE {fieldFKName} IN ({FieldSanitization.JoinIds(fkIds)})";
                 return await connection.QueryAsync<T>(sqlQuery);
             }
         }

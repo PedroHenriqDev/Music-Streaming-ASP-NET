@@ -16,7 +16,6 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
         private readonly UserHelpersFacade<Listener> _helpersFacade;
         private readonly UserFactoriesFacade<Listener> _factoriesFacade;
 
-
         public ListenerController(
             UserServicesFacade<Listener> servicesFacade,
             UserHelpersFacade<Listener> helpersFacade, 
@@ -77,7 +76,7 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Description()
         {
-            var descriptionVM = await _factoriesFacade.FacListenerDescriptionViewModel(await _servicesFacade.FindCurrentUserAsync());
+            var descriptionVM = await _factoriesFacade.FacListenerDescriptionVMAsync(await _servicesFacade.FindCurrentUserAsync());
             return View(descriptionVM);
         }
     }
