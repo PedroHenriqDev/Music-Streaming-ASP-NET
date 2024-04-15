@@ -193,8 +193,11 @@ namespace DataAccessLayer.Sql
                     (music, artist) =>
                     {
                         if (artist != null)
+                        {
                             music.Artist = artist;
-                        return music;
+                            return music;
+                        }
+                        throw new QueryException("Not Found Artist!");
                     },
                     splitOn: "ArtistId",
                     param: new { fkId });
@@ -233,8 +236,11 @@ namespace DataAccessLayer.Sql
                         (music, artist) =>
                         {
                             if (artist != null)
+                            {
                                 music.Artist = artist;
-                            return music;
+                                return music;
+                            }
+                            throw new QueryException("Not Found Artists!");
                         },
                         splitOn: "ArtistId",
                         param: new { fkIds });
