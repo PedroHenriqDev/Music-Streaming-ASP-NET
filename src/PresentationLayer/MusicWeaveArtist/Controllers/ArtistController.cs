@@ -41,7 +41,6 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
             try
             {
                 ArtistPageViewModel artistPageVM = await _factoriesFacade.FacArtistPageVMAsync(await _servicesFacade.FindCurrentUserAsync());
-
                 return View(artistPageVM);
             }
             catch (Exception ex)

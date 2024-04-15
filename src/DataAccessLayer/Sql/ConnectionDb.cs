@@ -60,6 +60,19 @@ namespace DataAccessLayer.Sql
             }
         }
 
+        public async Task<IEnumerable<T>> GetEntitiesByForeignKeyAsync<T, TR>(string fkId)
+            where T : class, IEntity where TR : class, IEntity
+        {
+            using(NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
+            {
+                await connection.OpenAsync();
+                string tableName = TableNameSanitization.GetPluralTableName<T>();
+                string fkField = FieldSanitization.ForeignKeyName<TR>();
+                var sqlQuery = $"SELECT * FROM {tableName} WHERE {fkField} = @fkid";
+                return await connection.QueryAsync<T>(sqlQuery, new { fkId = fkId });
+            }
+        }
+
         public async Task<IEnumerable<T>> GetEntitiesByForeignKeysAsync<T, TR>(IEnumerable<string> fkIds)
             where T : class, IEntity where TR : class, IEntity
         {
@@ -67,7 +80,7 @@ namespace DataAccessLayer.Sql
             {
                 await connection.OpenAsync();
                 string tableName = TableNameSanitization.GetPluralTableName<T>();
-                string fieldFKName = FieldSanitization.ForeignKeyName(typeof(TR).Name);
+                string fieldFKName = FieldSanitization.ForeignKeyName<TR>();
                 var sqlQuery = $"SELECT * FROM {tableName} WHERE {fieldFKName} IN ({FieldSanitization.JoinIds(fkIds)})";
                 return await connection.QueryAsync<T>(sqlQuery);
             }
@@ -150,10 +163,53 @@ namespace DataAccessLayer.Sql
             }
         }
 
-        public async Task<IEnumerable<Music>> GetMusicsByGenreIdsAsync(IEnumerable<string> genreIds)
+        public async Task<IEnumerable<Music>> GetMusicsByFkIdAsync<T>(string fkId) 
+            where T : class, IEntity
+        {
+            using(NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString())) 
+            {
+                string fkField = FieldSanitization.ForeignKeyName<T>();
+
+                await connection.OpenAsync();
+                string sqlQuery = $@"
+                                   SELECT
+                                       m.Id,
+                                       m.Name,
+                                       m.ArtistId,
+                                       m.GenreId,
+                                       m.Date,
+                                       m.DateCreation,
+                                       a.Id AS ArtistId,
+                                       a.Name AS Name
+                                    FROM
+                                       Musics m
+                                    INNER JOIN 
+                                       Artists a ON m.ArtistId = a.Id
+                                    WHERE 
+                                       m.{fkField} = @fkId";
+
+                var result = await connection.QueryAsync<Music, Artist, Music>
+                    (sqlQuery,
+                    (music, artist) =>
+                    {
+                        if (artist != null)
+                            music.Artist = artist;
+                        return music;
+                    },
+                    splitOn: "ArtistId",
+                    param: new { fkId });
+
+                return result;
+            }
+        }
+
+        public async Task<IEnumerable<Music>> GetMusicsByFkIdsAsync<T>(IEnumerable<string> fkIds) 
+            where T : class, IEntity
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
             {
+                string fkField = FieldSanitization.ForeignKeyName<T>();
+
                 await connection.OpenAsync();
                 string sqlQuery = @$"
                                    SELECT
@@ -170,7 +226,7 @@ namespace DataAccessLayer.Sql
                                    INNER JOIN
                                        Artists a ON m.ArtistId = a.Id
                                    WHERE
-                                      m.GenreId = ANY(@genreIds)";
+                                      m.{fkField} = ANY(@fkIds)";
 
                 var result = await connection.QueryAsync<Music, Artist, Music>(
                         sqlQuery,
@@ -181,7 +237,7 @@ namespace DataAccessLayer.Sql
                             return music;
                         },
                         splitOn: "ArtistId",
-                        param: new { genreIds });
+                        param: new { fkIds });
 
                 return result;
             }

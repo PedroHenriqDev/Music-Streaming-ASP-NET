@@ -79,14 +79,22 @@ namespace ApplicationLayer.Services
             return await _connectionDb.GetEntityByCredentialsAsync<T>(email, password);
         }
 
-        public async Task<IEnumerable<Music>> FindMusicsByGenreIdsAsync(IEnumerable<string> genreIds) 
+        public async Task<IEnumerable<Music>> FindMusicsByFkIdsAsync<T>(IEnumerable<string> fkIds) 
+            where T : class, IEntity
         {
-            return await _connectionDb.GetMusicsByGenreIdsAsync(genreIds);
+            return await _connectionDb.GetMusicsByFkIdsAsync<T>(fkIds);
         }
 
-        public async Task<IEnumerable<Music>> FindMusicsByArtistIdAsync(string artistId) 
+        public async Task<IEnumerable<Music>> FindMusicByFkIdAsync<T>(string fkId) 
+            where T : class, IEntity
         {
-            return await _connectionDb.GetEntitiesByIdAsync<Music>(artistId);
+            return await _connectionDb.GetMusicsByFkIdAsync<T>(fkId);
+        }
+
+        public async Task<IEnumerable<T>> FindEntityByFkIdAsync<T, TR>(string artistId)
+            where T : class, IEntity where TR : class, IEntity
+        {
+            return await _connectionDb.GetEntitiesByForeignKeyAsync<T, TR>(artistId);
         }
     }
 }

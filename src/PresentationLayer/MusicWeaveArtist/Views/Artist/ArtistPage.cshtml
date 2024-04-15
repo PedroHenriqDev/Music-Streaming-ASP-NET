@@ -38,10 +38,6 @@
             </div>
         </div>
         <div class="text-center">
-            @if (Model.Description != null)
-            {
-                <p class="card-text my-auto">@Html.Raw(System.Text.Encodings.Web.HtmlEncoder.Default.Encode(Model.Description))</p>
-
                 <hr/>
                 <h5 class="card-title mt-4">Musics:</h5>
                 <ul class="list-group">
@@ -50,7 +46,6 @@
                         <li class="list-group-item">@music.Music.Artist.Name - @music.Music.Name</li>
                     }
                 </ul>
-            }
         </div>
     }
     else

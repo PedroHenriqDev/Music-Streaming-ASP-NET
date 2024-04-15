@@ -46,7 +46,7 @@ namespace ApplicationLayer.Factories
         {
             T user = await _searchService.FindCurrentUserAsync<T>();
             IEnumerable<Genre> genres = await _searchService.FindUserGenresAsync(user);
-            IEnumerable<Music> musics = await _searchService.FindMusicsByGenreIdsAsync(genres.Select(g => g.Id).ToList());
+            IEnumerable<Music> musics = await _searchService.FindMusicsByFkIdsAsync<Genre>(genres.Select(g => g.Id).ToList());
             IEnumerable<MusicData> musicDatas = await _storageService.DownloadMusicsAsync(musics.Select(m => m.Id).ToList());
             return new DisplayMusicViewModel
             {
@@ -56,7 +56,7 @@ namespace ApplicationLayer.Factories
 
         public async Task<ArtistPageViewModel> FacArtistPageVMAsync(Artist artist)
         {
-            IEnumerable<Music> musics = await _searchService.FindMusicsByArtistIdAsync(artist.Id);
+            IEnumerable<Music> musics = await _searchService.FindMusicByFkIdAsync<Artist>(artist.Id);
             IEnumerable<MusicData> musicDatas = await _storageService.DownloadMusicsAsync(musics.Select(m => m.Id).ToList());
 
             return new ArtistPageViewModel
