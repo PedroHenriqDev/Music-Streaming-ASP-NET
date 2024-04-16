@@ -14,17 +14,19 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
     {
         private readonly UserServicesFacade<Artist> _servicesFacade;
         private readonly UserHelpersFacade<Artist> _helpersFacade;
-        private readonly UserFactoriesFacade<Artist> _factoriesFacade;
+        private readonly ArtistFactoriesFacade _artistFactoriesFacade;
+        private readonly UserFactoriesFacade<Artist> _userFactoriesFacade;
 
         public ArtistController(
             UserServicesFacade<Artist> servicesFacade, 
             UserHelpersFacade<Artist> helpersFacade, 
-            UserFactoriesFacade<Artist> factoriesFacade)
-            : base(servicesFacade, helpersFacade, factoriesFacade)
+            ArtistFactoriesFacade artistFactoriesFacade,
+            UserFactoriesFacade<Artist> userFactoriesFacade)
+            : base(servicesFacade, helpersFacade, userFactoriesFacade)
         {
             _servicesFacade = servicesFacade;
             _helpersFacade = helpersFacade;
-            _factoriesFacade = factoriesFacade;
+            _artistFactoriesFacade = artistFactoriesFacade;
         }
 
         [HttpGet]
@@ -37,10 +39,10 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> ArtistPage()
-        {
+        {   
             try
             {
-                ArtistPageViewModel artistPageVM = await _factoriesFacade.FacArtistPageVMAsync(await _servicesFacade.FindCurrentUserAsync());
+                ArtistPageViewModel artistPageVM = await _artistFactoriesFacade.FacArtistPageVMAsync(await _servicesFacade.FindCurrentUserAsync());
                 return View(artistPageVM);
             }
             catch (Exception ex)
@@ -90,7 +92,7 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Description()
         {
-            var descriptionVM = await _factoriesFacade.FacArtistDescriptionVMAsync(await _servicesFacade.FindCurrentUserAsync());
+            var descriptionVM = await _artistFactoriesFacade.FacArtistDescriptionVMAsync(await _servicesFacade.FindCurrentUserAsync());
             return View(descriptionVM);
         }
     }

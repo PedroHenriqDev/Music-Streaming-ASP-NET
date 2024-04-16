@@ -28,6 +28,7 @@ builder.Services.AddScoped<UserAuthenticationService>();
 builder.Services.AddScoped<UpdateService>();
 builder.Services.AddScoped<UserServicesFacade<Artist>>();
 builder.Services.AddScoped<UserHelpersFacade<Artist>>();
+builder.Services.AddScoped<ArtistFactoriesFacade>();
 builder.Services.AddScoped<UserFactoriesFacade<Artist>>();
 builder.Services.AddScoped<MusicServicesFacade>();
 builder.Services.AddScoped<MusicHelpersFacade>();

@@ -14,17 +14,20 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
     {
         private readonly UserServicesFacade<Listener> _servicesFacade;
         private readonly UserHelpersFacade<Listener> _helpersFacade;
-        private readonly UserFactoriesFacade<Listener> _factoriesFacade;
+        private readonly ListenerFactoriesFacade _listenerFactoriesFacade;
+        private readonly UserFactoriesFacade<Listener> _userFactoriesFacade;
 
         public ListenerController(
             UserServicesFacade<Listener> servicesFacade,
             UserHelpersFacade<Listener> helpersFacade, 
-            UserFactoriesFacade<Listener> factoriesFacade) 
-            : base(servicesFacade, helpersFacade, factoriesFacade)
+            ListenerFactoriesFacade listenerFactoriesFacade,
+            UserFactoriesFacade<Listener> userFactoriesFacade) 
+            : base(servicesFacade, helpersFacade, userFactoriesFacade)
         {
             _servicesFacade = servicesFacade;
             _helpersFacade = helpersFacade;
-            _factoriesFacade = factoriesFacade;
+            _listenerFactoriesFacade = listenerFactoriesFacade;
+            _userFactoriesFacade = userFactoriesFacade;
         }
 
         [HttpGet]
@@ -69,14 +72,14 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ListenerPage()
         {
-            return View(await _servicesFacade.FindCurrentUserAsync());
+            return View(_listenerFactoriesFacade.FacListenerPageVMAsync(await _servicesFacade.FindCurrentUserAsync()));
         }
 
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> Description()
         {
-            var descriptionVM = await _factoriesFacade.FacListenerDescriptionVMAsync(await _servicesFacade.FindCurrentUserAsync());
+            var descriptionVM = await _listenerFactoriesFacade.FacListenerDescriptionVMAsync(await _servicesFacade.FindCurrentUserAsync());
             return View(descriptionVM);
         }
     }

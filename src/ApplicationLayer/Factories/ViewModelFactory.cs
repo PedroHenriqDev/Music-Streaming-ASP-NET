@@ -54,6 +54,16 @@ namespace ApplicationLayer.Factories
             };
         }
 
+        public ListenerPageViewModel FacListenerPageVM(Listener listener) 
+        {
+            return new ListenerPageViewModel
+            {
+                Name = listener.Name,
+                Description = listener.Description,
+                PictureProfile = listener.PictureProfile,
+            };
+        }
+
         public async Task<ArtistPageViewModel> FacArtistPageVMAsync(Artist artist)
         {
             IEnumerable<Music> musics = await _searchService.FindMusicByFkIdAsync<Artist>(artist.Id);

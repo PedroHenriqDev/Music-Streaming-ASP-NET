@@ -28,6 +28,8 @@ builder.Services.AddScoped<UserAuthenticationService>();
 builder.Services.AddScoped<UpdateService>();
 builder.Services.AddScoped<UserServicesFacade<Listener>>();
 builder.Services.AddScoped<UserHelpersFacade<Listener>>();
+builder.Services.AddScoped<ListenerFactoriesFacade>();
+builder.Services.AddScoped<ArtistFactoriesFacade>();
 builder.Services.AddScoped<UserFactoriesFacade<Listener>>();
 builder.Services.AddScoped<HomeFactoriesFacades>();
 builder.Services.AddScoped<ModelFactory>();
