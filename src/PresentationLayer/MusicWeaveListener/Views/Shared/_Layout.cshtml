@@ -62,43 +62,30 @@
                         }
 
         .content {
-            margin-left: 250px;
+            margin-left: 300px;
             padding: 20px;
         }
 
-        #audioPlayerContainer {
-            padding: 10px;
+        #musicPlayer {
+            padding: 20px;
             border-radius: 10px;
-            margin-top: 700px;
-            margin-left: 860px;
-            width: 120px;
-            position: fixed;
-            top: 60px; 
+            margin-top: 20px;
+            width: 80%;
+            max-width: 400px;
+            z-index: 9999;
         }
 
-            #audioPlayerContainer h3 {
-                color: black;
-                text-align: center;
-                margin-bottom: 5px;
-            }
+        #songName {
+            color: #fff;
+            margin-top: 10px;
+            font-size: 18px;
+            text-align: center;
+        }
 
-            #audioPlayerContainer audio {
-                width: 280%;
-                outline: none;
-                background-color: transparent;
-            }
-
-            #audioPlayerContainer audio {
-                outline: none;
-            }
-
-                #audioPlayerContainer audio::-webkit-media-controls-play-button {
-                    color: black;
-                }
-
-                #audioPlayerContainer audio::-webkit-media-controls-volume-slider {
-                    background-color: black;
-                }
+        #audioPlayer {
+            width: 100%;
+            margin-top: 10px;
+        }
     </style>
 
 </head>
@@ -110,7 +97,7 @@
             <li><a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="About">About <i class="bi bi-person-workspace mx-2"></i></a></li>
             @if (User.Identity.IsAuthenticated)
             {
-                <li><a class="nav-link text-light" asp-area="" asp-controller="Listener" asp-action="Logout">Logout <i class="bi-box-arrow-right mx-2"></i></a></li>
+               <li><a class="nav-link text-light" asp-area="" asp-controller="Listener" asp-action="Logout">Logout <i class="bi-box-arrow-right mx-2"></i></a></li>
             }
             else
             {
@@ -119,6 +106,10 @@
         </ul>
         @if (User.Identity.IsAuthenticated)
         {
+            <div id="musicPlayer" style="padding: 20px; border-radius: 10px; margin-top: 20px;">
+                <audio controls id="audioPlayer" style="width: 100%;"></audio>
+                <h6 id="songName" style="color: #fff; margin-top: 10px; text-align: center;"></h6>
+            </div>
             @if (User.HasClaim(c => c.Type == "ProfilePictureUrl"))
             {
                 var profilePictureUrl = User.FindFirst("ProfilePictureUrl").Value;
@@ -127,7 +118,6 @@
                         <img src="@profilePictureUrl" alt="Profile Picture" class="img-fluid rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;" />
                     </a>
                 </a>
-
             }
             else
             {
@@ -137,12 +127,6 @@
             }
         }
     </div>
-
-    <div id="audioPlayerContainer">
-        <h3 id="songName"></h3>
-        <audio controls id="audioPlayer"></audio>
-    </div>
-
     <div class="content">
         <header>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"

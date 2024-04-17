@@ -3,44 +3,117 @@
 
 <style>
     .music-container {
-        display: flex;
-        justify-content: center;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+        padding: 20px;
         align-items: center;
-        height: 100%;
-        overflow-y: auto;
+        justify-content: center;
     }
 
     .music-item {
         text-align: center;
-        margin: 10px;
+        padding: 10px;
+        background-color: #282828;
+        width: 220px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+        .music-item:hover {
+            transform: translateY(-5px);
+        }
+
+    .music-info {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
     }
 
     .music-name {
         font-weight: bold;
         color: white;
+        margin-top: 10px;
     }
 
     .artist-name {
         color: #888;
+        margin-top: 5px;
+    }
+
+    .play-button {
+        background-color: #1db954;
+        border: none;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 20px;
+        transition: background-color 0.3s ease;
+    }
+
+        .play-button:hover {
+            background-color: #15a94d;
+        }
+
+        .play-button i {
+            font-size: 24px;
+            color: white;
+        }
+
+    .music-image {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-bottom: 10px;
     }
 </style>
-
-<div class="music-container">
+<div class="music-container text-center mx-auto" style="display: flex; flex-wrap: wrap; justify-content: center;" ">
     @if (Model != null)
     {
         @foreach (var music in Model.CompleteMusics)
         {
             <div class="music-item">
-                <button type="button" class="btn btn-dark text-black rounded-3 play-button" onclick="playMusic('@music.Music.Name', '@Convert.ToBase64String(music.MusicData.Audio)')">
-                    <div class="music-info">
-                        <img src="data:image/png;base64,@(Convert.ToBase64String(music.MusicData.Picture))" class="img-fluid rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;" />
-                        <div class="music-details">
-                            <span class="music-name">@music.Music.Name</span><br>
-                            <span class="artist-name">@music.Music.Artist.Name</span>
-                        </div>
-                    </div>
-                </button>
+                <div class="music-info">
+                    <img src="data:image/png;base64,@(Convert.ToBase64String(music.MusicData.Picture))" class="music-image" />
+                    <button type="button" class="btn btn-dark text-black rounded-circle play-button" id="playButton@(music.Music.Id)" onclick="playMusic('@music.Music.Name', '@Convert.ToBase64String(music.MusicData.Audio)')">
+                        <i class="bi bi-play-fill"></i>
+                    </button>
+                    <span class="music-name">@music.Music.Name</span>
+                    <span class="artist-name">@music.Music.Artist.Name</span>
+                </div>
             </div>
         }
     }
 </div>
+
+@section Scripts {
+    <script>
+        function playMusic(musicName, audioData, playButtonId) {
+            var audioPlayer = document.getElementById('audioPlayer');
+            audioPlayer.src = "data:audio/mp3;base64," + audioData;
+            audioPlayer.play();
+            document.getElementById('songName').textContent = musicName;
+
+            var activeButton = document.querySelector('.active');
+            if (activeButton) {
+                activeButton.classList.remove('active');
+            }
+            document.getElementById(playButtonId).classList.add('active');
+        }
+
+        function markActiveButton() {
+            var activeButton = document.querySelector('.active');
+            if (activeButton) {
+                activeButton.classList.remove('active');
+            }
+            var audio = document.getElementById('audioPlayer');
+            var playButtonId = 'playButton' + audio.dataset.index;
+            document.getElementById(playButtonId).classList.add('active');
+        }
+    </script>
+}
