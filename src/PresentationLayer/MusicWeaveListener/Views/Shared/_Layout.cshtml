@@ -68,24 +68,30 @@
 
         #musicPlayer {
             padding: 20px;
+            height: 60px;
             border-radius: 10px;
-            margin-top: 20px;
-            width: 80%;
-            max-width: 400px;
+            width: 100%;
             z-index: 9999;
+            margin-bottom: 60px;
         }
 
         #songName {
             color: #fff;
-            margin-top: 10px;
+            margin: 0;
+            left: 20px;
             font-size: 18px;
             text-align: center;
         }
 
         #audioPlayer {
-            width: 100%;
+            width: 150%;
             margin-top: 10px;
         }
+
+        .music-name {
+            margin-top: 5px;
+        }
+
     </style>
 
 </head>
@@ -104,27 +110,30 @@
                 <li><a class="nav-link text-light" asp-area="" asp-controller="Listener" asp-action="Login">Login <i class="bi-box-arrow-in-right mx-2"></i></a></li>
             }
         </ul>
+
         @if (User.Identity.IsAuthenticated)
         {
-            <div id="musicPlayer" style="padding: 20px; border-radius: 10px; margin-top: 20px;">
+            <div class="text-center music-name" id="musicPlayer" style="padding: 20px; border-radius: 10px; position: absolute; bottom: 0; width: 100%; height: 60px;">
                 <audio controls id="audioPlayer" style="width: 100%;"></audio>
-                <h6 id="songName" style="color: #fff; margin-top: 10px; text-align: center;"></h6>
+                <p class="text-center music-name" id="songName" style="color:#008000;; text-align: center;"></p>
             </div>
-            @if (User.HasClaim(c => c.Type == "ProfilePictureUrl"))
-            {
-                var profilePictureUrl = User.FindFirst("ProfilePictureUrl").Value;
-                <a class="mt-auto text-light" asp-area="" asp-controller="Listener" asp-action="ListenerPage">
-                    <a href="@Url.Action("ListenerPage", "Listener")" class="nav-link text-light">
-                        <img src="@profilePictureUrl" alt="Profile Picture" class="img-fluid rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;" />
-                    </a>
+        }
+    </div>
+    <div class="text-xxl-end">
+        @if (User.HasClaim(c => c.Type == "ProfilePictureUrl"))
+        {
+            var profilePictureUrl = User.FindFirst("ProfilePictureUrl").Value;
+            <a class="mt-auto text-light" asp-area="" asp-controller="Listener" asp-action="ListenerPage" style="position: fixed; bottom: 80px; left: 20px; z-index: 1000;">
+                <a href="@Url.Action("ListenerPage", "Listener")" class="nav-link text-light">
+                    <img src="@profilePictureUrl" alt="Profile Picture" class="img-fluid rounded-circle me-2" style="margin-left: 1645px; width: 40px; height: 40px; object-fit: cover;" />
                 </a>
-            }
-            else
-            {
-                <a class="mt-auto text-light" asp-area="" asp-controller="Listener" asp-action="ListenerPage">
-                    <strong class="text-light"><i class="bi bi-person-circle me-2"></i></strong>
-                </a>
-            }
+            </a>
+        }
+        else
+        {
+            <a class="mt-auto text-light" asp-area="" asp-controller="Listener" asp-action="ListenerPage" style="position: fixed; bottom: 80px; left: 20px; z-index: 1000;">
+                <strong class="text-light"><i class="bi bi-person-circle me-2"></i></strong>
+            </a>
         }
     </div>
     <div class="content">

@@ -43,8 +43,7 @@
     }
 
     .play-button {
-        background-color: #1db954;
-        border: none;
+        background-color: #008000;
         border-radius: 50%;
         width: 60px;
         height: 60px;
@@ -80,7 +79,7 @@
             <div class="music-item">
                 <div class="music-info">
                     <img src="data:image/png;base64,@(Convert.ToBase64String(music.MusicData.Picture))" class="music-image" />
-                    <button type="button" class="btn btn-dark text-black rounded-circle play-button" id="playButton@(music.Music.Id)" onclick="playMusic('@music.Music.Name', '@Convert.ToBase64String(music.MusicData.Audio)')">
+                    <button type="button" class="btn btn-dark text-black rounded-circle play-button" id="playButton@(music.Music.Id)" onclick="togglePlayPause('@music.Music.Name', '@Convert.ToBase64String(music.MusicData.Audio)', this)">
                         <i class="bi bi-play-fill"></i>
                     </button>
                     <span class="music-name">@music.Music.Name</span>
@@ -93,27 +92,36 @@
 
 @section Scripts {
     <script>
+        var currentPlayingButton = null;
+
         function playMusic(musicName, audioData, playButtonId) {
             var audioPlayer = document.getElementById('audioPlayer');
+            if (currentPlayingButton !== null) {
+                currentPlayingButton.innerHTML = '<i class="bi bi-play-fill"></i>';
+            }
             audioPlayer.src = "data:audio/mp3;base64," + audioData;
             audioPlayer.play();
             document.getElementById('songName').textContent = musicName;
-
-            var activeButton = document.querySelector('.active');
-            if (activeButton) {
-                activeButton.classList.remove('active');
-            }
-            document.getElementById(playButtonId).classList.add('active');
+            document.getElementById(playButtonId).innerHTML = '<i class="bi bi-pause-fill"></i>';
+            currentPlayingButton = document.getElementById(playButtonId);
         }
 
-        function markActiveButton() {
-            var activeButton = document.querySelector('.active');
-            if (activeButton) {
-                activeButton.classList.remove('active');
+        function togglePlayPause(musicName, audioData, button) {
+            var audioPlayer = document.getElementById('audioPlayer');
+            if (audioPlayer.paused || audioPlayer.src !== "data:audio/mp3;base64," + audioData) {
+                if (currentPlayingButton !== null && currentPlayingButton !== button) {
+                    currentPlayingButton.innerHTML = '<i class="bi bi-play-fill"></i>';
+                }
+                audioPlayer.src = "data:audio/mp3;base64," + audioData;
+                audioPlayer.play();
+                button.innerHTML = '<i class="bi bi-pause-fill"></i>';
+                document.getElementById('songName').textContent = musicName;
+                currentPlayingButton = button;
+            } else {
+                audioPlayer.pause();
+                button.innerHTML = '<i class="bi bi-play-fill"></i>';
+                currentPlayingButton = null;
             }
-            var audio = document.getElementById('audioPlayer');
-            var playButtonId = 'playButton' + audio.dataset.index;
-            document.getElementById(playButtonId).classList.add('active');
         }
     </script>
 }

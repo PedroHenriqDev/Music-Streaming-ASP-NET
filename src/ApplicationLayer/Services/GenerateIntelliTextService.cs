@@ -13,7 +13,8 @@ namespace ApplicationLayer.Services
             _searchService = searchService;
         }
 
-        private async Task<string[]> GenerateDescriptionAsync<T>(T user, string action) where T : class, IUser<T>
+        private async Task<string[]> GenerateDescriptionAsync<T>(T user, string action)
+            where T : class, IUser<T>
         {
             var genres = await _searchService.FindUserGenresAsync(user);
             StringBuilder allGenres = new StringBuilder();
