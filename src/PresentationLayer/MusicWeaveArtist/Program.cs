@@ -64,7 +64,7 @@ var configuration = new ConfigurationBuilder().SetBasePath(builder.Environment.C
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+    app.UseExceptionHandler("/Main/Error");
     app.UseHsts();
 }
 
@@ -89,6 +89,6 @@ app.UseSession();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Main}/{action=Index}/{id?}");
 
 app.Run();

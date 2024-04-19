@@ -1,0 +1,92 @@
+﻿@using ApplicationLayer.ViewModels;
+@model PlaylistViewModel
+
+<style>
+    .playlist-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+        padding: 20px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .playlist-item {
+        text-align: center;
+        padding: 10px;
+        background-color: #282828;
+        width: 220px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+        .playlist-item:hover {
+            transform: translateY(-5px);
+        }
+
+    .playlist-info {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+    }
+
+    .playlist-name {
+        font-weight: bold;
+        color: white;
+        margin-top: 10px;
+    }
+
+    .playlist-count {
+        color: #888;
+        margin-top: 5px;
+    }
+
+    .play-button {
+        background-color: #008000;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 20px;
+        transition: background-color 0.3s ease;
+    }
+
+        .play-button:hover {
+            background-color: #15a94d;
+        }
+
+        .play-button i {
+            font-size: 24px;
+            color: white;
+        }
+
+    .playlist-image {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-bottom: 10px;
+    }
+</style>
+
+<div class="playlist-container text-center mx-auto" style="display: flex; flex-wrap: wrap; justify-content: center;">
+    @if (Model != null)
+    {
+        @foreach (var playlist in Model.Playlists)
+        {
+            <div class="playlist-item">
+                <div class="playlist-info">
+                    <img src="data:image/png;base64,@(Convert.ToBase64String(playlist.CoverImage))" class="playlist-image" />
+                    <span class="playlist-name">@playlist.Name</span>
+                    <span class="playlist-count">@playlist.SongCount songs</span>
+                    <button type="button" class="btn btn-dark text-black rounded-circle play-button" onclick="playPlaylist('@playlist.Name', '@playlist.Id')">
+                        <i class="bi bi-play-fill"></i>
+                    </button>
+                </div>
+            </div>
+        }
+    }
+</div>

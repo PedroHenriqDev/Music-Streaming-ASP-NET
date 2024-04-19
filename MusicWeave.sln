@@ -16,8 +16,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UtilitiesLayer", "src\Utili
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DomainLayer", "src\DomainLayer\DomainLayer.csproj", "{353A277D-1A8F-4A36-A89F-F9567681B7F2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeleteApi", "..\..\APIS\DeleteApi\DeleteApi.csproj", "{8170297C-38DC-409B-AB9E-1DFF65C67C81}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,10 +50,6 @@ Global
 		{353A277D-1A8F-4A36-A89F-F9567681B7F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{353A277D-1A8F-4A36-A89F-F9567681B7F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{353A277D-1A8F-4A36-A89F-F9567681B7F2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8170297C-38DC-409B-AB9E-1DFF65C67C81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8170297C-38DC-409B-AB9E-1DFF65C67C81}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8170297C-38DC-409B-AB9E-1DFF65C67C81}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8170297C-38DC-409B-AB9E-1DFF65C67C81}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

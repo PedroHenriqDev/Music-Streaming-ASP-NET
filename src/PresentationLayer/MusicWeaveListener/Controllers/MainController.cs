@@ -6,12 +6,12 @@ using DomainLayer.Entities;
 
 namespace PresentationLayer.MusicWeaveListener.Controllers
 {
-    public class HomeController : Controller
+    public class MainController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<MainController> _logger;
         private readonly HomeFactoriesFacades _factoriesFacades;
 
-        public HomeController(ILogger<HomeController> logger, HomeFactoriesFacades factoriesFacades)
+        public MainController(ILogger<MainController> logger, HomeFactoriesFacades factoriesFacades)
         {
             _logger = logger;
             _factoriesFacades = factoriesFacades;
@@ -24,6 +24,11 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
                 var displayMusicVM = await _factoriesFacades.FacDisplayMusicVMAsync<Listener>();
                 return View(displayMusicVM);
             }
+            return View();
+        }
+
+        public IActionResult Playlist() 
+        {
             return View();
         }
 
