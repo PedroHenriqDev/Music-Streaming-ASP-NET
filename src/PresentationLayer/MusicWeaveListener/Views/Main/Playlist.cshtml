@@ -1,5 +1,6 @@
 ﻿@using ApplicationLayer.ViewModels;
-@model PlaylistViewModel
+
+@model IEnumerable<PlaylistViewModel>
 
 <style>
     .playlist-container {
@@ -75,18 +76,24 @@
 <div class="playlist-container text-center mx-auto" style="display: flex; flex-wrap: wrap; justify-content: center;">
     @if (Model != null)
     {
-        @foreach (var playlist in Model.Playlists)
+        @foreach (var playlist in Model)
         {
-            <div class="playlist-item">
-                <div class="playlist-info">
-                    <img src="data:image/png;base64,@(Convert.ToBase64String(playlist.CoverImage))" class="playlist-image" />
-                    <span class="playlist-name">@playlist.Name</span>
-                    <span class="playlist-count">@playlist.SongCount songs</span>
+                <div class="playlist-item">
+                    <div class="playlist-info">
+                    <img src="data:image/png;base64,@(Convert.ToBase64String(playlist.Image))" class="playlist-image" />
+                    <span class="playlist-name">model.Name</span>
+                    <span class="playlist-count">@playlist.Musics.Count() songs</span>
                     <button type="button" class="btn btn-dark text-black rounded-circle play-button" onclick="playPlaylist('@playlist.Name', '@playlist.Id')">
                         <i class="bi bi-play-fill"></i>
                     </button>
                 </div>
             </div>
+
         }
     }
+</div>
+<div style="position: fixed; bottom: 20px; right: 20px;">
+    <button type="button" class="btn btn-primary rounded-pill">
+        Playlist <i class="bi bi-plus-lg"></i>
+    </button>
 </div>

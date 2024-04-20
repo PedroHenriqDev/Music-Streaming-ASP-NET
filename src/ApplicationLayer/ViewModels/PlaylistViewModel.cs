@@ -1,0 +1,10 @@
+﻿namespace ApplicationLayer.ViewModels
+{
+    public class PlaylistViewModel
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public byte[] Image { get; set; }
+        public IEnumerable<CompleteMusicViewModel> Musics { get; set; }
+    }
+}
