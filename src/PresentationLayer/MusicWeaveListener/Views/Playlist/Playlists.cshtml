@@ -78,8 +78,8 @@
     {
         @foreach (var playlist in Model)
         {
-                <div class="playlist-item">
-                    <div class="playlist-info">
+            <div class="playlist-item">
+                <div class="playlist-info">
                     <img src="data:image/png;base64,@(Convert.ToBase64String(playlist.Image))" class="playlist-image" />
                     <span class="playlist-name">model.Name</span>
                     <span class="playlist-count">@playlist.Musics.Count() songs</span>
@@ -92,8 +92,11 @@
         }
     }
 </div>
+
 <div style="position: fixed; bottom: 20px; right: 20px;">
-    <button type="button" class="btn btn-primary rounded-pill">
-        Playlist <i class="bi bi-plus-lg"></i>
-    </button>
+    <form asp-controller="Playlist" asp-action="AddPlaylist">
+        <button type="submit" class="btn btn-primary rounded-pill">
+            Playlist <i class="bi bi-plus-lg"></i>
+        </button>
+    </form>
 </div>
