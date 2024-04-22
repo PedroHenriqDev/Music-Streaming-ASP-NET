@@ -65,9 +65,14 @@ namespace ApplicationLayer.Factories
 
         public async Task<MusicData> FacMusicDataAsync(AddMusicViewModel musicVM, string Id)
         {
-            byte[] audioBytes = await _byteHelper.ConvertIFormFileInByte(musicVM.Audio);
-            byte[] pictureBytes = await _byteHelper.ConvertIFormFileInByte(musicVM.Picture);
+            byte[] audioBytes = await _byteHelper.ConvertIFormFileInByteAsync(musicVM.Audio);
+            byte[] pictureBytes = await _byteHelper.ConvertIFormFileInByteAsync(musicVM.Picture);
             return new MusicData(Id, audioBytes, pictureBytes);
+        }
+
+        public async Task<Playlist> FacPlaylistAsync(PlaylistViewModel playlistVM, string id) 
+        {
+            return new Playlist(id, playlistVM.Name, playlistVM.Description, await _byteHelper.ConvertIFormFileInByteAsync(playlistVM.FileImage), DateTime.Now);
         }
     }
 }

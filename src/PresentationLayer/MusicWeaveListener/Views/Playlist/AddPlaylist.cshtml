@@ -5,26 +5,26 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-6 mx-auto">
-            @if (TempData["InvalidMusic"] != null)
+            @if (TempData["InvalidImage"] != null)
             {
                 <div class="alert alert-danger strong-red" role="alert">
-                    @TempData["InvalidMusic"]
+                    @TempData["InvalidImage"]
                 </div>
             }
             <div class="body">
                 <form id="postForm" asp-action="AddPlaylist" asp-controller="Playlist" method="post" enctype="multipart/form-data">
                     <div class="mb-3 text-center">
                         <div class="custom-file">
-                            <input type="file" class="form-control custom-file-input" id="formImage" name="musicImage" accept="image/*" onchange="previewImage(event)">
+                            <input type="file" class="form-control custom-file-input" id="formImage" name="playlistImage" accept="image/*" onchange="previewImage(event)">
                             <label class="custom-file-label text-primary" for="formImage"><i class="bi bi-images"></i></label>
                         </div>
                         <div class="text-xxl-center" style="margin-left: 232px" id="imagePreview"></div>
                         <label for="Name" class="form-label text-dark border-bottom text-center">Name:</label>
-                        <input type="text" class="form-control rounded-pill border-primary" asp-for="Name" id="Name" placeholder="Enter playlist name">
+                        <input type="text" class="form-control rounded-pill border-primary text-dark" asp-for="Name" id="Name" placeholder="Enter playlist name">
                         <span class="text-danger" asp-validation-for="Name"></span>
                         <div class="mb-3">
                             <label for="Description" class="form-label text-dark border-bottom text-center">Description:</label>
-                            <textarea class="form-control rounded-pill border-primary" asp-for="Description" id="Description" rows="3" placeholder="Enter playlist description"></textarea>
+                            <textarea class="form-control rounded-pill border-primary text-dark" asp-for="Description" id="Description" rows="3" placeholder="Enter playlist description"></textarea>
                             <span class="text-danger" asp-validation-for="Description"></span>
                         </div>
                     </div>

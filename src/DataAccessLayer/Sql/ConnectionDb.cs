@@ -1,11 +1,11 @@
 ﻿using Dapper;
-using Npgsql;
+using DataAccessLayer.Sanitization;
 using DomainLayer.Entities;
-using DomainLayer.Interfaces;
 using DomainLayer.Exceptions;
+using DomainLayer.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using DataAccessLayer.Sanitization;
+using Npgsql;
 
 namespace DataAccessLayer.Sql
 {
@@ -329,6 +329,37 @@ namespace DataAccessLayer.Sql
                     date = music.Date,
                     dateCreation = music.DateCreation,
                 });
+            }
+        }
+
+        public async Task RecordPlaylistMusicAsync(string Id, List<string> musicIds) 
+        {
+            using(NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString())) 
+            {
+                await connection.OpenAsync();
+
+                var playlistMusicPairs = musicIds.Select(musicId => new { id =  musicId, musicId = musicId });
+                string sqlQuery = @$"INSERT INTO PlaylistMusic (Id, MusicId) VALUES (@id, @musicId)";
+                await connection.QueryAsync(sqlQuery, playlistMusicPairs);
+            }
+        }
+
+        public async Task RecordPlaylistAsync(Playlist playlist) 
+        {
+            using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
+            {
+                await connection.OpenAsync();
+                string sqlQuery = @"INSERT INTO Playlists (Id, Name, Image, CreateAt, Description) 
+                                    VALUES(@id, @name, @image, @createAt, @description)";
+
+                await connection.QueryAsync(sqlQuery, new
+                {
+                    id = playlist.Id,
+                    name = playlist.Name,
+                    image = playlist.Image,
+                    createAt = playlist.CreateAt,
+                    description = playlist.Description
+                });               
             }
         }
 

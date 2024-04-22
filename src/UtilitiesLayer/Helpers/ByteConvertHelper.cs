@@ -4,7 +4,7 @@ namespace UtilitiesLayer.Helpers
 {
     public class ByteConvertHelper
     {
-        public async Task<byte[]> ConvertIFormFileInByte(IFormFile formFile) 
+        public async Task<byte[]> ConvertIFormFileInByteAsync(IFormFile formFile) 
         {
             using(var memoryStream = new MemoryStream()) 
             {

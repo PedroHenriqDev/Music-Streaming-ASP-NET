@@ -74,5 +74,20 @@ namespace ApplicationLayer.Services
                 return new EntityQuery<Music>(false, $"Unable to create song, because this error: {ex.Message}", music, DateTime.Now);
             }
         }
+
+        public async Task<EntityQuery<Playlist>> CreatePlaylistAsync(PlaylistViewModel playlistVM) 
+        {
+            string id = Guid.NewGuid().ToString();
+            var playlist = await _modelFactory.FacPlaylistAsync(playlistVM, id);
+            try 
+            {
+                await _connectionDb.RecordPlaylistAsync(playlist);
+                return new EntityQuery<Playlist>(true, "Playlist created succesasfully", playlist, DateTime.Now);
+            }
+            catch(Exception ex) 
+            {
+                return new EntityQuery<Playlist>(false, $"Unable to create playlist, because this error: {ex.Message}", playlist, DateTime.Now);
+            }
+        }
     }
 }

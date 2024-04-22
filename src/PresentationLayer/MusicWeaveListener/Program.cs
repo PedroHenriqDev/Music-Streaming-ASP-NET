@@ -32,6 +32,7 @@ builder.Services.AddScoped<ListenerFactoriesFacade>();
 builder.Services.AddScoped<ArtistFactoriesFacade>();
 builder.Services.AddScoped<UserFactoriesFacade<Listener>>();
 builder.Services.AddScoped<HomeFactoriesFacades>();
+builder.Services.AddScoped<PlaylistServicesFacade>();
 builder.Services.AddScoped<ModelFactory>();
 builder.Services.AddScoped<ViewModelFactory>();
 builder.Services.AddScoped<ConnectionDb>();
