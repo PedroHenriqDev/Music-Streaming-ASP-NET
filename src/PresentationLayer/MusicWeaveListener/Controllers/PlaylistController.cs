@@ -1,7 +1,6 @@
 ﻿using ApplicationLayer.Facades.ServicesFacade;
 using ApplicationLayer.ViewModels;
 using DomainLayer.Entities;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -10,38 +9,39 @@ namespace MusicWeaveListener.Controllers
     public class PlaylistController : Controller
     {
 
-        private readonly PlaylistServicesFacade _playlistServicesFacade;
+        private readonly PlaylistServicesFacade _servicesFacade;
 
-        public PlaylistController(PlaylistServicesFacade playlistServicesFacade)
+        public PlaylistController(PlaylistServicesFacade servicesFacade)
         {
-            _playlistServicesFacade = playlistServicesFacade;
+            _servicesFacade = servicesFacade;
         }
 
         [HttpGet]
-        public IActionResult Playlists()
+        public IActionResult Index()
         {
             return View();
         }
 
         [HttpGet]
-        public IActionResult AddPlaylist()
+        public IActionResult CreatePlaylist()
         {
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddPlaylist(PlaylistViewModel playlistVM, IFormFile playlistImage)
+        public async Task<IActionResult> CreatePlaylist(PlaylistViewModel playlistVM, IFormFile playlistImage)
         {
             playlistVM.FileImage = playlistImage; 
+            var playlistVerify = _servicesFacade.VerifyPlaylistVM(playlistVM);
             try
             {
-                if (playlistVM.StepOneIsValid)
+                if (playlistVerify.IsValid)
                 {
-                    EntityQuery<Playlist> playlistQuery = await _playlistServicesFacade.RecordPlaylistAsnyc(playlistVM);
+                    EntityQuery<Playlist> playlistQuery = await _servicesFacade.RecordPlaylistAsnyc(playlistVM);
                     if (playlistQuery.Result)
                     {
-                        return RedirectToAction(nameof(Playlists));
+                        return RedirectToAction(nameof(Index));
                     }
                     return View(playlistVM);
                 }

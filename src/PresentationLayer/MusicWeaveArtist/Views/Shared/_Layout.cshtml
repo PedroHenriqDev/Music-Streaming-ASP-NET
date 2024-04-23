@@ -74,7 +74,7 @@
             <li><a class="nav-link text-light" asp-area="" asp-controller="Main" asp-action="About">About <i class="bi bi-person-workspace mx-2"></i></a></li>
             @if (User.Identity.IsAuthenticated)
             {
-                <li><a class="nav-link text-light" asp-area="" asp-controller="Music" asp-action="AddMusic">Music <i class="bi bi-plus mx-1" style="font-size: 1.5em;"></i></a></li>
+                <li><a class="nav-link text-light" asp-area="" asp-controller="Music" asp-action="Index">Music <i class="bi bi-plus mx-1" style="font-size: 1.5em;"></i></a></li>
                 <li><a class="nav-link text-light" asp-area="" asp-controller="Artist" asp-action="Logout">Logout <i class="bi-box-arrow-right mx-2"></i></a></li>
             }
             else

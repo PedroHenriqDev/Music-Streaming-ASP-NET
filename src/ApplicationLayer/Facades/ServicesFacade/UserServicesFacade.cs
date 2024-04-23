@@ -91,5 +91,15 @@ namespace ApplicationLayer.Facades.ServicesFacade
         {
             await _updateService.UpdateDescriptionAsync(user);
         }
+
+        public bool VerifyUserGenres(RegisterUserViewModel userVM) 
+        {
+            return _verifyService.VerifyUserGenres(userVM);
+        }
+
+        public bool VerifyUser(RegisterUserViewModel userVM) 
+        {
+            return _verifyService.VerifyUser(userVM);
+        }
     }
 }

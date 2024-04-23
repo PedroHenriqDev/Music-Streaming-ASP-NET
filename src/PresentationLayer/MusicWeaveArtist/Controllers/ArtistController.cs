@@ -31,13 +31,6 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult RegisterArtist()
-        {
-            return View();
-        }
-
-        [HttpGet]
-        [AllowAnonymous]
         public async Task<IActionResult> ArtistPage()
         {   
             try
@@ -53,17 +46,24 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult RedirectToAddMusic()
+        public IActionResult RedirectToCreateMusic()
         {
-            return RedirectToAction("AddMusic", "Music");
+            return RedirectToAction("CreateMusic", "Music");
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult CreateArtist()
+        {
+            return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
-        public async Task<IActionResult> RegisterArtist(RegisterUserViewModel artistVM)
+        public async Task<IActionResult> CreateArtist(RegisterUserViewModel artistVM)
         {
-            if (!artistVM.UserHaveGenres)
+            if (!_servicesFacade.VerifyUserGenres(artistVM))
             {
                 TempData["InvalidGenres"] = "You must select at least one genre!";
                 artistVM.Genres = _helpersFacade.GetSessionValue<List<Genre>>("Genres");
@@ -71,7 +71,7 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
             }
             try
             {
-                if (artistVM.UserIsValid)
+                if (_servicesFacade.VerifyUser(artistVM))
                 {
                     _helpersFacade.RemoveSessionValue("Genres");
                     EntityQuery<Artist> entityQuery = await _servicesFacade.CreateUserAsync(artistVM);
@@ -90,7 +90,7 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> Description()
+        public async Task<IActionResult> EditDescription()
         {
             var descriptionVM = await _artistFactoriesFacade.FacArtistDescriptionVMAsync(await _servicesFacade.FindCurrentUserAsync());
             return View(descriptionVM);

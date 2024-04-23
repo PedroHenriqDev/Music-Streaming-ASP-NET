@@ -28,27 +28,5 @@ namespace ApplicationLayer.ViewModels
 
         [PhoneNumber(ErrorMessage = "The format of this number is incorrect")]
         public string PhoneNumber { get; set; }
-
-        public bool UserIsValid
-        {
-            get
-            {
-                DateTime birthDate = BirthDate;
-                TimeSpan duration = DateTime.Now.Subtract(birthDate);
-
-                return !string.IsNullOrEmpty(Name) &&
-                       !string.IsNullOrEmpty(Email) &&
-                       !string.IsNullOrEmpty(Password) &&
-                       duration.TotalDays >= 3650;
-            }
-        }
-
-        public bool UserHaveGenres
-        {
-            get
-            {
-                return SelectedGenreIds != null && SelectedGenreIds.Any();
-            }
-        }
     }
 }

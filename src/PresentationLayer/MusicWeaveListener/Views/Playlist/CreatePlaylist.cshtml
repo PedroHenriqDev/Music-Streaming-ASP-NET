@@ -5,14 +5,8 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-6 mx-auto">
-            @if (TempData["InvalidImage"] != null)
-            {
-                <div class="alert alert-danger strong-red" role="alert">
-                    @TempData["InvalidImage"]
-                </div>
-            }
             <div class="body">
-                <form id="postForm" asp-action="AddPlaylist" asp-controller="Playlist" method="post" enctype="multipart/form-data">
+                <form id="postForm" asp-action="CreatePlaylist" asp-controller="Playlist" method="post" enctype="multipart/form-data">
                     <div class="mb-3 text-center">
                         <div class="custom-file">
                             <input type="file" class="form-control custom-file-input" id="formImage" name="playlistImage" accept="image/*" onchange="previewImage(event)">

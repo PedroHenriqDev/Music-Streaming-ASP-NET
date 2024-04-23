@@ -10,18 +10,5 @@ namespace ApplicationLayer.ViewModels
         public IFormFile FileImage { get; set; }
         public byte[] Image { get; set; }
         public IEnumerable<CompleteMusicViewModel> Musics { get; set; }
-
-        public bool StepOneIsValid 
-        {
-            get
-            {
-                if(!string.IsNullOrEmpty(Name) && FileImage != null)
-                {
-                    return true;
-                }
-                return false;
-            }
-        }
-
     }
 }

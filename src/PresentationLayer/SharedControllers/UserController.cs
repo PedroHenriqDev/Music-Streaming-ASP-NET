@@ -17,7 +17,7 @@ namespace PresentationLayer.SharedControllers
         private readonly UserHelpersFacade<T> _helpersFacade;
         private readonly UserFactoriesFacade<T> _factoriesFacade;
         private string UserPageName => typeof(T).Name + "Page";
-        private string RegisterUser => $"Register{typeof(T).Name}";
+        private string CreateUser => $"Create{typeof(T).Name}";
 
         public UserController(
             UserServicesFacade<T> servicesFacade,
@@ -47,7 +47,7 @@ namespace PresentationLayer.SharedControllers
                 {
                     T user = await _servicesFacade.FindEntityByEmailAsync<T>(credentialsVM.Email);
                     await _servicesFacade.SignInUserAsync(user);
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Index", "Main");
                 }
                 TempData["InvalidUser"] = "Email or password incorrect!";
                 return View(credentialsVM);
@@ -66,18 +66,18 @@ namespace PresentationLayer.SharedControllers
             try
             {
                 await _servicesFacade.VerifyDuplicateNameOrEmailAsync(userVM.Name, userVM.Email);
-                if (userVM.UserIsValid)
+                if (_servicesFacade.VerifyUser(userVM))
                 {
                     userVM.Genres = (List<Genre>)await _servicesFacade.FindAllEntitiesAsync<Genre>();
                     _helpersFacade.SetSessionValue("Genres", userVM.Genres);
                     return View(userVM);
                 }
-                return View(RegisterUser, userVM);
+                return View(CreateUser, userVM);
             }
             catch (EqualException ex)
             {
                 TempData["ErrorMessage"] = ex.Message;
-                return View(RegisterUser, userVM);
+                return View(CreateUser, userVM);
             }
             catch (Exception ex)
             {
@@ -157,7 +157,7 @@ namespace PresentationLayer.SharedControllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
-        public async Task<IActionResult> AddDescription(DescriptionViewModel descriptionVM)
+        public async Task<IActionResult> EditDescription(DescriptionViewModel descriptionVM)
         {
             await _servicesFacade.UpdateDescriptionAsync(_factoriesFacade.FacUser(descriptionVM.Id, descriptionVM.Description));
             return RedirectToAction(UserPageName);

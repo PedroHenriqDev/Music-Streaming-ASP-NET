@@ -26,7 +26,7 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> AddMusic()
+        public async Task<IActionResult> Index()
         {
             IEnumerable<Genre> genres = await _servicesFacade.FindAllEntitiesAsync<Genre>();
             ViewBag.Genres = genres;
@@ -36,7 +36,7 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
-        public async Task<IActionResult> AddMusic(AddMusicViewModel musicVM, IFormFile musicImage, IFormFile musicAudio) 
+        public async Task<IActionResult> CreateMusic(AddMusicViewModel musicVM, IFormFile musicImage, IFormFile musicAudio) 
         {
             TempData["AddMusicViewModel"] = _helpersFacade.SerializeObject(musicVM);
             try
@@ -65,7 +65,7 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
-        public async Task<IActionResult> AddMusicDatas(AddMusicViewModel musicVM) 
+        public async Task<IActionResult> CreateMusicDatas(AddMusicViewModel musicVM) 
         {
             if (musicVM.Step1IsValid) 
             {
@@ -74,7 +74,7 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
             }
             IEnumerable<Genre> genres = await _servicesFacade.FindAllEntitiesAsync<Genre>();
             ViewBag.Genres = genres;
-            return View("AddMusic", musicVM);
+            return View("CreateMusic", musicVM);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

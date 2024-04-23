@@ -1,7 +1,8 @@
-﻿using DataAccessLayer.Sql;
-using DomainLayer.Exceptions;
+﻿using DomainLayer.Exceptions;
 using DomainLayer.Interfaces;
 using DomainLayer.Entities;
+using ApplicationLayer.ViewModels;
+using System.Xml.Linq;
 
 namespace ApplicationLayer.Services
 {
@@ -48,9 +49,38 @@ namespace ApplicationLayer.Services
             }
         }
 
-        public async Task<bool> HasEntityInDbAsync<T>(string id)  where T : class, IEntity
+        public async Task<bool> HasEntityInDbAsync<T>(string id) where T : class, IEntity
         {
-           return await _searchService.FindEntityByIdAsync<T>(id) != null;  
+            return await _searchService.FindEntityByIdAsync<T>(id) != null;
+        }
+
+        public EntityVerify<PlaylistViewModel> VefifyPlaylistVM(PlaylistViewModel playlistVM)
+        {
+            if (string.IsNullOrEmpty(playlistVM.Name))
+            {
+                return new EntityVerify<PlaylistViewModel>(false, "The playlist must have a name", playlistVM);
+            }
+            else if (playlistVM.FileImage is null)
+            {
+                return new EntityVerify<PlaylistViewModel>(false, "The playlist must have a name", playlistVM);
+            }
+            return new EntityVerify<PlaylistViewModel>(true, "Correct playlist", playlistVM);
+        }
+
+        public bool VerifyUserGenres(RegisterUserViewModel userVM)
+        {
+            return userVM.SelectedGenreIds != null && userVM.SelectedGenreIds.Any();
+        }
+
+        public bool VerifyUser(RegisterUserViewModel userVM)
+        {
+            DateTime birthDate = userVM.BirthDate;
+            TimeSpan duration = DateTime.Now.Subtract(birthDate);
+
+            return !string.IsNullOrEmpty(userVM.Name) &&
+                   !string.IsNullOrEmpty(userVM.Email) &&
+                   !string.IsNullOrEmpty(userVM.Password) &&
+                   duration.TotalDays >= 3650;
         }
     }
 }

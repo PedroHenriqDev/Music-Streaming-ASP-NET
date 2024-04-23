@@ -1,7 +1,7 @@
-using Microsoft.AspNetCore.Mvc;
 using ApplicationLayer.ViewModels;
-using System.Diagnostics;
 using ApplicationLayer.Facades.FactoriesFacade;
+using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 using DomainLayer.Entities;
 
 namespace PresentationLayer.MusicWeaveListener.Controllers
@@ -24,11 +24,6 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
                 var displayMusicVM = await _factoriesFacades.FacDisplayMusicVMAsync<Listener>();
                 return View(displayMusicVM);
             }
-            return View();
-        }
-
-        public IActionResult Playlist() 
-        {
             return View();
         }
 

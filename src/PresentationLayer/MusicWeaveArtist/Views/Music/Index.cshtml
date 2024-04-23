@@ -2,12 +2,13 @@
 @model AddMusicViewModel;
 
 <div class="container mt-5">
+    <div class="body">
     <div class="text-center mb-4" data-aos="fade-down">
         <h1 class="info-text"><i class="bi bi-music-note-list"></i></h1>
         <p class="lead">Share your art.</p>
     </div>
     <h5 class="text-center text-center">Step: 1/2</h5>
-    <form method="post" asp-controller="Music" asp-action="AddMusicDatas" asp-validation-summary="All">
+    <form method="post" asp-controller="Music" asp-action="CreateMusicDatas" asp-validation-summary="All">
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <hr data-aos="fade-up" data-aos-duration="1000" data-aos-delay="800">
@@ -39,6 +40,7 @@
             </div>
         </div>
     </form>
+    </div>
 </div>
 
 <style>
@@ -52,5 +54,16 @@
 
     .rounded-pill {
         border-radius: 50px;
+    }
+
+
+    .body {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        padding-left: 5px;
+        padding-right: 5px;
+        margin-bottom: 80px;
     }
 </style>

@@ -110,7 +110,7 @@
         {
         <h2 class="text-center mb-4">@HtmlEncoder.Encode(Model.Name.CutName()), What is your musical style?</h2>
         }
-        <form asp-action="RegisterListener" asp-controller="Listener" method="post">
+        <form asp-action="CreateListener" asp-controller="Listener" method="post">
             <input type="hidden" name="listenerVM.Name" value="@Model.Name">
             <input type="hidden" name="listenerVM.Email" value="@Model.Email">
             <input type="hidden" name="listenerVM.PhoneNumber" value="@Model.PhoneNumber">

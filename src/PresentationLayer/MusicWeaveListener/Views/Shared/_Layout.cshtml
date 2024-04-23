@@ -103,7 +103,7 @@
             @if (User.Identity.IsAuthenticated)
             {
 
-                <li><a class="nav-link text-light" asp-area="" asp-controller="Playlist" asp-action="Playlists">Playlist <i class="bi bi-list-nested mx-2"></i></a></li>
+                <li><a class="nav-link text-light" asp-area="" asp-controller="Playlist" asp-action="Index">Playlist <i class="bi bi-list-nested mx-2"></i></a></li>
                <li><a class="nav-link text-light" asp-area="" asp-controller="Listener" asp-action="Logout">Logout <i class="bi-box-arrow-right mx-2"></i></a></li>
             }
             else
@@ -111,7 +111,6 @@
                 <li><a class="nav-link text-light" asp-area="" asp-controller="Listener" asp-action="Login">Login <i class="bi-box-arrow-in-right mx-2"></i></a></li>
             }
         </ul>
-
         @if (User.Identity.IsAuthenticated)
         {
             
@@ -122,20 +121,24 @@
         }
     </div>
     <div class="text-xxl-end">
-        @if (User.HasClaim(c => c.Type == "ProfilePictureUrl"))
+        @if (User.Identity.IsAuthenticated)
         {
-            var profilePictureUrl = User.FindFirst("ProfilePictureUrl").Value;
-            <a class="mt-auto text-light" asp-area="" asp-controller="Listener" asp-action="ListenerPage" style="position: fixed; bottom: 80px; left: 20px; z-index: 1000;">
-                <a href="@Url.Action("ListenerPage", "Listener")" class="nav-link text-light">
-                    <img src="@profilePictureUrl" alt="Profile Picture" class="img-fluid rounded-circle me-2" style="margin-left: 1645px; width: 40px; height: 40px; object-fit: cover;" />
+
+            @if (User.HasClaim(c => c.Type == "ProfilePictureUrl"))
+            {
+                var profilePictureUrl = User.FindFirst("ProfilePictureUrl").Value;
+                <a class="mt-auto text-light" asp-area="" asp-controller="Listener" asp-action="ListenerPage" style="position: fixed; bottom: 80px; left: 20px; z-index: 1000;">
+                    <a href="@Url.Action("ListenerPage", "Listener")" class="nav-link text-light">
+                        <img src="@profilePictureUrl" alt="Profile Picture" class="img-fluid rounded-circle me-2" style="margin-left: 1645px; width: 40px; height: 40px; object-fit: cover;" />
+                    </a>
                 </a>
-            </a>
-        }
-        else
-        {
-            <a class="mt-auto text-light" asp-area="" asp-controller="Listener" asp-action="ListenerPage" style="position: fixed; bottom: 80px; left: 20px; z-index: 1000;">
-                <strong class="text-light"><i class="bi bi-person-circle me-2"></i></strong>
-            </a>
+            }
+            else
+            {
+                <a class="mt-auto text-light" asp-area="" asp-controller="Listener" asp-action="ListenerPage" style="position: fixed; bottom: 80px; left: 20px; z-index: 1000;">
+                    <strong class="text-light"><i class="bi bi-person-circle me-2"></i></strong>
+                </a>
+            }
         }
     </div>
     <div class="content">

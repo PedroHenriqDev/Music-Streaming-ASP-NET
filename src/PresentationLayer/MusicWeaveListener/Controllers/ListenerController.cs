@@ -32,7 +32,7 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult RegisterListener()
+        public IActionResult CreateListener()
         {
             return View();
         }
@@ -40,18 +40,18 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
-        public async Task<IActionResult> RegisterListener(RegisterUserViewModel listenerVM)
+        public async Task<IActionResult> CreateListener(RegisterUserViewModel listenerVM)
         {
             try
             {
-                if (!listenerVM.UserHaveGenres)
+                if (!_servicesFacade.VerifyUserGenres(listenerVM))
                 {
                     TempData["InvalidGenres"] = "You must select at least one genre!";
                     listenerVM.Genres = _helpersFacade.GetSessionValue<List<Genre>>("Genres");
                     return View("SelectGenres", listenerVM);
                 }
 
-                if (listenerVM.UserIsValid)
+                if (_servicesFacade.VerifyUser(listenerVM))
                 {
                     _helpersFacade.RemoveSessionValue("Genres");
                     EntityQuery<Listener> listenerQuery = await _servicesFacade.CreateUserAsync(listenerVM);
@@ -77,7 +77,7 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> Description()
+        public async Task<IActionResult> EditDescription()
         {
             var descriptionVM = await _listenerFactoriesFacade.FacListenerDescriptionVMAsync(await _servicesFacade.FindCurrentUserAsync());
             return View(descriptionVM);
