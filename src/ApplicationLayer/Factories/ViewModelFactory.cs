@@ -1,5 +1,5 @@
-﻿using ApplicationLayer.Services;
-using ApplicationLayer.ViewModels;
+﻿using ApplicationLayer.ViewModels;
+using ApplicationLayer.Services;
 using DomainLayer.Entities;
 using DomainLayer.Interfaces;
 
@@ -41,17 +41,17 @@ namespace ApplicationLayer.Factories
             return new DescriptionViewModel(artist.Description, artist.Name, artist.Id, await _generateTextService.GenerateArtistDescriptionAsync(artist));
         }
 
-        public async Task<DisplayMusicViewModel> FacDisplayMusicVMAsync<T>()
-            where T : class, IUser<T>
+        public async Task<IEnumerable<CompleteMusicViewModel>> FacCompleteMusicsVMAsync<T>(T user)
+           where T : class, IUser<T>
         {
-            T user = await _searchService.FindCurrentUserAsync<T>();
             IEnumerable<Genre> genres = await _searchService.FindUserGenresAsync(user);
             IEnumerable<Music> musics = await _searchService.FindMusicsByFkIdsAsync<Genre>(genres.Select(g => g.Id).ToList());
             IEnumerable<MusicData> musicDatas = await _storageService.DownloadMusicsAsync(musics.Select(m => m.Id).ToList());
-            return new DisplayMusicViewModel
-            {
-                CompleteMusics = musics.Zip(musicDatas, (music, musicData) => new CompleteMusicViewModel(music, musicData)).ToList()
-            };
+
+            return musics.Join(musicDatas,
+                               music => music.Id,
+                               musicDatas => musicDatas.Id,
+                               (music, musicData) => new CompleteMusicViewModel(music, musicData));
         }
 
         public ListenerPageViewModel FacListenerPageVM(Listener listener) 
@@ -77,5 +77,19 @@ namespace ApplicationLayer.Factories
                 Musics = musics.Zip(musicDatas, (music, musicData) => new CompleteMusicViewModel(music, musicData)).ToList()
             };
         }
+
+        public async Task<SearchMusics> FacSearchMusicsVMAsync(Listener listener)
+        {
+            IEnumerable<Genre> genres = await _searchService.FindUserGenresAsync(listener);
+            IEnumerable<Music> musics = await _searchService.FindMusicsByFkIdsAsync<Genre>(genres.Select(g => g.Id).ToList());
+            IEnumerable<MusicData> musicDatas = await _storageService.DownloadMusicsAsync(musics.Select(m => m.Id).ToList());
+
+            return new SearchMusics
+            {
+                MusicsSuggestion = musics.Join(musicDatas, music => music.Id,
+                                              musicData => musicData.Id,
+                                              (music, musicData) => new CompleteMusicViewModel(music, musicData))
+            };
+        } 
     }
 }

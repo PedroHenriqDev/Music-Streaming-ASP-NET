@@ -1,13 +1,10 @@
-﻿using ApplicationLayer.Services;
+﻿using ApplicationLayer.Facades.HelpersFacade;
+using ApplicationLayer.Facades.ServicesFacade;
 using ApplicationLayer.ViewModels;
-using UtilitiesLayer.Helpers;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using System.Diagnostics;
 using DomainLayer.Entities;
 using DomainLayer.Exceptions;
-using ApplicationLayer.Facades.ServicesFacade;
-using ApplicationLayer.Facades.HelpersFacade;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace PresentationLayer.MusicWeaveArtist.Controllers
 {
@@ -58,7 +55,7 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
             }
             catch(Exception ex) 
             {
-                return RedirectToAction(nameof(Error), new { message = ex.Message });
+                return RedirectToAction("Error", new { message = ex.Message });
             }
         }
 
@@ -75,12 +72,6 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
             IEnumerable<Genre> genres = await _servicesFacade.FindAllEntitiesAsync<Genre>();
             ViewBag.Genres = genres;
             return View("CreateMusic", musicVM);
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error(string message)
-        {
-            return View(new ErrorViewModel { Message = message, RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }

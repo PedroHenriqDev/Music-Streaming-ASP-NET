@@ -1,0 +1,58 @@
+﻿@using ApplicationLayer.ViewModels;
+
+@model SearchMusics;
+
+@{
+    ViewData["Title"] = "Add Music to Playlist";
+}
+
+<h1>Add Music to Playlist</h1>
+
+<form asp-action="AddMusicToPlaylist" method="post">
+    <div class="form-group">
+        <input type="text" name="searchQuery" class="form-control" placeholder="Search for music...">
+    </div>
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+@if (Model != null && Model.MusicsSuggestion.Any())
+{
+    <h2>Search Results</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Artist</th>
+                <th>Duration</th>
+                <th>Add to Playlist</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var music in Model.MusicsSuggestion)
+            {
+                <tr>
+                    <td>@music.Music.Name</td>
+                    <td>@music.Music.Artist.Name</td>
+                    <td>
+                        <button type="button" class="btn btn-success add-to-playlist" data-music-id="@music.Music.Id">Add</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No results found.</p>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.add-to-playlist').click(function () {
+                var musicId = $(this).data('music-id');
+                alert("Music with ID " + musicId + " added to playlist.");
+            });
+        });
+    </script>
+}

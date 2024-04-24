@@ -1,8 +1,8 @@
 ﻿using DataAccessLayer.Sql;
-using DomainLayer.Interfaces;
-using DomainLayer.Exceptions;
-using Microsoft.AspNetCore.Http;
 using DomainLayer.Entities;
+using DomainLayer.Exceptions;
+using DomainLayer.Interfaces;
+using Microsoft.AspNetCore.Http;
 
 namespace ApplicationLayer.Services
 {

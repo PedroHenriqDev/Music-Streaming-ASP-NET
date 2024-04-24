@@ -1,8 +1,7 @@
-﻿using DomainLayer.Exceptions;
-using DomainLayer.Interfaces;
+﻿using ApplicationLayer.ViewModels;
+using DomainLayer.Exceptions;
 using DomainLayer.Entities;
-using ApplicationLayer.ViewModels;
-using System.Xml.Linq;
+using DomainLayer.Interfaces;
 
 namespace ApplicationLayer.Services
 {

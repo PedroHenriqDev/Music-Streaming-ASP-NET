@@ -1,19 +1,20 @@
 ﻿using ApplicationLayer.Facades.ServicesFacade;
+using ApplicationLayer.Factories;
 using ApplicationLayer.ViewModels;
 using DomainLayer.Entities;
 using Microsoft.AspNetCore.Mvc;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace MusicWeaveListener.Controllers
 {
     public class PlaylistController : Controller
     {
-
         private readonly PlaylistServicesFacade _servicesFacade;
+        private readonly ViewModelFactory _viewModelFactory;
 
-        public PlaylistController(PlaylistServicesFacade servicesFacade)
+        public PlaylistController(PlaylistServicesFacade servicesFacade, ViewModelFactory viewModelFactory)
         {
             _servicesFacade = servicesFacade;
+            _viewModelFactory = viewModelFactory;
         }
 
         [HttpGet]
@@ -41,7 +42,7 @@ namespace MusicWeaveListener.Controllers
                     EntityQuery<Playlist> playlistQuery = await _servicesFacade.RecordPlaylistAsnyc(playlistVM);
                     if (playlistQuery.Result)
                     {
-                        return RedirectToAction(nameof(Index));
+                        return RedirectToAction(nameof(AddPlaylistMusics));
                     }
                     return View(playlistVM);
                 }
@@ -49,8 +50,14 @@ namespace MusicWeaveListener.Controllers
             }
             catch (Exception ex)
             {   
-                return RedirectToAction(nameof(Error), new { message = ex.Message });
+                return RedirectToAction("Error", new { message = ex.Message });
             }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> AddPlaylistMusics() 
+        {
+            return View(await _viewModelFactory.FacSearchMusicsVMAsync(await _servicesFacade.FindCurrentListenerAsync()));
         }
     }
 }

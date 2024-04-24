@@ -1,5 +1,6 @@
 ﻿@using ApplicationLayer.ViewModels
-@model DisplayMusicViewModel
+
+@model IEnumerable<CompleteMusicViewModel>
 
 <style>
     .music-container {
@@ -74,7 +75,7 @@
 <div class="music-container text-center mx-auto" style="display: flex; flex-wrap: wrap; justify-content: center;" ">
     @if (Model != null)
     {
-        @foreach (var music in Model.CompleteMusics)
+        @foreach (var music in Model)
         {
             <div class="music-item">
                 <div class="music-info">

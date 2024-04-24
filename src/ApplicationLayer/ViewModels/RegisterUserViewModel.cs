@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using DomainLayer.Entities;
+using System.ComponentModel.DataAnnotations;
 using UtilitiesLayer.Attributes;
-using DomainLayer.Entities;
 
 namespace ApplicationLayer.ViewModels
 {

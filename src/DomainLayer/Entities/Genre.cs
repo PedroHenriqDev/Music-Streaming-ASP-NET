@@ -9,16 +9,16 @@ namespace DomainLayer.Entities
         public string Description { get; set; }
         public string Date { get; set; }
 
+        public Genre()
+        {
+        }
+
         public Genre(string id, string name, string description, string date)
         {
             Id = id;
             Name = name;
             Description = description;
             Date = date;
-        }
-
-        public Genre()
-        {
         }
     }
 }

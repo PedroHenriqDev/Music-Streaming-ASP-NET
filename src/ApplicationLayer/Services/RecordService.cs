@@ -1,9 +1,9 @@
 ﻿using ApplicationLayer.Factories;
 using ApplicationLayer.ViewModels;
 using DataAccessLayer.Sql;
-using DomainLayer.Interfaces;
 using DomainLayer.Entities;
 using DomainLayer.Exceptions;
+using DomainLayer.Interfaces;
 using Microsoft.Extensions.Logging;
 
 namespace ApplicationLayer.Services

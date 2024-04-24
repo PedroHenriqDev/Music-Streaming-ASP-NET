@@ -3,7 +3,6 @@ using ApplicationLayer.ViewModels;
 using DomainLayer.Entities;
 using DomainLayer.Interfaces;
 
-
 namespace ApplicationLayer.Facades.ServicesFacade
 {
     public class UserServicesFacade<T> where T : class, IUser<T>, new()

@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace UtilitiesLayer.Extensions
 {
     static public class ByteExtension
     {
         static public bool IsWebPImage(this byte[] imageData)
-        {
+        {   
             return imageData.Length > 12 &&
                    imageData[0] == 0x52 &&
                    imageData[1] == 0x49 &&

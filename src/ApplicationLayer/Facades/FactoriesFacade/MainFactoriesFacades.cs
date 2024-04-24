@@ -4,19 +4,19 @@ using DomainLayer.Interfaces;
 
 namespace ApplicationLayer.Facades.FactoriesFacade
 {
-    public class HomeFactoriesFacades
+    public class MainFactoriesFacades
     {
         private readonly ViewModelFactory _viewModelFactory;
 
-        public HomeFactoriesFacades(ViewModelFactory viewModelFactory) 
+        public MainFactoriesFacades(ViewModelFactory viewModelFactory) 
         {
             _viewModelFactory = viewModelFactory;
         }
 
-        public async Task<DisplayMusicViewModel> FacDisplayMusicVMAsync<T>() 
+        public async Task<IEnumerable<CompleteMusicViewModel>> FacCompleteMusicsVMAsync<T>(T user) 
             where T : class, IUser<T> 
         {
-            return await _viewModelFactory.FacDisplayMusicVMAsync<T>();
+            return await _viewModelFactory.FacCompleteMusicsVMAsync(user);
         }
     }
 }

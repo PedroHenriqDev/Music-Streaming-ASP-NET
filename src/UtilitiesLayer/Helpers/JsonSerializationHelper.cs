@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using DomainLayer.Interfaces;
+﻿using DomainLayer.Interfaces;
+using Newtonsoft.Json;
 
 namespace UtilitiesLayer.Helpers
 {

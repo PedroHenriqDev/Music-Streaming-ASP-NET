@@ -1,28 +1,27 @@
-using ApplicationLayer.ViewModels;
 using ApplicationLayer.Facades.FactoriesFacade;
-using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
+using ApplicationLayer.Facades.ServicesFacade;
 using DomainLayer.Entities;
+using Microsoft.AspNetCore.Mvc;
 
 namespace PresentationLayer.MusicWeaveListener.Controllers
 {
     public class MainController : Controller
     {
-        private readonly ILogger<MainController> _logger;
-        private readonly HomeFactoriesFacades _factoriesFacades;
+        private readonly MainFactoriesFacades _factoriesFacades;
+        private readonly MainServicesFacade<Listener> _servicesFacade;
 
-        public MainController(ILogger<MainController> logger, HomeFactoriesFacades factoriesFacades)
+        public MainController(MainFactoriesFacades factoriesFacades, MainServicesFacade<Listener> servicesFacades)
         {
-            _logger = logger;
             _factoriesFacades = factoriesFacades;
+            _servicesFacade = servicesFacades;
         }
 
         public async Task<IActionResult> Index()
         {
             if (User.Identity.IsAuthenticated) 
             {
-                var displayMusicVM = await _factoriesFacades.FacDisplayMusicVMAsync<Listener>();
-                return View(displayMusicVM);
+                var completeMusicsVM = await _factoriesFacades.FacCompleteMusicsVMAsync(await _servicesFacade.FindCurrentUserAsync());
+                return View(completeMusicsVM);
             }
             return View();
         }
@@ -30,12 +29,6 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
         public IActionResult About()
         {
             return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }

@@ -12,6 +12,7 @@ namespace DomainLayer.Entities
         public DateTime DateCreation { get; set; }
         public Artist Artist { get; set; }
         public Genre Genre { get; set; }
+        public TimeSpan Duration { get; set; }
 
         public Music() 
         {
