@@ -38,8 +38,8 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
             TempData["AddMusicViewModel"] = _helpersFacade.SerializeObject(musicVM);
             try
             {
-                musicVM.Picture = musicImage;
-                musicVM.Audio = musicAudio;
+                musicVM.PictureFile = musicImage;
+                musicVM.AudioFile = musicAudio;
                 await _servicesFacade.CreateMusicAsync(musicVM);
                 return RedirectToAction("ArtistPage", "Artist");
             }

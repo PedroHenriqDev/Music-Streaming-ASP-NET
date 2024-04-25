@@ -1,4 +1,5 @@
 ﻿@using ApplicationLayer.ViewModels
+@using UtilitiesLayer.Extensions;
 
 @model IEnumerable<CompleteMusicViewModel>
 
@@ -79,6 +80,7 @@
         {
             <div class="music-item">
                 <div class="music-info">
+                    <span class="artist-name">@music.DurationText<i class="bi bi-clock mx-2"></i></span>
                     <img src="data:image/png;base64,@(Convert.ToBase64String(music.MusicData.Picture))" class="music-image" />
                     <button type="button" class="btn btn-dark text-black rounded-circle play-button" id="playButton@(music.Music.Id)" onclick="togglePlayPause('@music.Music.Name', '@Convert.ToBase64String(music.MusicData.Audio)', this)">
                         <i class="bi bi-play-fill"></i>

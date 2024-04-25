@@ -179,6 +179,7 @@ namespace DataAccessLayer.Sql
                                        m.GenreId,
                                        m.Date,
                                        m.DateCreation,
+                                       m.Duration,
                                        a.Id AS ArtistId,
                                        a.Name AS Name
                                     FROM
@@ -222,6 +223,7 @@ namespace DataAccessLayer.Sql
                                        m.GenreId,
                                        m.Date,
                                        m.DateCreation,
+                                       m.Duration,
                                        a.Id AS ArtistId,
                                        a.Name AS Name
                                    FROM
@@ -317,8 +319,8 @@ namespace DataAccessLayer.Sql
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
             {
-                string sqlQuery = @"INSERT INTO Musics (Id, Name, ArtistId, GenreId, Date, DateCreation) 
-                                    VALUES(@id, @name, @artistId, @genreId, @date, @dateCreation)";
+                string sqlQuery = @"INSERT INTO Musics (Id, Name, ArtistId, GenreId, Date, DateCreation, Duration) 
+                                    VALUES(@id, @name, @artistId, @genreId, @date, @dateCreation, @duration)";
 
                 await connection.QueryAsync(sqlQuery, new
                 {
@@ -328,17 +330,18 @@ namespace DataAccessLayer.Sql
                     genreId = music.GenreId,
                     date = music.Date,
                     dateCreation = music.DateCreation,
+                    duration = music.Duration
                 });
             }
         }
 
-        public async Task RecordPlaylistMusicAsync(string Id, List<string> musicIds) 
+        public async Task RecordPlaylistMusicAsync(string id, List<string> musicIds) 
         {
             using(NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString())) 
             {
                 await connection.OpenAsync();
 
-                var playlistMusicPairs = musicIds.Select(musicId => new { id =  musicId, musicId = musicId });
+                var playlistMusicPairs = musicIds.Select(musicId => new { id =  id, musicId = musicId });
                 string sqlQuery = @$"INSERT INTO PlaylistMusic (Id, MusicId) VALUES (@id, @musicId)";
                 await connection.QueryAsync(sqlQuery, playlistMusicPairs);
             }

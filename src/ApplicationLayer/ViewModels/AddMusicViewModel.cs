@@ -7,9 +7,10 @@ namespace ApplicationLayer.ViewModels
     public class AddMusicViewModel
     {
         [Required]
-        public IFormFile Picture { get; set; }
+        public IFormFile PictureFile { get; set; }
 
-        public IFormFile Audio { get; set; }
+        [Required]
+        public IFormFile AudioFile { get; set; }
 
         [Required(ErrorMessage = "Music name is a required field")]
         public string Name { get; set; }

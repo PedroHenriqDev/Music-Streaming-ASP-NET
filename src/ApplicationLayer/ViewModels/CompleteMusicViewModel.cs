@@ -6,15 +6,17 @@ namespace ApplicationLayer.ViewModels
     {
         public Music Music { get; set; }
         public MusicData MusicData { get; set; }
+        public string DurationText {  get; set; }
 
         public CompleteMusicViewModel() 
         { 
         }
 
-        public CompleteMusicViewModel(Music music, MusicData musicData) 
+        public CompleteMusicViewModel(Music music, MusicData musicData, string durationText) 
         {
             Music = music;
             MusicData = musicData;
+            DurationText = durationText;
         }
     }
 }

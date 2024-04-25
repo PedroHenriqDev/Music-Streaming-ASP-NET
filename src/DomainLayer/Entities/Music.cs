@@ -18,7 +18,7 @@ namespace DomainLayer.Entities
         {
         }
 
-        public Music(string id, string name, string artistId, string genreId, DateTime date, DateTime dateCreation)
+        public Music(string id, string name, string artistId, string genreId, DateTime date, DateTime dateCreation, TimeSpan duration)
         {
             Id = id;
             Name = name;
@@ -26,6 +26,7 @@ namespace DomainLayer.Entities
             GenreId = genreId;
             Date = date;
             DateCreation = dateCreation;
+            Duration = duration;
         }
     }
 }

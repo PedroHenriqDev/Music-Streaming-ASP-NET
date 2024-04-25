@@ -55,18 +55,19 @@ namespace ApplicationLayer.Factories
         public async Task<Music> FacMusicAsync(AddMusicViewModel musicVM, string id)
         {
             Artist artist = await _searchService.FindCurrentUserAsync<Artist>();
-            if (artist == null)
+            if (artist is null)
             {
                 _logger.LogWarning("Error occurred due to a null user reference");
                 throw new ArgumentNullException("Error occurred when searching for the user");
             }
-            return new Music(id, musicVM.Name, artist.Id, musicVM.GenreId, musicVM.Date, DateTime.Now);
+
+            return new Music(id, musicVM.Name, artist.Id, musicVM.GenreId, musicVM.Date, DateTime.Now, MusicHelper.GetDuration(musicVM.AudioFile));
         }
 
         public async Task<MusicData> FacMusicDataAsync(AddMusicViewModel musicVM, string Id)
         {
-            byte[] audioBytes = await _byteHelper.ConvertIFormFileInByteAsync(musicVM.Audio);
-            byte[] pictureBytes = await _byteHelper.ConvertIFormFileInByteAsync(musicVM.Picture);
+            byte[] audioBytes = await _byteHelper.ConvertIFormFileInByteAsync(musicVM.AudioFile);
+            byte[] pictureBytes = await _byteHelper.ConvertIFormFileInByteAsync(musicVM.PictureFile);
             return new MusicData(Id, audioBytes, pictureBytes);
         }
 
