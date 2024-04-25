@@ -9,11 +9,13 @@ namespace ApplicationLayer.Facades.ServicesFacade
     {
         private readonly RecordService _recordService;
         private readonly SearchService _searchService;
+        private readonly VerifyService _verifyService;
 
-        public MusicServicesFacade(RecordService recordService, SearchService searchService)
+        public MusicServicesFacade(RecordService recordService, SearchService searchService, VerifyService verifyService)
         {
             _recordService = recordService;
             _searchService = searchService;
+            _verifyService = verifyService;
         }
 
         public async Task<EntityQuery<Music>> CreateMusicAsync(AddMusicViewModel musicVM)
@@ -25,6 +27,11 @@ namespace ApplicationLayer.Facades.ServicesFacade
             where T : class, IEntity 
         {
             return await _searchService.FindAllEntitiesAsync<T>();
+        }
+
+        public bool VerifyMusic(AddMusicViewModel musicVM) 
+        {
+            return _verifyService.VerifyMusic(musicVM);
         }
     }
 }

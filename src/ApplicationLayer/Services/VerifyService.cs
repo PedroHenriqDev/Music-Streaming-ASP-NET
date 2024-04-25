@@ -81,5 +81,14 @@ namespace ApplicationLayer.Services
                    !string.IsNullOrEmpty(userVM.Password) &&
                    duration.TotalDays >= 3650;
         }
+
+        public bool VerifyMusic(AddMusicViewModel musicVM)
+        {
+            if (!string.IsNullOrEmpty(musicVM.Name) && musicVM.Date <= DateTime.Now && !string.IsNullOrEmpty(musicVM.GenreId))
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }

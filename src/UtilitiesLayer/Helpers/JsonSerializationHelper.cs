@@ -1,16 +1,15 @@
-﻿using DomainLayer.Interfaces;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace UtilitiesLayer.Helpers
 {
-    public class JsonSerializationHelper : IJsonSerializationHelper
+    static public class JsonSerializationHelper
     {
-        public T DeserializeObject<T>(string json)
+        static public T DeserializeObject<T>(string json)
         {
             return JsonConvert.DeserializeObject<T>(json);
         }
 
-        public string SerializeObject(object obj)
+        static public string SerializeObject(object obj)
         {
             return JsonConvert.SerializeObject(obj);
         }

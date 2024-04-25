@@ -1,5 +1,4 @@
-﻿using ApplicationLayer.Facades.HelpersFacade;
-using ApplicationLayer.Facades.ServicesFacade;
+﻿using ApplicationLayer.Facades.ServicesFacade;
 using ApplicationLayer.Facades.FactoriesFacade;
 using ApplicationLayer.ViewModels;
 using DomainLayer.Entities;
@@ -7,27 +6,28 @@ using DomainLayer.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PresentationLayer.SharedControllers;
+using UtilitiesLayer.Helpers;
 
 namespace PresentationLayer.MusicWeaveListener.Controllers
 {
     public class ListenerController : UserController<Listener>
     {
         private readonly UserServicesFacade<Listener> _servicesFacade;
-        private readonly UserHelpersFacade<Listener> _helpersFacade;
         private readonly ListenerFactoriesFacade _listenerFactoriesFacade;
         private readonly UserFactoriesFacade<Listener> _userFactoriesFacade;
+        private readonly IHttpContextAccessor _httpAccessor;
 
         public ListenerController(
             UserServicesFacade<Listener> servicesFacade,
-            UserHelpersFacade<Listener> helpersFacade, 
             ListenerFactoriesFacade listenerFactoriesFacade,
-            UserFactoriesFacade<Listener> userFactoriesFacade) 
-            : base(servicesFacade, helpersFacade, userFactoriesFacade)
+            UserFactoriesFacade<Listener> userFactoriesFacade, 
+            IHttpContextAccessor httpAccessor) 
+            : base(servicesFacade, userFactoriesFacade, httpAccessor)
         {
             _servicesFacade = servicesFacade;
-            _helpersFacade = helpersFacade;
             _listenerFactoriesFacade = listenerFactoriesFacade;
             _userFactoriesFacade = userFactoriesFacade;
+            _httpAccessor = httpAccessor;
         }
 
         [HttpGet]
@@ -47,13 +47,13 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
                 if (!_servicesFacade.VerifyUserGenres(listenerVM))
                 {
                     TempData["InvalidGenres"] = "You must select at least one genre!";
-                    listenerVM.Genres = _helpersFacade.GetSessionValue<List<Genre>>("Genres");
+                    listenerVM.Genres = HttpHelper.GetSessionValue<List<Genre>>(_httpAccessor, "Genres");
                     return View("SelectGenres", listenerVM);
                 }
 
                 if (_servicesFacade.VerifyUser(listenerVM))
                 {
-                    _helpersFacade.RemoveSessionValue("Genres");
+                    HttpHelper.RemoveSessionValue(_httpAccessor, "Genres");
                     EntityQuery<Listener> listenerQuery = await _servicesFacade.CreateUserAsync(listenerVM);
                     await _servicesFacade.SignInUserAsync(listenerQuery.Entity);
                     return RedirectToAction(nameof(CompleteRegistration));

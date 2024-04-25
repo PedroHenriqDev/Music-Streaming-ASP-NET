@@ -2,7 +2,7 @@
 using ApplicationLayer.Services;
 using DomainLayer.Entities;
 using DomainLayer.Interfaces;
-using UtilitiesLayer.Extensions;
+using UtilitiesLayer.Helpers;
 
 namespace ApplicationLayer.Factories
 {
@@ -52,7 +52,7 @@ namespace ApplicationLayer.Factories
             return musics.Join(musicDatas,
                                music => music.Id,
                                musicDatas => musicDatas.Id,
-                               (music, musicData) => new CompleteMusicViewModel(music, musicData, music.Duration.FormatDuration()));
+                               (music, musicData) => new CompleteMusicViewModel(music, musicData, MusicHelper.FormatMusicDuration(music.Duration)));
         }
 
         public ListenerPageViewModel FacListenerPageVM(Listener listener) 
@@ -75,7 +75,7 @@ namespace ApplicationLayer.Factories
                 Name = artist.Name,
                 Description = artist.Description,
                 PictureProfile = artist.PictureProfile,
-                Musics = musics.Zip(musicDatas, (music, musicData) => new CompleteMusicViewModel(music, musicData, music.Duration.FormatDuration())).ToList()
+                Musics = musics.Zip(musicDatas, (music, musicData) => new CompleteMusicViewModel(music, musicData, MusicHelper.FormatMusicDuration(music.Duration))).ToList()
             };
         }
 
@@ -90,7 +90,7 @@ namespace ApplicationLayer.Factories
                 MusicsSuggestion = musics.Join(musicDatas,
                                               music => music.Id,
                                               musicData => musicData.Id,
-                                              (music, musicData) => new CompleteMusicViewModel(music, musicData, music.Duration.FormatDuration()))
+                                              (music, musicData) => new CompleteMusicViewModel(music, musicData, MusicHelper.FormatMusicDuration(music.Duration)))
             };
         } 
     }

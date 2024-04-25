@@ -3,34 +3,23 @@ using System.Text;
 
 namespace UtilitiesLayer.Helpers
 {
-    public class HttpHelper
+    static public class HttpHelper
     {
-        private readonly IHttpContextAccessor _httpAccessor;
-        private readonly JsonSerializationHelper _jsonHelper;
-
-        public HttpHelper(
-            IHttpContextAccessor httpAccessor, 
-            JsonSerializationHelper jsonHelper)
-        {   
-            _httpAccessor = httpAccessor;
-            _jsonHelper = jsonHelper;
+        static public T GetSessionValue<T>(IHttpContextAccessor httpAccessor, string key)
+        {
+            string value = httpAccessor.HttpContext.Session.GetString(key);
+            return value != null ? JsonSerializationHelper.DeserializeObject<T>(value) : default(T);
         }
 
-        public T GetSessionValue<T>(string key) 
+        static public void SetSessionValue<T>(IHttpContextAccessor httpAccessor, string key, T value)
         {
-            string value = _httpAccessor.HttpContext.Session.GetString(key);
-            return value != null ? _jsonHelper.DeserializeObject<T>(value) : default(T);
+            string serializeValue = JsonSerializationHelper.SerializeObject(value);
+            httpAccessor.HttpContext.Session.SetString(key, serializeValue);
         }
 
-        public void SetSessionValue<T>(string key, T value) 
+        static public void RemoveSessionValue(IHttpContextAccessor httpAccessor, string key)
         {
-            string serializeValue = _jsonHelper.SerializeObject(value);
-            _httpAccessor.HttpContext.Session.SetString(key, serializeValue);
-        } 
-
-        public void RemoveSessionValue(string key)
-        {
-            _httpAccessor.HttpContext.Session.Remove(key);
+            httpAccessor.HttpContext.Session.Remove(key);
         }
     }
 }

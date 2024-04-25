@@ -1,32 +1,33 @@
 ﻿using ApplicationLayer.ViewModels;
 using ApplicationLayer.Facades.ServicesFacade;
 using ApplicationLayer.Facades.FactoriesFacade;
-using ApplicationLayer.Facades.HelpersFacade;
 using DomainLayer.Entities;
 using DomainLayer.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PresentationLayer.SharedControllers;
+using UtilitiesLayer.Helpers;
 
 namespace PresentationLayer.MusicWeaveArtist.Controllers
 {
     public class ArtistController : UserController<Artist>
     {
         private readonly UserServicesFacade<Artist> _servicesFacade;
-        private readonly UserHelpersFacade<Artist> _helpersFacade;
         private readonly ArtistFactoriesFacade _artistFactoriesFacade;
         private readonly UserFactoriesFacade<Artist> _userFactoriesFacade;
+        private readonly IHttpContextAccessor _httpAccessor;
 
         public ArtistController(
             UserServicesFacade<Artist> servicesFacade, 
-            UserHelpersFacade<Artist> helpersFacade, 
             ArtistFactoriesFacade artistFactoriesFacade,
-            UserFactoriesFacade<Artist> userFactoriesFacade)
-            : base(servicesFacade, helpersFacade, userFactoriesFacade)
+            UserFactoriesFacade<Artist> userFactoriesFacade, 
+            IHttpContextAccessor httpAccessor)
+            : base(servicesFacade, userFactoriesFacade, httpAccessor)
         {
             _servicesFacade = servicesFacade;
-            _helpersFacade = helpersFacade;
             _artistFactoriesFacade = artistFactoriesFacade;
+            _userFactoriesFacade = userFactoriesFacade;
+            _httpAccessor = httpAccessor;
         }
 
         [HttpGet]
@@ -66,14 +67,14 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
             if (!_servicesFacade.VerifyUserGenres(artistVM))
             {
                 TempData["InvalidGenres"] = "You must select at least one genre!";
-                artistVM.Genres = _helpersFacade.GetSessionValue<List<Genre>>("Genres");
+                artistVM.Genres = HttpHelper.GetSessionValue<List<Genre>>(_httpAccessor,"Genres");
                 return View("SelectGenres", artistVM);
             }
             try
             {
                 if (_servicesFacade.VerifyUser(artistVM))
                 {
-                    _helpersFacade.RemoveSessionValue("Genres");
+                    HttpHelper.RemoveSessionValue(_httpAccessor, "Genres");
                     EntityQuery<Artist> entityQuery = await _servicesFacade.CreateUserAsync(artistVM);
                     await _servicesFacade.SignInUserAsync(entityQuery.Entity);
                     return RedirectToAction(nameof(CompleteRegistration));

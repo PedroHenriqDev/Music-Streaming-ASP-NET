@@ -1,6 +1,4 @@
-using ApplicationLayer.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 
 namespace PresentationLayer.MusicWeaveArtist.Controllers
 {

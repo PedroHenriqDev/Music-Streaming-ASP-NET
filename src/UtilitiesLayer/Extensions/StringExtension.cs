@@ -11,13 +11,5 @@
 
             return str.Split(' ')[0];
         }
-
-        static public string FormatDuration(this TimeSpan duration) 
-        {
-            int minutes = (int)duration.TotalMinutes;
-            int seconds = duration.Seconds;
-
-            return $"{minutes}:{seconds:D2}";
-        }
     }
 }

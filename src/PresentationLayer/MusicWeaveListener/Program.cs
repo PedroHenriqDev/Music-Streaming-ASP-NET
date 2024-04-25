@@ -1,4 +1,3 @@
-using ApplicationLayer.Facades.HelpersFacade;
 using ApplicationLayer.Facades.FactoriesFacade;
 using ApplicationLayer.Facades.ServicesFacade;
 using ApplicationLayer.Factories;
@@ -8,7 +7,7 @@ using DataAccessLayer.Sql;
 using DomainLayer.Entities;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.FileProviders;
-using UtilitiesLayer.Helpers;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,7 +26,6 @@ builder.Services.AddScoped<SearchService>();
 builder.Services.AddScoped<UserAuthenticationService>();
 builder.Services.AddScoped<UpdateService>();
 builder.Services.AddScoped<UserServicesFacade<Listener>>();
-builder.Services.AddScoped<UserHelpersFacade<Listener>>();
 builder.Services.AddScoped<ListenerFactoriesFacade>();
 builder.Services.AddScoped<ArtistFactoriesFacade>();
 builder.Services.AddScoped<UserFactoriesFacade<Listener>>();
@@ -38,9 +36,6 @@ builder.Services.AddScoped<ModelFactory>();
 builder.Services.AddScoped<ViewModelFactory>();
 builder.Services.AddScoped<ConnectionDb>();
 builder.Services.AddScoped<ConnectionGoogleCloud>();
-builder.Services.AddScoped<HttpHelper>();
-builder.Services.AddScoped<ByteConvertHelper>();
-builder.Services.AddScoped<JsonSerializationHelper>();
 
 builder.Services.AddHttpContextAccessor();
 

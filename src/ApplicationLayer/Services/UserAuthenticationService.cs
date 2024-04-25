@@ -14,17 +14,14 @@ namespace ApplicationLayer.Services
         private readonly ILogger<UserAuthenticationService> _logger;
         private readonly PictureService _pictureService;
         private readonly IHttpContextAccessor _httpAcessor;
-        private readonly JsonSerializationHelper _jsonHelper;
         public UserAuthenticationService(
             ILogger<UserAuthenticationService> logger,
             PictureService pictureService,
-            IHttpContextAccessor httpAccessor,
-            JsonSerializationHelper jsonHelper)
+            IHttpContextAccessor httpAccessor)
         {
             _logger = logger;
             _pictureService = pictureService; 
             _httpAcessor = httpAccessor;
-            _jsonHelper = jsonHelper;
         }
 
         public async Task SignInUserAsync<T>(T user) 
@@ -64,7 +61,7 @@ namespace ApplicationLayer.Services
                 SameSite = SameSiteMode.Strict
             };
 
-            var serializedValue = _jsonHelper.SerializeObject(value);
+            var serializedValue = JsonSerializationHelper.SerializeObject(value);
             _httpAcessor.HttpContext.Response.Cookies.Append(key, serializedValue, options);
         }
 

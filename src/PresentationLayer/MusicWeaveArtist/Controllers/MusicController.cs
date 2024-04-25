@@ -1,10 +1,10 @@
-﻿using ApplicationLayer.Facades.HelpersFacade;
-using ApplicationLayer.Facades.ServicesFacade;
+﻿using ApplicationLayer.Facades.ServicesFacade;
 using ApplicationLayer.ViewModels;
 using DomainLayer.Entities;
 using DomainLayer.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using UtilitiesLayer.Helpers;
 
 namespace PresentationLayer.MusicWeaveArtist.Controllers
 {
@@ -12,13 +12,11 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
     {
 
         private readonly MusicServicesFacade _servicesFacade;
-        private readonly MusicHelpersFacade _helpersFacade;
 
         public MusicController(
-            MusicServicesFacade servicesFacade, MusicHelpersFacade helpersFacade)
+            MusicServicesFacade servicesFacade)
         {
             _servicesFacade = servicesFacade;
-            _helpersFacade = helpersFacade;
         }
 
         [HttpGet]
@@ -35,7 +33,7 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> CreateMusic(AddMusicViewModel musicVM, IFormFile musicImage, IFormFile musicAudio) 
         {
-            TempData["AddMusicViewModel"] = _helpersFacade.SerializeObject(musicVM);
+            TempData["AddMusicViewModel"] = JsonSerializationHelper.SerializeObject(musicVM);
             try
             {
                 musicVM.PictureFile = musicImage;
@@ -64,14 +62,14 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> CreateMusicDatas(AddMusicViewModel musicVM) 
         {
-            if (musicVM.Step1IsValid) 
+            if (_servicesFacade.VerifyMusic(musicVM)) 
             {
-                TempData["AddMusicViewModel"] = _helpersFacade.SerializeObject(musicVM);
+                TempData["AddMusicViewModel"] = JsonSerializationHelper.SerializeObject(musicVM);
                 return View(musicVM);
             }
             IEnumerable<Genre> genres = await _servicesFacade.FindAllEntitiesAsync<Genre>();
             ViewBag.Genres = genres;
-            return View("CreateMusic", musicVM);
+            return View("Index", musicVM);
         }
     }
 }

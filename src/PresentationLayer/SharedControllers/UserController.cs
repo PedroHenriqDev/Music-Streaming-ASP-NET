@@ -1,32 +1,33 @@
 ﻿using ApplicationLayer.Facades.FactoriesFacade;
-using ApplicationLayer.Facades.HelpersFacade;
 using ApplicationLayer.Facades.ServicesFacade;
 using ApplicationLayer.ViewModels;
 using DomainLayer.Entities;
 using DomainLayer.Exceptions;
 using DomainLayer.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using UtilitiesLayer.Helpers;
 
 namespace PresentationLayer.SharedControllers
 {
     public class UserController<T> : Controller where T : class, IUser<T>, new()
     {
         private readonly UserServicesFacade<T> _servicesFacade;
-        private readonly UserHelpersFacade<T> _helpersFacade;
         private readonly UserFactoriesFacade<T> _factoriesFacade;
+        private readonly IHttpContextAccessor _httpAccessor;
         private string UserPageName => typeof(T).Name + "Page";
         private string CreateUser => $"Create{typeof(T).Name}";
 
         public UserController(
             UserServicesFacade<T> servicesFacade,
-            UserHelpersFacade<T> helpersFacade,
-            UserFactoriesFacade<T> factoriesFacade)
+            UserFactoriesFacade<T> factoriesFacade, 
+            IHttpContextAccessor httpAccessor)
         {
             _servicesFacade = servicesFacade;
-            _helpersFacade = helpersFacade;
             _factoriesFacade = factoriesFacade;
+            _httpAccessor = httpAccessor;
         }
 
         [HttpGet]
@@ -69,7 +70,7 @@ namespace PresentationLayer.SharedControllers
                 if (_servicesFacade.VerifyUser(userVM))
                 {
                     userVM.Genres = (List<Genre>)await _servicesFacade.FindAllEntitiesAsync<Genre>();
-                    _helpersFacade.SetSessionValue("Genres", userVM.Genres);
+                    HttpHelper.SetSessionValue(_httpAccessor, "Genres", userVM.Genres);
                     return View(userVM);
                 }
                 return View(CreateUser, userVM);

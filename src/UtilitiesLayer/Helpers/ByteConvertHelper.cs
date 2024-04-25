@@ -2,9 +2,9 @@
 
 namespace UtilitiesLayer.Helpers
 {
-    public class ByteConvertHelper
+    static public class ByteConvertHelper
     {
-        public async Task<byte[]> ConvertIFormFileInByteAsync(IFormFile formFile) 
+        static public async Task<byte[]> ConvertIFormFileInByteAsync(IFormFile formFile) 
         {
             using(var memoryStream = new MemoryStream()) 
             {

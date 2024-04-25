@@ -13,5 +13,13 @@ namespace UtilitiesLayer.Helpers
                 return audioFile.TotalTime;
             } 
         }
+
+        static public string FormatMusicDuration(this TimeSpan duration)
+        {
+            int minutes = (int)duration.TotalMinutes;
+            int seconds = duration.Seconds;
+
+            return $"{minutes}:{seconds:D2}";
+        }
     }
 }

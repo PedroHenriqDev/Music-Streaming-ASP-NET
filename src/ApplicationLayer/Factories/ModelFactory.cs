@@ -12,13 +12,11 @@ namespace ApplicationLayer.Factories
 
         private readonly SearchService _searchService;
         private readonly ILogger<ModelFactory> _logger;
-        private readonly ByteConvertHelper _byteHelper;
 
-        public ModelFactory(SearchService searchService, ILogger<ModelFactory> logger, ByteConvertHelper byteHelper) 
+        public ModelFactory(SearchService searchService, ILogger<ModelFactory> logger) 
         {
             _searchService = searchService;
             _logger = logger;
-            _byteHelper = byteHelper;
         }
 
         public T FacUser<T>(string id, string description)
@@ -66,14 +64,14 @@ namespace ApplicationLayer.Factories
 
         public async Task<MusicData> FacMusicDataAsync(AddMusicViewModel musicVM, string Id)
         {
-            byte[] audioBytes = await _byteHelper.ConvertIFormFileInByteAsync(musicVM.AudioFile);
-            byte[] pictureBytes = await _byteHelper.ConvertIFormFileInByteAsync(musicVM.PictureFile);
+            byte[] audioBytes = await ByteConvertHelper.ConvertIFormFileInByteAsync(musicVM.AudioFile);
+            byte[] pictureBytes = await ByteConvertHelper.ConvertIFormFileInByteAsync(musicVM.PictureFile);
             return new MusicData(Id, audioBytes, pictureBytes);
         }
 
         public async Task<Playlist> FacPlaylistAsync(PlaylistViewModel playlistVM, string id) 
         {
-            return new Playlist(id, playlistVM.Name, playlistVM.Description, await _byteHelper.ConvertIFormFileInByteAsync(playlistVM.FileImage), DateTime.Now);
+            return new Playlist(id, playlistVM.Name, playlistVM.Description, await ByteConvertHelper.ConvertIFormFileInByteAsync(playlistVM.FileImage), DateTime.Now);
         }
     }
 }

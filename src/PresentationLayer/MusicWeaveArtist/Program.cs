@@ -1,4 +1,3 @@
-using ApplicationLayer.Facades.HelpersFacade;
 using ApplicationLayer.Facades.FactoriesFacade;
 using ApplicationLayer.Facades.ServicesFacade;
 using ApplicationLayer.Factories;
@@ -27,18 +26,13 @@ builder.Services.AddScoped<SearchService>();
 builder.Services.AddScoped<UserAuthenticationService>();
 builder.Services.AddScoped<UpdateService>();
 builder.Services.AddScoped<UserServicesFacade<Artist>>();
-builder.Services.AddScoped<UserHelpersFacade<Artist>>();
 builder.Services.AddScoped<ArtistFactoriesFacade>();
 builder.Services.AddScoped<UserFactoriesFacade<Artist>>();
 builder.Services.AddScoped<MusicServicesFacade>();
-builder.Services.AddScoped<MusicHelpersFacade>();
 builder.Services.AddScoped<ModelFactory>();
 builder.Services.AddScoped<ViewModelFactory>();
 builder.Services.AddScoped<ConnectionDb>();
 builder.Services.AddScoped<ConnectionGoogleCloud>();
-builder.Services.AddScoped<HttpHelper>();
-builder.Services.AddScoped<ByteConvertHelper>();
-builder.Services.AddScoped<JsonSerializationHelper>();
 
 builder.Services.AddHttpContextAccessor();
 

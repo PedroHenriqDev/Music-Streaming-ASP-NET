@@ -21,17 +21,5 @@ namespace ApplicationLayer.ViewModels
 
         [Required]
         public string GenreId { get; set; }
-
-        public bool Step1IsValid 
-        {
-            get 
-            {
-                if(!string.IsNullOrEmpty(Name) && Date <= DateTime.Now && !string.IsNullOrEmpty(GenreId)) 
-                {
-                    return true;
-                }
-                return false;
-            }
-        }
     }
 }
