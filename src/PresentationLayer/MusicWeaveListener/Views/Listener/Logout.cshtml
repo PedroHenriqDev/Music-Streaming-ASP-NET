@@ -11,27 +11,26 @@
         font-size: 18px;
     }
 
-    .body {
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        padding-top: 20px;
-        padding-bottom: 20px;
-        padding-left: 5px;
-        padding-right: 5px;
-        margin-bottom: 80px;
+    .card
+    {
+        border-radius: 20px;
     }
 </style>
 
 <div class="container body p-5 rounded-5">
-    <div class="mb-5 text-center">
-        <h1 class="text-dark">@ViewData["title"]<i class="bi bi-door-open mx-2"></i></h1>
-        <h4 class="text-dark">
-            Are you sure you want to leave @User.Identity.Name.CutName()
-        </h4>
-    </div>
-    <form method="post" asp-controller="Listener" asp-action="LogoutPost">
-        <div class="d-flex justify-content-center">
-            <button type="submit" class="btn btn-outline-danger text-dark btn-custom mr-2">Logout</button>
+    <div class="card shadow-lg">
+        <div class="card-body">
+            <div class="mb-5 text-center">
+                <h1 class="text-dark">@ViewData["title"]<i class="bi bi-door-open mx-2"></i></h1>
+                <h4 class="text-dark">
+                    Are you sure you want to leave @User.Identity.Name.CutName()
+                </h4>
+            </div>
+            <form method="post" asp-controller="Listener" asp-action="LogoutPost">
+                <div class="d-flex justify-content-center">
+                    <button type="submit" class="btn btn-outline-danger text-dark btn-custom mr-2">Logout</button>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
 </div>

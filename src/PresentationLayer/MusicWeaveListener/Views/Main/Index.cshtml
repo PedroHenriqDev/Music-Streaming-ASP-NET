@@ -4,6 +4,7 @@
 @model IEnumerable<CompleteMusicViewModel>
 
 <style>
+
     .music-container {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -72,26 +73,35 @@
         border-radius: 10px;
         margin-bottom: 10px;
     }
-</style>
-<div class="music-container text-center mx-auto" style="display: flex; flex-wrap: wrap; justify-content: center;" ">
-    @if (Model != null)
-    {
-        @foreach (var music in Model)
-        {
-            <div class="music-item">
-                <div class="music-info">
-                    <span class="artist-name">@music.DurationText<i class="bi bi-clock mx-2"></i></span>
-                    <img src="data:image/png;base64,@(Convert.ToBase64String(music.MusicData.Picture))" class="music-image" />
-                    <button type="button" class="btn btn-dark text-black rounded-circle play-button" id="playButton@(music.Music.Id)" onclick="togglePlayPause('@music.Music.Name', '@Convert.ToBase64String(music.MusicData.Audio)', this)">
-                        <i class="bi bi-play-fill"></i>
-                    </button>
-                    <span class="music-name">@music.Music.Name</span>
-                    <span class="artist-name">@music.Music.Artist.Name</span>
-                </div>
-            </div>
-        }
+
+    .card {
+        border-radius: 20px;
     }
-</div>
+</style>
+
+@if (Model != null)
+{
+    <div class="card shadow-lg">
+        <div class="card-body">
+            <div class="music-container text-center mx-auto" style="display: flex; flex-wrap: wrap; justify-content: center;">
+                @foreach (var music in Model)
+                {
+                    <div class="music-item">
+                        <div class="music-info">
+                            <span class="artist-name">@music.DurationText<i class="bi bi-clock mx-2"></i></span>
+                            <img src="data:image/png;base64,@(Convert.ToBase64String(music.MusicData.Picture))" class="music-image" />
+                            <button type="button" class="btn btn-dark text-black rounded-circle play-button" id="playButton@(music.Music.Id)" onclick="togglePlayPause('@music.Music.Name', '@Convert.ToBase64String(music.MusicData.Audio)', this)">
+                                <i class="bi bi-play-fill"></i>
+                            </button>
+                            <span class="music-name">@music.Music.Name</span>
+                            <span class="artist-name">@music.Music.Artist.Name</span>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
 
 @section Scripts {
     <script>

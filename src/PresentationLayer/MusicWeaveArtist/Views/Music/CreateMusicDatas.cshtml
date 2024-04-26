@@ -5,41 +5,45 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-6 mx-auto">
-            @if (TempData["InvalidMusic"] != null)
-            {
-                <div class="alert alert-danger strong-red" role="alert">
-                    @TempData["InvalidMusic"]
-                </div>
-            }
-            <div class="body">
-                <h2 class="text-center mb-4">@Model.Name</h2>
-                <h5 class="text-center text-center">Step: 2/2</h5>
-                <form id="postForm" asp-action="CreateMusic" asp-controller="Music" method="post" enctype="multipart/form-data">
-                    <input type="hidden" name="musicVM.Name" value="@Model.Name">
-                    <input type="hidden" name="musicVM.Date" value="@Model.Date">
-                    <input type="hidden" name="musicVM.GenreId" value="@Model.GenreId">
-                    <div class="mb-3 text-center">
-                        <div class="custom-file">
-                            <input type="file" class="form-control custom-file-input" id="formImage" name="musicImage" accept="image/*" onchange="previewImage(event)">
-                            <label class="custom-file-label text-primary" for="formImage"><i class="bi bi-images"></i></label>
+            <div class="card shadow-lg">
+                <div class="card-body">
+                    @if (TempData["InvalidMusic"] != null)
+                    {
+                        <div class="alert alert-danger strong-red" role="alert">
+                            @TempData["InvalidMusic"]
                         </div>
-                        <div class="text-xxl-center" style="margin-left: 232px" id="imagePreview"></div>
-                    </div>
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    <hr />
-                    <div class="mb-3 text-center">
-                        <div class="custom-file">
-                            <input type="file" class="form-control custom-file-input" id="formAudio" name="musicAudio" accept="audio/*" onchange="previewAudio(event)">
-                            <label class="custom-file-label text-primary" style="margin-top:20px" for="formAudio"><i class="bi bi-soundwave"></i></label>
-                        </div>
-                        <div class="text-xxl-center" style="margin-left:110px" id="audioPreview"></div>
-                    </div>
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    <div class="text-center">
-                        <button type="submit" class="btn btn-outline-primary rounded-pill">Create <i class="bi bi-plus-lg"></i></button>
-                    </div>
-                </form>
+                    }
+                    <div class="body">
+                        <h2 class="text-center mb-4">@Model.Name</h2>
+                        <h5 class="text-center text-center">Step: 2/2</h5>
+                        <form id="postForm" asp-action="CreateMusic" asp-controller="Music" method="post" enctype="multipart/form-data">
+                            <input type="hidden" name="musicVM.Name" value="@Model.Name">
+                            <input type="hidden" name="musicVM.Date" value="@Model.Date">
+                            <input type="hidden" name="musicVM.GenreId" value="@Model.GenreId">
+                            <div class="mb-3 text-center">
+                                <div class="custom-file">
+                                    <input type="file" class="form-control custom-file-input" id="formImage" name="musicImage" accept="image/*" onchange="previewImage(event)">
+                                    <label class="custom-file-label text-primary" for="formImage"><i class="bi bi-images"></i></label>
+                                </div>
+                                <div class="text-xxl-center" style="margin-left: 232px" id="imagePreview"></div>
+                            </div>
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <hr />
+                            <div class="mb-3 text-center">
+                                <div class="custom-file">
+                                    <input type="file" class="form-control custom-file-input" id="formAudio" name="musicAudio" accept="audio/*" onchange="previewAudio(event)">
+                                    <label class="custom-file-label text-primary" style="margin-top:20px" for="formAudio"><i class="bi bi-soundwave"></i></label>
+                                </div>
+                                <div class="text-xxl-center" style="margin-left:110px" id="audioPreview"></div>
+                            </div>
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-outline-primary rounded-pill">Create <i class="bi bi-plus-lg"></i></button>
+                            </div>
+                        </form>
 
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -67,10 +71,10 @@
             transform: scale(1.1);
         }
 
-            #audioPreview audio::-webkit-media-controls-panel {
-                background-color: white;
-                border-radius: 5px;
-            }
+        #audioPreview audio::-webkit-media-controls-panel {
+            background-color: white;
+            border-radius: 5px;
+        }
 
     .container {
         margin-top: 100px;
@@ -79,14 +83,6 @@
     .strong-red {
         background-color: #dc3545;
         color: #fff;
-    }
-
-    .card {
-        border: none;
-        border-radius: 15px;
-        background: linear-gradient(135deg, #6a0dad, #000000);
-        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-        padding: 20px;
     }
 
     .form-label {
@@ -117,16 +113,6 @@
 
     .custom-file-input {
         display: none;
-    }
-
-    .body {
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        padding-top: 20px;
-        padding-bottom: 20px;
-        padding-left: 5px;
-        padding-right: 5px;
-        margin-bottom: 80px;
     }
 
     .btn-primary:hover {
@@ -163,6 +149,10 @@
             height: 100%;
             object-fit: cover;
         }
+
+    .card {
+        border-radius: 20px;
+    }
 </style>
 
 <script>

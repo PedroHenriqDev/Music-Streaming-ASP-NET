@@ -3,31 +3,46 @@
 
 @model ListenerPageViewModel
 <div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-6 text-center">
-            @if (Model.PictureProfile != null)
-            {
-                <img src="data:image/png;base64,@(Convert.ToBase64String(Model.PictureProfile))" class="img-fluid rounded-circle" style="width: 180px; height: 180px; object-fit: cover;" />
-            }
-            else
-            {
-                <i class="bi bi-person-circle" style="font-size: 5em;"></i>
-            }
-            @if (User.Identity.Name == Model.Name)
-            {
-                <div class="mt-3" style="margin-bottom: 30px;">
-                    <a asp-action="AddPictureProfile" asp-controller="Listener" class="btn btn-outline-secondary"><i class="bi bi-file-image-fill"></i> Picture</a>
-                </div>
-                <hr />
-                <div class="card mt-3" style="margin-bottom: 20px;">
-                    <div class="card-body">
-                        <h5 class="card-title">Description</h5>
-                        <div class="text-center">
-                            <p class="card-text">@Model.Description</p>
+    <div class="card shadow-lg">
+        <div class="card-body">
+            <div class="row justify-content-center">
+                <div class="col-md-6 text-center">
+                    @if (Model.PictureProfile != null)
+                    {
+                        <img src="data:image/png;base64,@(Convert.ToBase64String(Model.PictureProfile))" class="img-fluid rounded-circle" style="width: 180px; height: 180px; object-fit: cover;" />
+                    }
+                    else
+                    {
+                        <i class="bi bi-person-circle" style="font-size: 5em;"></i>
+                    }
+                    @if (User.Identity.Name == Model.Name)
+                    {
+                        <div class="mt-3" style="margin-bottom: 30px;">
+                            <a asp-action="AddPictureProfile" asp-controller="Listener" class="btn btn-outline-secondary"><i class="bi bi-file-image-fill"></i> Picture</a>
                         </div>
-                        <a asp-action="EditDescription" asp-controller="Listener" class="btn btn-link"><i class="bi bi-pen"></i></a>
-                    </div>
+                        <hr />
+                        <div class="card mt-3" style="margin-bottom: 20px;">
+                            <div class="card-body">
+                                <h5 class="card-title">Description</h5>
+                                <div class="text-center">
+                                    <p class="card-text">@Model.Description</p>
+                                </div>
+                                <a asp-action="EditDescription" asp-controller="Listener" class="btn btn-link"><i class="bi bi-pen"></i></a>
+                            </div>
+                        </div>
+                    }
                 </div>
-            }
+            </div>
+        </div>
+    </div>
 </div>
+
+
+
+<style>
+    .card {
+        border-radius: 20px;
+    }
+</style>
+
 

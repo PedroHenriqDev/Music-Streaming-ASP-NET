@@ -1,6 +1,6 @@
-﻿@using ApplicationLayer.ViewModels;
+﻿@using ApplicationLayer.ViewModels
 
-@model SearchMusics;
+@model SearchMusics
 
 @{
     ViewData["Title"] = "Add Music to Playlist";
@@ -17,41 +17,85 @@
 
 @if (Model != null && Model.MusicsSuggestion.Any())
 {
-    <h2>Search Results</h2>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Artist</th>
-                <th>Duration</th>
-                <th>Add to Playlist</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var music in Model.MusicsSuggestion)
-            {
-                <tr>
-                    <td>@music.Music.Name</td>
-                    <td>@music.Music.Artist.Name</td>
-                    <td>
-                        <button type="button" class="btn btn-success add-to-playlist" data-music-id="@music.Music.Id">Add</button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <div class="card shadow-lg">
+        <div class="card-body">
+            <h2 class="text-center">Sugested musics</h2>
+            <div class="music-container">
+                @foreach (var music in Model.MusicsSuggestion)
+                {
+                    <div class="music-item">
+                        <div class="music-info">
+                            <span class="artist-name">@music.DurationText<i class="bi bi-clock mx-2"></i></span>
+                            <img src="data:image/png;base64,@(Convert.ToBase64String(music.MusicData.Picture))" class="music-image" />
+                            <button type="button" class="btn btn-success add-to-playlist" data-music-id="@music.Music.Id">Add</button>
+                            <span class="music-name">@music.Music.Name</span>
+                            <span class="artist-name">@music.Music.Artist.Name</span>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
 }
-else
-{
-    <p>No results found.</p>
-}
+
+<style>
+    .card {
+        border-radius: 20px;
+    }
+
+    .music-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .music-item {
+        text-align: center;
+        padding: 10px;
+        background-color: #282828;
+        width: 220px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+        .music-item:hover {
+            transform: translateY(-5px);
+        }
+
+    .music-info {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+    }
+
+    .music-name {
+        font-weight: bold;
+        color: white;
+        margin-top: 10px;
+    }
+
+    .artist-name {
+        color: #888;
+        margin-top: 5px;
+    }
+
+    .music-image {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-bottom: 10px;
+    }
+</style>
 
 @section Scripts {
     <script>
         $(document).ready(function () {
             $('.add-to-playlist').click(function () {
                 var musicId = $(this).data('music-id');
-                alert("Music with ID " + musicId + " added to playlist.");
             });
         });
     </script>
