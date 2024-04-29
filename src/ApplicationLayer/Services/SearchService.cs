@@ -96,5 +96,10 @@ namespace ApplicationLayer.Services
         {
             return await _connectionDb.GetEntitiesByForeignKeyAsync<T, TR>(artistId);
         }
+
+        public async Task<IEnumerable<Music>> FindMusicsByQueryAsync(string query) 
+        {
+            return await _connectionDb.GetMusicsByQueryAsync(query);
+        }
     }
 }

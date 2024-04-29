@@ -59,5 +59,11 @@ namespace MusicWeaveListener.Controllers
         {
             return View(await _viewModelFactory.FacSearchMusicsVMAsync(await _servicesFacade.FindCurrentListenerAsync()));
         }
+
+        [HttpGet]
+        public async Task<IActionResult> AddPlaylistMusicFound(IEnumerable<Music> musics) 
+        {
+            return _viewModelFactory.FacSearchMusicsVMAsync()
+        }
     }
 }

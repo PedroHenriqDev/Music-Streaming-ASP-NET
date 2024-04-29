@@ -63,7 +63,7 @@ namespace DataAccessLayer.Sql
         public async Task<IEnumerable<T>> GetEntitiesByForeignKeyAsync<T, TR>(string fkId)
             where T : class, IEntity where TR : class, IEntity
         {
-            using(NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
+            using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
             {
                 await connection.OpenAsync();
                 string tableName = TableNameSanitization.GetPluralTableName<T>();
@@ -163,10 +163,55 @@ namespace DataAccessLayer.Sql
             }
         }
 
-        public async Task<IEnumerable<Music>> GetMusicsByFkIdAsync<T>(string fkId) 
+        public async Task<IEnumerable<Music>> GetMusicsByQueryAsync(string query)
+        {
+            using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
+            {
+                await connection.OpenAsync();
+                string sqlQuery = $@"
+                                     SELECT
+                                        m.Id,
+                                        m.Name,
+                                        m.ArtistId,
+                                        m.GenreId,
+                                        m.Date,
+                                        m.DateCreation,
+                                        m.Duration,
+                                        a.Id AS ArtistId,
+                                        a.Name AS Name
+                                     FROM 
+                                        Musics m
+                                     INNER JOIN 
+                                        Artist a ON m.ArtistId = a.Id   
+                                     WHERE m.Name
+                                     LIKE '%{query}%' 
+                                     AND a.Name
+                                     LIKE '%{query}%' 
+                                     AND a.Description
+                                     Like '%{query}%'";
+
+                var result = await connection.QueryAsync<Music, Artist, Music>
+                    (sqlQuery,
+                    (music, artist) =>
+                    {
+                        if (!(artist is null))
+                        {
+                            music.Artist = artist;
+                            return music;
+                        }
+                        throw new QueryException("Error, not found artist");
+                    },
+                    splitOn: "ArtistId",
+                    param: new { query });
+
+                return result;
+            }
+        }
+
+        public async Task<IEnumerable<Music>> GetMusicsByFkIdAsync<T>(string fkId)
             where T : class, IEntity
         {
-            using(NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString())) 
+            using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
             {
                 string fkField = FieldSanitization.ForeignKeyName<T>();
 
@@ -193,7 +238,7 @@ namespace DataAccessLayer.Sql
                     (sqlQuery,
                     (music, artist) =>
                     {
-                        if (artist != null)
+                        if (!(artist is null))
                         {
                             music.Artist = artist;
                             return music;
@@ -207,7 +252,7 @@ namespace DataAccessLayer.Sql
             }
         }
 
-        public async Task<IEnumerable<Music>> GetMusicsByFkIdsAsync<T>(IEnumerable<string> fkIds) 
+        public async Task<IEnumerable<Music>> GetMusicsByFkIdsAsync<T>(IEnumerable<string> fkIds)
             where T : class, IEntity
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
@@ -335,19 +380,19 @@ namespace DataAccessLayer.Sql
             }
         }
 
-        public async Task RecordPlaylistMusicAsync(string id, List<string> musicIds) 
+        public async Task RecordPlaylistMusicAsync(string id, List<string> musicIds)
         {
-            using(NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString())) 
+            using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
             {
                 await connection.OpenAsync();
 
-                var playlistMusicPairs = musicIds.Select(musicId => new { id =  id, musicId = musicId });
+                var playlistMusicPairs = musicIds.Select(musicId => new { id = id, musicId = musicId });
                 string sqlQuery = @$"INSERT INTO PlaylistMusic (Id, MusicId) VALUES (@id, @musicId)";
                 await connection.QueryAsync(sqlQuery, playlistMusicPairs);
             }
         }
 
-        public async Task RecordPlaylistAsync(Playlist playlist) 
+        public async Task RecordPlaylistAsync(Playlist playlist)
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
             {
@@ -362,7 +407,7 @@ namespace DataAccessLayer.Sql
                     image = playlist.Image,
                     createAt = playlist.CreateAt,
                     description = playlist.Description
-                });               
+                });
             }
         }
 
