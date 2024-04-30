@@ -1,20 +1,21 @@
-﻿using ApplicationLayer.Facades.ServicesFacade;
-using ApplicationLayer.Factories;
+﻿using ApplicationLayer.Facades.FactoriesFacade;
+using ApplicationLayer.Facades.ServicesFacade;
 using ApplicationLayer.ViewModels;
 using DomainLayer.Entities;
 using Microsoft.AspNetCore.Mvc;
+using UtilitiesLayer.Extensions;
 
 namespace MusicWeaveListener.Controllers
 {
     public class PlaylistController : Controller
     {
         private readonly PlaylistServicesFacade _servicesFacade;
-        private readonly ViewModelFactory _viewModelFactory;
+        private readonly PlaylistFactoriesFacades _factoriesFacade;
 
-        public PlaylistController(PlaylistServicesFacade servicesFacade, ViewModelFactory viewModelFactory)
+        public PlaylistController(PlaylistServicesFacade servicesFacade, PlaylistFactoriesFacades factoriesFacades)
         {
             _servicesFacade = servicesFacade;
-            _viewModelFactory = viewModelFactory;
+            _factoriesFacade = factoriesFacades;
         }
 
         [HttpGet]
@@ -57,13 +58,15 @@ namespace MusicWeaveListener.Controllers
         [HttpGet]
         public async Task<IActionResult> AddPlaylistMusics() 
         {
-            return View(await _viewModelFactory.FacSearchMusicsVMAsync(await _servicesFacade.FindCurrentListenerAsync()));
+            var model = await _factoriesFacade.FacSearchMusicVMAsync(await _servicesFacade.FindCurrentListenerAsync());
+            return View(model);
         }
 
         [HttpGet]
-        public async Task<IActionResult> AddPlaylistMusicFound(IEnumerable<Music> musics) 
+        public async Task<IActionResult> AddPlaylistFoundMusics(string foundMusicsIds) 
         {
-            return _viewModelFactory.FacSearchMusicsVMAsync()
+            var model = await _factoriesFacade.FacSearchMusicVMAsync(foundMusicsIds.ConvertStringJoinInList(), await _servicesFacade.FindCurrentListenerAsync());
+            return View("AddPlaylistMusics", model);
         }
     }
 }

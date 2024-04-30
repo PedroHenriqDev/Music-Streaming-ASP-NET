@@ -6,6 +6,6 @@ namespace ApplicationLayer.ViewModels
     {
         public Listener Listener { get; set; }
         public IEnumerable<CompleteMusicViewModel>? MusicsSuggestion { get; set; }
-        public IEnumerable<CompleteMusicViewModel> Musics { get; set; }
+        public IEnumerable<CompleteMusicViewModel> FoundMusics { get; set; }
     }
 }

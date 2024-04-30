@@ -79,7 +79,7 @@ namespace ApplicationLayer.Factories
             };
         }
 
-        public async Task<SearchMusics> FacSearchMusicsVMAsync(Listener listener)
+        public async Task<SearchMusics> FacSearchMusicVMAsync(Listener listener)
         {
             IEnumerable<Genre> genres = await _searchService.FindUserGenresAsync(listener);
             IEnumerable<Music> musics = await _searchService.FindMusicsByFkIdsAsync<Genre>(genres.Select(g => g.Id).ToList());
@@ -92,6 +92,28 @@ namespace ApplicationLayer.Factories
                                               musicData => musicData.Id,
                                               (music, musicData) => new CompleteMusicViewModel(music, musicData, MusicHelper.FormatMusicDuration(music.Duration)))
             };
-        } 
+        }
+
+        public async Task<SearchMusics> FacSearchMusicVMAsync(List<string> foundMusicsIds, Listener listener)
+        {
+            IEnumerable<Genre> genres = await _searchService.FindUserGenresAsync(listener);
+            IEnumerable<Music> musicsSuggestion = await _searchService.FindMusicsByFkIdsAsync<Genre>(genres.Select(m => m.Id).ToList());
+            IEnumerable<MusicData> musicSuggestionDatas = await _storageService.DownloadMusicsAsync(musicsSuggestion.Select(m => m.Id).ToList());
+
+            IEnumerable<Music> foundMusics = await _searchService.FindMusicByIdsAsync(foundMusicsIds);
+            IEnumerable<MusicData> foundMusicsDatas = await _storageService.DownloadMusicsAsync(foundMusics.Select(m => m.Id).ToList());
+                 
+            return new SearchMusics
+            {
+                MusicsSuggestion = musicsSuggestion.Join(musicSuggestionDatas,
+                                               music => music.Id,
+                                               musicData => musicData.Id, (music, musicData) => new CompleteMusicViewModel(music, musicData, MusicHelper.FormatMusicDuration(music.Duration))),
+
+                FoundMusics = foundMusics.Join(foundMusicsDatas,
+                                               music => music.Id,
+                                               musicData => musicData.Id,
+                                               (music, musicData) => new CompleteMusicViewModel(music, musicData, MusicHelper.FormatMusicDuration(music.Duration)))
+            };
+        }
     }
 }

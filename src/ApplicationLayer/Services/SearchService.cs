@@ -101,5 +101,10 @@ namespace ApplicationLayer.Services
         {
             return await _connectionDb.GetMusicsByQueryAsync(query);
         }
+
+        public async Task<IEnumerable<Music>> FindMusicByIdsAsync(List<string> ids) 
+        {
+            return await _connectionDb.GetMusicsByIdsAsync(ids);
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using ApplicationLayer.Facades.ServicesFacade;
+using DomainLayer.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MusicWeaveListener.Controllers
@@ -6,20 +7,39 @@ namespace MusicWeaveListener.Controllers
     public class SearchController : Controller
     {
         private readonly SearchServicesFacade _servicesFacades;
+        private readonly ILogger<SearchController> _logger;
 
-        public SearchController(SearchServicesFacade servicesFacades) 
+        public SearchController(SearchServicesFacade servicesFacades, ILogger<SearchController> logger) 
         {
             _servicesFacades = servicesFacades;
+            _logger = logger;
         }
 
-        public IActionResult SearchMusicToPlaylist(string query)
+        public async Task<IActionResult> SearchMusicToPlaylist(string query)
         {
-            if(query is null) 
+            try
             {
-                return RedirectToAction("AddPlaylistMusics", "Playlist");
-            }
+                if (string.IsNullOrWhiteSpace(query))
+                {
+                    return RedirectToAction("AddPlaylistMusics", "Playlist");
+                }
 
-            return RedirectToAction("AddPlaylistMusics", "Playlist", new { musics = _servicesFacades.FindMusicByQueryAsync(query) });
+                var foundMusics = await _servicesFacades.FindMusicByQueryAsync(query);
+                return RedirectToAction("AddPlaylistFoundMusics", "Playlist", new 
+                {
+                    foundMusicsIds = string.Join(",", foundMusics.Select(m => m.Id))
+                });
+            }
+            catch(QueryException ex)
+            {
+                _logger.LogError("An error occurred while the query was running: 'GetMusicsByQueryAsync'");
+                return RedirectToAction("Error", "Main", new { message = ex.Message });
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError("An unexpected error ocurred");
+                return RedirectToAction("Error", "Main", new { message = ex.Message });
+            }
         }
     }
 }

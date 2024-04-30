@@ -8,7 +8,6 @@ using DomainLayer.Entities;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.FileProviders;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -32,6 +31,8 @@ builder.Services.AddScoped<UserFactoriesFacade<Listener>>();
 builder.Services.AddScoped<MainServicesFacade<Listener>>();
 builder.Services.AddScoped<MainFactoriesFacades>();
 builder.Services.AddScoped<PlaylistServicesFacade>();
+builder.Services.AddScoped<PlaylistFactoriesFacades>();
+builder.Services.AddScoped<SearchServicesFacade>();
 builder.Services.AddScoped<ModelFactory>();
 builder.Services.AddScoped<ViewModelFactory>();
 builder.Services.AddScoped<ConnectionDb>();

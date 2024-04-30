@@ -162,14 +162,52 @@ namespace DataAccessLayer.Sql
                 return await connection.QueryAsync<UserGenre<T>>(sqlQuery, new { id = id });
             }
         }
+        public async Task<IEnumerable<Music>> GetMusicsByIdsAsync(List<string> ids)
+        {
+            using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
+            {
+                await connection.OpenAsync();
+                string sqlQuery = $@"SELECT
+                                m.Id, 
+                                m.Name,
+                                m.ArtistId,
+                                m.GenreId,
+                                m.Date,
+                                m.DateCreation,
+                                m.Duration,
+                                a.Id AS ArtistId,
+                                a.Name AS Name
+                                FROM 
+                                    Musics m
+                                INNER JOIN 
+                                    Artists a ON m.ArtistId = a.Id
+                                WHERE
+                                    m.Id IN ({FieldSanitization.JoinIds(ids)})";
+
+                var result = await connection.QueryAsync<Music, Artist, Music>(
+                    sqlQuery, (music, artist) =>
+                    {
+                        if (!(artist is null))
+                        {
+                            music.Artist = artist;
+                            return music;
+                        }
+                        throw new QueryException("Error, artist null");
+                    },
+                    splitOn: "ArtistId");
+
+                return result;
+            }
+        }
 
         public async Task<IEnumerable<Music>> GetMusicsByQueryAsync(string query)
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
             {
                 await connection.OpenAsync();
+
                 string sqlQuery = $@"
-                                     SELECT
+                                    SELECT
                                         m.Id,
                                         m.Name,
                                         m.ArtistId,
@@ -179,27 +217,26 @@ namespace DataAccessLayer.Sql
                                         m.Duration,
                                         a.Id AS ArtistId,
                                         a.Name AS Name
-                                     FROM 
+                                    FROM
                                         Musics m
-                                     INNER JOIN 
-                                        Artist a ON m.ArtistId = a.Id   
-                                     WHERE m.Name
-                                     LIKE '%{query}%' 
-                                     AND a.Name
-                                     LIKE '%{query}%' 
-                                     AND a.Description
-                                     Like '%{query}%'";
+                                    INNER JOIN
+                                        Artists a ON m.ArtistId = a.Id
+                                    WHERE
+                                         LOWER(m.Name) LIKE LOWER ('%' || @query || '%')
+                                         OR LOWER (a.Name) LIKE LOWER ('%' || @query || '%')
+                                         OR LOWER (a.Description) LIKE LOWER('%' || @query || '%')
+                                   ";
 
-                var result = await connection.QueryAsync<Music, Artist, Music>
-                    (sqlQuery,
+                var result = await connection.QueryAsync<Music, Artist, Music>(
+                    sqlQuery,
                     (music, artist) =>
                     {
-                        if (!(artist is null))
+                        if (artist is null)
                         {
-                            music.Artist = artist;
-                            return music;
+                            throw new QueryException("Error, not found artist");
                         }
-                        throw new QueryException("Error, not found artist");
+                        music.Artist = artist;
+                        return music;
                     },
                     splitOn: "ArtistId",
                     param: new { query });

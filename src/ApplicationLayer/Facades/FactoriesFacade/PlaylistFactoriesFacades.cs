@@ -13,9 +13,14 @@ namespace ApplicationLayer.Facades.FactoriesFacade
             _viewModelFactory = viewModelFactory;
         }
 
-        public async Task<SearchMusics> FacSearchMusicsVMAsync(Listener listener) 
+        public async Task<SearchMusics> FacSearchMusicVMAsync(Listener listener) 
         {
-            return await _viewModelFactory.FacSearchMusicsVMAsync(listener);
+            return await _viewModelFactory.FacSearchMusicVMAsync(listener);
+        }
+
+        public async Task<SearchMusics> FacSearchMusicVMAsync(List<string> foundMusicsIds, Listener listener) 
+        {
+            return await _viewModelFactory.FacSearchMusicVMAsync(foundMusicsIds, listener);
         }
     }
 }
