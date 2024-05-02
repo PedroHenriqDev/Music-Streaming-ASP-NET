@@ -205,7 +205,6 @@ namespace DataAccessLayer.Sql
             using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
             {
                 await connection.OpenAsync();
-
                 string sqlQuery = $@"
                                     SELECT
                                         m.Id,
@@ -417,15 +416,31 @@ namespace DataAccessLayer.Sql
             }
         }
 
-        public async Task RecordPlaylistMusicAsync(string id, List<string> musicIds)
+        public async Task RecordPlaylistMusicsAsync(IEnumerable<PlaylistMusic> playlistMusics)
         {
-            using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
+            using (var connection = new NpgsqlConnection(GetConnectionString()))
             {
                 await connection.OpenAsync();
+                string sqlQuery = $@"INSERT INTO PlaylistMusic(Id, MusicId) 
+                                     VALUES (@id, @MusicId)";
 
-                var playlistMusicPairs = musicIds.Select(musicId => new { id = id, musicId = musicId });
-                string sqlQuery = @$"INSERT INTO PlaylistMusic (Id, MusicId) VALUES (@id, @musicId)";
-                await connection.QueryAsync(sqlQuery, playlistMusicPairs);
+                using (var transaction = await connection.BeginTransactionAsync())
+                {
+                    try
+                    {
+                        foreach (var playlistMusic in playlistMusics)
+                        {
+                            await connection.ExecuteAsync(sqlQuery, playlistMusics, transaction);      
+                        }
+
+                        await transaction.CommitAsync();
+                    }
+                    catch(Exception ex) 
+                    {
+                        await transaction.RollbackAsync();
+                        throw new QueryException($"Failed to record playlist musics. Transaction rolled back because this error:{ex.Message}");
+                    }
+                }
             }
         }
 

@@ -89,5 +89,22 @@ namespace ApplicationLayer.Services
                 return new EntityQuery<Playlist>(false, $"Unable to create playlist, because this error: {ex.Message}", playlist, DateTime.Now);
             }
         }
+
+        public async Task<EntityQuery<IEnumerable<PlaylistMusic>>> CreatePlaylistMusicsAsync(IEnumerable<PlaylistMusic> playlistMusics) 
+        {
+            try
+            {
+                await _connectionDb.RecordPlaylistMusicsAsync(playlistMusics);
+                return new EntityQuery<IEnumerable<PlaylistMusic>>(true, "Record musics successfully", playlistMusics, DateTime.Now);
+            }
+            catch (QueryException ex)
+            {
+                return new EntityQuery<IEnumerable<PlaylistMusic>>(false, $"{ex.Message}", playlistMusics, DateTime.Now);
+            }
+            catch (Exception ex) 
+            {
+                return new EntityQuery<IEnumerable<PlaylistMusic>>(false, $"An unexpected error ocurred: {ex.Message}", playlistMusics, DateTime.Now);
+            }
+        }
     }
 }

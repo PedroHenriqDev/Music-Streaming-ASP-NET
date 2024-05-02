@@ -73,5 +73,10 @@ namespace ApplicationLayer.Factories
         {
             return new Playlist(id, playlistVM.Name, playlistVM.Description, await ByteConvertHelper.ConvertIFormFileInByteAsync(playlistVM.FileImage), DateTime.Now);
         }
+
+        public IEnumerable<PlaylistMusic> FacPlaylistMusics(string playlistId, IEnumerable<string> musicsIds) 
+        {
+            return musicsIds.Select(musicId => new PlaylistMusic { Id = musicId, MusicId = musicId });
+        }
     }
 }

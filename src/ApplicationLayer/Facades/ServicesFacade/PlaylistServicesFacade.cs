@@ -22,7 +22,6 @@ namespace ApplicationLayer.Facades.ServicesFacade
             return await _recordService.CreatePlaylistAsync(playlistVM);
         }
 
-
         public EntityVerify<PlaylistViewModel> VerifyPlaylistVM(PlaylistViewModel playlistVM)
         {
             return _verifyService.VefifyPlaylistVM(playlistVM);
@@ -31,6 +30,11 @@ namespace ApplicationLayer.Facades.ServicesFacade
         public async Task<Listener> FindCurrentListenerAsync() 
         {
             return await _searchService.FindCurrentUserAsync<Listener>();
+        }
+
+        public async Task<EntityQuery<IEnumerable<PlaylistMusic>>> CreatePlaylistMusicsAsync(IEnumerable<PlaylistMusic> playlistMusics) 
+        {
+            return await _recordService.CreatePlaylistMusicsAsync(playlistMusics);
         }
     }
 }

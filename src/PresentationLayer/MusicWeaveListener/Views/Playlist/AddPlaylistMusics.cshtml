@@ -7,12 +7,23 @@
 }
 
 <div class="search-box">
-    <form asp-action="SearchMusicToPlaylist" asp-controller="Search" method="GET">
+    <form id="searchForm" asp-action="SearchMusicToPlaylist" asp-controller="Search" method="post">
         <input type="text" name="query" class="search-input bg-light text-dark" placeholder="Enter your search query...">
-        <input type="hidden" id="musicIdsInput" name="musicsSuggestionIds" />
-        <button type="submit" onclick="submitIdsToController()" class="search-button bg-black text-light"><i class="bi bi-search"></i></button>
+        <input type="hidden" id="musicIdsInput" name="musicIds" />
+        <button type="submit" class="search-button bg-black text-light"><i class="bi bi-search"></i></button>
     </form>
 </div>
+
+<form id="addMusicForm" asp-action="AddPlaylistMusics" asp-controller="Playlist" method="post">
+    <div class="card shadow-lg" style="margin-bottom:40px">
+        <div class="card-body text-center">
+            <h2 class="text-center">Music To Add</h2>
+            <div id="selectedMusics" style="margin-top:20px;">
+            </div>
+            <button type="submit" style="margin-top:15px;" class="text-center btn btn-outline-success">Add Musics <i class="bi bi-plus-lg"></i></button>
+        </div>
+    </div>
+</form>
 
 @if (Model.FoundMusics != null)
 {
@@ -24,11 +35,10 @@
                 {
                     <div class="music-item">
                         <div class="music-info">
-                            <span class="artist-name">@music.DurationText<i class="bi bi-clock mx-2"></i></span>
                             <img src="data:image/png;base64,@(Convert.ToBase64String(music.MusicData.Picture))" class="music-image" />
-                            <button type="button" class="btn btn-success add-to-playlist" data-music-id="@music.Music.Id">Add</button>
                             <span class="music-name">@music.Music.Name</span>
                             <span class="artist-name">@music.Music.Artist.Name</span>
+                            <button type="button" class="btn btn-success add-to-playlist" data-music-id="@music.Music.Id" data-music-name="@music.Music.Name" data-artist-name="@music.Music.Artist.Name">Add</button>
                         </div>
                     </div>
                 }
@@ -47,11 +57,10 @@
                 {
                     <div class="music-item">
                         <div class="music-info">
-                            <span class="artist-name">@music.DurationText<i class="bi bi-clock mx-2"></i></span>
                             <img src="data:image/png;base64,@(Convert.ToBase64String(music.MusicData.Picture))" class="music-image" />
-                            <button type="button" class="btn btn-success add-to-playlist" data-music-id="@music.Music.Id">Add</button>
-                            <span class="music-name">@music.Music.Name</span> 
+                            <span class="music-name">@music.Music.Name</span>
                             <span class="artist-name">@music.Music.Artist.Name</span>
+                            <button type="button" class="btn btn-success add-to-playlist" data-music-id="@music.Music.Id" data-music-name="@music.Music.Name" data-artist-name="@music.Music.Artist.Name">Add</button>
                         </div>
                     </div>
                 }
@@ -137,6 +146,35 @@
         border-radius: 10px;
         margin-bottom: 10px;
     }
+
+    .selected-music-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        background-color: #282828;
+        border-radius: 10px;
+        margin-bottom: 10px;
+    }
+
+        .selected-music-item .music-name,
+        .selected-music-item .artist-name {
+            color: white;
+            margin: 0;
+        }
+
+        .selected-music-item .remove-music {
+            background-color: #dc3545;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+            .selected-music-item .remove-music:hover {
+                background-color: #c82333;
+            }
 </style>
 
 @section Scripts {
@@ -144,23 +182,47 @@
         $(document).ready(function () {
             $('.add-to-playlist').click(function () {
                 var musicId = $(this).data('music-id');
+                var musicName = $(this).data('music-name');
+                var artistName = $(this).data('artist-name');
+
+                if ($('#selectedMusics').find('input[value="' + musicId + '"]').length === 0) {
+                    $('#selectedMusics').append('<div class="selected-music-item">' +
+                        '<span class="music-name">' + musicName + '</span>' +
+                        '<span class="artist-name">' + artistName + '</span>' +
+                        '<button type="button" class="btn btn-danger btn-sm remove-music">Remove</button>' +
+                        '<input type="hidden" name="selectedMusicIds" value="' + musicId + '" />' +
+                        '</div>');
+
+                    updateMusicIdsInput();
+                }
             });
+
+            $(document).on('click', '.remove-music', function () {
+                $(this).parent().remove();
+                updateMusicIdsInput();
+            });
+
+            function updateMusicIdsInput() {
+                var musicIds = [];
+                $('#selectedMusics input[name="selectedMusicIds"]').each(function () {
+                    musicIds.push($(this).val());
+                });
+                $('#musicIdsInput').val(musicIds.join(',')); 
+            }
         });
 
         function submitIdsToController() {
-            var ids = [];
+            var musicIds = $('#musicIdsInput').val();
 
-            $('.add-to-playlist').each(function () {
-                var musicId = $(this).data('music-id');
-                ids.push(musicId); 
-            });
+            if (musicIds.trim() !== '') {
+                $('#musicIdsInput').val(musicIds);
 
-            var idsString = ids.join(',');
-
-            $('#musicIdsInput').val(idsString);
-
-            $('#searchForm').submit();
+                $('#addMusicForm').submit();
+            } else {
+                console.log('Nenhum ID de música selecionado.');
+            }
         }
     </script>
-    }
+}
+
 
