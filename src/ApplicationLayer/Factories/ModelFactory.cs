@@ -69,14 +69,14 @@ namespace ApplicationLayer.Factories
             return new MusicData(Id, audioBytes, pictureBytes);
         }
 
-        public async Task<Playlist> FacPlaylistAsync(PlaylistViewModel playlistVM, string id) 
+        public async Task<Playlist> FacPlaylistAsync(PlaylistViewModel playlistVM) 
         {
-            return new Playlist(id, playlistVM.Name, playlistVM.Description, await ByteConvertHelper.ConvertIFormFileInByteAsync(playlistVM.FileImage), DateTime.Now);
+            return new Playlist(playlistVM.Id, playlistVM.Name, playlistVM.Description, await ByteConvertHelper.ConvertIFormFileInByteAsync(playlistVM.FileImage), DateTime.Now);
         }
 
-        public IEnumerable<PlaylistMusic> FacPlaylistMusics(string playlistId, IEnumerable<string> musicsIds) 
+        public IEnumerable<PlaylistMusic> FacPlaylistMusics(string playlistId, string listenerId, IEnumerable<string> musicsIds) 
         {
-            return musicsIds.Select(musicId => new PlaylistMusic { Id = playlistId, MusicId = musicId });
+            return musicsIds.Select(musicId => new PlaylistMusic { PlaylistId = playlistId, ListenerId = listenerId, MusicId = musicId });
         }
     }
 }

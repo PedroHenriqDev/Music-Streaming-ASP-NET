@@ -25,9 +25,14 @@ namespace ApplicationLayer.Facades.FactoriesFacade
             return await _viewModelFactory.FacSearchMusicVMAsync(foundMusicsIds, listener);
         }
 
-        public IEnumerable<PlaylistMusic> FacPlaylistMusics(string playlistId, IEnumerable<string> musicIds) 
+        public IEnumerable<PlaylistMusic> FacPlaylistMusics(string playlistId, string listenerId, IEnumerable<string> musicIds) 
         {
-            return _modelFactory.FacPlaylistMusics(playlistId, musicIds);
+            return _modelFactory.FacPlaylistMusics(playlistId, listenerId, musicIds);
+        }
+
+        public async Task<Playlist> FacPlaylistAsync(PlaylistViewModel playlistVM) 
+        {
+            return await _modelFactory.FacPlaylistAsync(playlistVM);
         }
     }
 }

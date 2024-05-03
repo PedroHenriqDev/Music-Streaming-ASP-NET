@@ -75,10 +75,8 @@ namespace ApplicationLayer.Services
             }
         }
 
-        public async Task<EntityQuery<Playlist>> CreatePlaylistAsync(PlaylistViewModel playlistVM) 
+        public async Task<EntityQuery<Playlist>> CreatePlaylistAsync(Playlist playlist) 
         {
-            string id = Guid.NewGuid().ToString();
-            var playlist = await _modelFactory.FacPlaylistAsync(playlistVM, id);
             try 
             {
                 await _connectionDb.RecordPlaylistAsync(playlist);

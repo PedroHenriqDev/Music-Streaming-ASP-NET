@@ -421,8 +421,7 @@ namespace DataAccessLayer.Sql
             using (var connection = new NpgsqlConnection(GetConnectionString()))
             {
                 await connection.OpenAsync();
-                string sqlQuery = $@"INSERT INTO PlaylistMusic(Id, MusicId) 
-                             VALUES (@id, @MusicId)";
+                string sqlQuery = $@"INSERT INTO PlaylistMusic (PlaylistId, ListenerId, MusicId) VALUES (@playlistId, @listenerId, @musicId)";
 
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
@@ -430,8 +429,13 @@ namespace DataAccessLayer.Sql
                     {
                         foreach (var playlistMusic in playlistMusics)
                         {
-                            // Corrigir o parâmetro passado para a execução da consulta
-                            await connection.ExecuteAsync(sqlQuery, playlistMusic, transaction);
+                            await connection.ExecuteAsync(sqlQuery, new 
+                            { 
+                                playlistId = playlistMusic.PlaylistId, 
+                                listenerId = playlistMusic.ListenerId,
+                                musicId = playlistMusic.MusicId
+                            },
+                            transaction);
                         }
 
                         await transaction.CommitAsync();
@@ -448,7 +452,7 @@ namespace DataAccessLayer.Sql
         public async Task RecordPlaylistAsync(Playlist playlist)
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
-            {
+            {   
                 await connection.OpenAsync();
                 string sqlQuery = @"INSERT INTO Playlists (Id, Name, Image, CreateAt, Description) 
                                     VALUES(@id, @name, @image, @createAt, @description)";

@@ -17,9 +17,9 @@ namespace ApplicationLayer.Facades.ServicesFacade
             _searchService = searchService;
         }
 
-        public async Task<EntityQuery<Playlist>> RecordPlaylistAsnyc(PlaylistViewModel playlistVM) 
+        public async Task<EntityQuery<Playlist>> RecordPlaylistAsnyc(Playlist playlist) 
         {
-            return await _recordService.CreatePlaylistAsync(playlistVM);
+            return await _recordService.CreatePlaylistAsync(playlist);
         }
 
         public EntityVerify<PlaylistViewModel> VerifyPlaylistVM(PlaylistViewModel playlistVM)
