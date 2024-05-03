@@ -76,7 +76,7 @@ namespace ApplicationLayer.Factories
 
         public IEnumerable<PlaylistMusic> FacPlaylistMusics(string playlistId, IEnumerable<string> musicsIds) 
         {
-            return musicsIds.Select(musicId => new PlaylistMusic { Id = musicId, MusicId = musicId });
+            return musicsIds.Select(musicId => new PlaylistMusic { Id = playlistId, MusicId = musicId });
         }
     }
 }

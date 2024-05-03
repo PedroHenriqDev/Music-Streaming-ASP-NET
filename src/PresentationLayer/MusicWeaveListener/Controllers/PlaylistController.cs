@@ -67,15 +67,15 @@ namespace MusicWeaveListener.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
-        public async Task<IActionResult> AddPlaylistMusics(string musicIds)
+        public async Task<IActionResult> AddPlaylistMusics(string musicsToAdd)
         {
-            if (string.IsNullOrEmpty(musicIds)) 
+            if (string.IsNullOrWhiteSpace(musicsToAdd)) 
             {
                 return RedirectToAction(nameof(AddPlaylistMusics));
             }
             
             Listener listener = await _servicesFacade.FindCurrentListenerAsync();
-            var playlistQuery = await _servicesFacade.CreatePlaylistMusicsAsync(_factoriesFacade.FacPlaylistMusics(listener.Id, musicIds.ConvertStringJoinInList()));
+            var playlistQuery = await _servicesFacade.CreatePlaylistMusicsAsync(_factoriesFacade.FacPlaylistMusics(listener.Id, musicsToAdd.ConvertStringJoinInList()));
             
             if (playlistQuery.Result) 
             {

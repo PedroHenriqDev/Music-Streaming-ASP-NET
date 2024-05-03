@@ -422,7 +422,7 @@ namespace DataAccessLayer.Sql
             {
                 await connection.OpenAsync();
                 string sqlQuery = $@"INSERT INTO PlaylistMusic(Id, MusicId) 
-                                     VALUES (@id, @MusicId)";
+                             VALUES (@id, @MusicId)";
 
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
@@ -430,12 +430,13 @@ namespace DataAccessLayer.Sql
                     {
                         foreach (var playlistMusic in playlistMusics)
                         {
-                            await connection.ExecuteAsync(sqlQuery, playlistMusics, transaction);      
+                            // Corrigir o parâmetro passado para a execução da consulta
+                            await connection.ExecuteAsync(sqlQuery, playlistMusic, transaction);
                         }
 
                         await transaction.CommitAsync();
                     }
-                    catch(Exception ex) 
+                    catch (Exception ex)
                     {
                         await transaction.RollbackAsync();
                         throw new QueryException($"Failed to record playlist musics. Transaction rolled back because this error:{ex.Message}");

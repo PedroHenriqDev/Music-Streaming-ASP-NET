@@ -9,7 +9,6 @@
 <div class="search-box">
     <form id="searchForm" asp-action="SearchMusicToPlaylist" asp-controller="Search" method="post">
         <input type="text" name="query" class="search-input bg-light text-dark" placeholder="Enter your search query...">
-        <input type="hidden" id="musicIdsInput" name="musicIds" />
         <button type="submit" class="search-button bg-black text-light"><i class="bi bi-search"></i></button>
     </form>
 </div>
@@ -20,6 +19,7 @@
             <h2 class="text-center">Music To Add</h2>
             <div id="selectedMusics" style="margin-top:20px;">
             </div>
+            <input type="hidden" id="MusicsToAdd" name="MusicsToAdd" />
             <button type="submit" style="margin-top:15px;" class="text-center btn btn-outline-success">Add Musics <i class="bi bi-plus-lg"></i></button>
         </div>
     </div>
@@ -51,7 +51,7 @@
 {
     <div class="card shadow-lg">
         <div class="card-body">
-            <h2 class="text-center">Sugested musics</h2>
+            <h2 class="text-center">Suggested musics</h2>
             <div class="music-container">
                 @foreach (var music in Model.MusicsSuggestion)
                 {
@@ -180,49 +180,40 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
+            var selectedMusicIds = [];
+
             $('.add-to-playlist').click(function () {
                 var musicId = $(this).data('music-id');
                 var musicName = $(this).data('music-name');
                 var artistName = $(this).data('artist-name');
 
-                if ($('#selectedMusics').find('input[value="' + musicId + '"]').length === 0) {
+                if (!selectedMusicIds.includes(musicId)) {
+                    selectedMusicIds.push(musicId);
                     $('#selectedMusics').append('<div class="selected-music-item">' +
                         '<span class="music-name">' + musicName + '</span>' +
                         '<span class="artist-name">' + artistName + '</span>' +
                         '<button type="button" class="btn btn-danger btn-sm remove-music">Remove</button>' +
-                        '<input type="hidden" name="selectedMusicIds" value="' + musicId + '" />' +
                         '</div>');
-
-                    updateMusicIdsInput();
                 }
             });
 
             $(document).on('click', '.remove-music', function () {
-                $(this).parent().remove();
-                updateMusicIdsInput();
+                var musicId = $(this).closest('.selected-music-item').find('input[name="selectedMusicIds"]').val();
+                var index = selectedMusicIds.indexOf(musicId);
+                if (index !== -1) {
+                    selectedMusicIds.splice(index, 1);
+                }
+                $(this).closest('.selected-music-item').remove();
             });
 
-            function updateMusicIdsInput() {
-                var musicIds = [];
-                $('#selectedMusics input[name="selectedMusicIds"]').each(function () {
-                    musicIds.push($(this).val());
-                });
-                $('#musicIdsInput').val(musicIds.join(',')); 
-            }
+            $('#addMusicForm').submit(function (event) {
+                event.preventDefault();
+
+                var musicsToAdd = selectedMusicIds.join(',');
+                $('#MusicsToAdd').val(musicsToAdd);
+
+                this.submit();
+            });
         });
-
-        function submitIdsToController() {
-            var musicIds = $('#musicIdsInput').val();
-
-            if (musicIds.trim() !== '') {
-                $('#musicIdsInput').val(musicIds);
-
-                $('#addMusicForm').submit();
-            } else {
-                console.log('Nenhum ID de música selecionado.');
-            }
-        }
     </script>
 }
-
-
