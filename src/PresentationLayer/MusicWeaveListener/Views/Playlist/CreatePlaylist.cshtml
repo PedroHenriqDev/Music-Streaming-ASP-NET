@@ -30,140 +30,140 @@
                     </form>
                 </div>
             </div>
-            </div>
         </div>
     </div>
+</div>
 
-    <style>
-        .card {
-            border-radius: 20px;
-            margin-top: 120px;
+<style>
+    .card {
+        border-radius: 20px;
+        margin-top: 120px;
+    }
+
+    .container {
+        margin-top: 10px;
+    }
+
+    .strong-red {
+        background-color: #dc3545;
+        color: #fff;
+    }
+
+    .form-label {
+        color: #fff;
+    }
+
+    .form-control {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 12px;
+        margin-bottom: 20px;
+    }
+
+        .form-control:focus {
+            background-color: rgba(255, 255, 255, 0.3);
         }
 
-        .container {
-            margin-top: 10px;
+    .custom-file-label {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 12px;
+        cursor: pointer;
+    }
+
+    .custom-file-input {
+        display: none;
+    }
+
+    .body {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        padding-left: 5px;
+        padding-right: 5px;
+        margin-bottom: 80px;
+    }
+
+    .btn-primary:focus {
+        box-shadow: none;
+    }
+
+    .text-danger {
+        color: #FF5252;
+    }
+
+    #imagePreview {
+        margin-top: 10px;
+        margin-left: 50px;
+        width: 150px;
+        height: 150px;
+        border-radius: 10%;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: transform 0.3s;
+    }
+
+        #imagePreview:hover {
+            transform: scale(1.1);
         }
 
-        .strong-red {
-            background-color: #dc3545;
-            color: #fff;
+        #imagePreview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
-        .form-label {
-            color: #fff;
-        }
+    .form-control {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: #fff;
+        border: 1px solid #6c757d;
+        border-radius: 10px;
+        padding: 12px;
+        margin-bottom: 20px;
+    }
 
-        .form-control {
-            background-color: rgba(255, 255, 255, 0.2);
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            padding: 12px;
-            margin-bottom: 20px;
+        .form-control:focus {
+            background-color: rgba(255, 255, 255, 0.3);
+            border-color: #6c757d;
+            outline: 0;
         }
+</style>
 
-            .form-control:focus {
-                background-color: rgba(255, 255, 255, 0.3);
+<script>
+    function previewImage(event) {
+        var file = event.target.files[0];
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function () {
+                var output = document.getElementById('imagePreview');
+                output.innerHTML = '<img src="' + reader.result + '" class="img-fluid" alt="Preview">';
             }
-
-        .custom-file-label {
-            background-color: rgba(255, 255, 255, 0.2);
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            padding: 12px;
-            cursor: pointer;
+            reader.readAsDataURL(file);
         }
+    }
 
-        .custom-file-input {
-            display: none;
+    function submitForm() {
+        var imageInput = document.getElementById('formImage');
+
+        if (imageInput.files.length > 0 && audioInput.files.length > 0) {
+            var imageFile = imageInput.files[0];
+
+            var imageReader = new FileReader();
+            imageReader.onload = function () {
+                var imageBase64String = imageReader.result.split(',')[1];
+                document.getElementById('imageBase64').value = imageBase64String;
+            };
+            imageReader.readAsDataURL(imageFile);
+        } else {
+            var errorMessageElement = document.getElementById('errorMessage');
+            errorMessageElement.innerText = 'Please select an image and an audio file.';
         }
-
-        .body {
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            padding-top: 20px;
-            padding-bottom: 20px;
-            padding-left: 5px;
-            padding-right: 5px;
-            margin-bottom: 80px;
-        }
-
-        .btn-primary:focus {
-            box-shadow: none;
-        }
-
-        .text-danger {
-            color: #FF5252;
-        }
-
-        #imagePreview {
-            margin-top: 10px;
-            margin-left: 50px;
-            width: 150px;
-            height: 150px;
-            border-radius: 10%;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: transform 0.3s;
-        }
-
-            #imagePreview:hover {
-                transform: scale(1.1);
-            }
-
-            #imagePreview img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-            }
-
-        .form-control {
-            background-color: rgba(255, 255, 255, 0.2);
-            color: #fff;
-            border: 1px solid #6c757d;
-            border-radius: 10px;
-            padding: 12px;
-            margin-bottom: 20px;
-        }
-
-            .form-control:focus {
-                background-color: rgba(255, 255, 255, 0.3);
-                border-color: #6c757d;
-                outline: 0;
-            }
-    </style>
-
-    <script>
-        function previewImage(event) {
-            var file = event.target.files[0];
-            if (file) {
-                var reader = new FileReader();
-                reader.onload = function () {
-                    var output = document.getElementById('imagePreview');
-                    output.innerHTML = '<img src="' + reader.result + '" class="img-fluid" alt="Preview">';
-                }
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function submitForm() {
-            var imageInput = document.getElementById('formImage');
-
-            if (imageInput.files.length > 0 && audioInput.files.length > 0) {
-                var imageFile = imageInput.files[0];
-
-                var imageReader = new FileReader();
-                imageReader.onload = function () {
-                    var imageBase64String = imageReader.result.split(',')[1];
-                    document.getElementById('imageBase64').value = imageBase64String;
-                };
-                imageReader.readAsDataURL(imageFile);
-            } else {
-                var errorMessageElement = document.getElementById('errorMessage');
-                errorMessageElement.innerText = 'Please select an image and an audio file.';
-            }
-        }
-    </script>
+    }
+</script>

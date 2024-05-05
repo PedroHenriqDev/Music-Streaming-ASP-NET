@@ -13,7 +13,7 @@ namespace ApplicationLayer.Facades.FactoriesFacade
             _viewModelFactory = viewModelFactory;
         }
 
-        public async Task<IEnumerable<CompleteMusicViewModel>> FacCompleteMusicsVMAsync<T>(T user) 
+        public async Task<IEnumerable<MusicViewModel>> FacCompleteMusicsVMAsync<T>(T user) 
             where T : class, IUser<T> 
         {
             return await _viewModelFactory.FacCompleteMusicsVMAsync(user);

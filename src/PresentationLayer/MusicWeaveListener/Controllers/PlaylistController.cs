@@ -16,7 +16,10 @@ namespace MusicWeaveListener.Controllers
         private readonly PlaylistFactoriesFacades _factoriesFacade;
         private readonly IHttpContextAccessor _httpAccessor;
 
-        public PlaylistController(PlaylistServicesFacade servicesFacade, PlaylistFactoriesFacades factoriesFacades, IHttpContextAccessor httpAccessor)
+        public PlaylistController(
+            PlaylistServicesFacade servicesFacade, 
+            PlaylistFactoriesFacades factoriesFacades,
+            IHttpContextAccessor httpAccessor)
         {
             _servicesFacade = servicesFacade;
             _factoriesFacade = factoriesFacades;
@@ -24,9 +27,17 @@ namespace MusicWeaveListener.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            try 
+            {
+                var listener = await _servicesFacade.FindCurrentListenerAsync();
+                return View(await _factoriesFacade.FacPlaylistViewModelsAsync(await _servicesFacade.FindPlaylistByListenerIdAsync(listener.Id)));
+            }
+            catch(Exception ex) 
+            {
+                return RedirectToAction(nameof(Error), new { message = ex.Message });
+            }
         }
 
         [HttpGet]

@@ -1,9 +1,7 @@
 using ApplicationLayer.Facades.FactoriesFacade;
 using ApplicationLayer.Facades.ServicesFacade;
-using ApplicationLayer.ViewModels;
 using DomainLayer.Entities;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 
 namespace PresentationLayer.MusicWeaveListener.Controllers
 {

@@ -7,8 +7,8 @@ namespace ApplicationLayer.ViewModels
         public string Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public IFormFile FileImage { get; set; }
+        public IFormFile? FileImage { get; set; }
         public byte[] Image { get; set; }
-        public IEnumerable<CompleteMusicViewModel> Musics { get; set; }
+        public IEnumerable<MusicViewModel>? Musics { get; set; }
     }
 }

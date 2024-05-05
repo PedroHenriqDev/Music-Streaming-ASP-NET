@@ -223,8 +223,7 @@ namespace DataAccessLayer.Sql
                                     WHERE
                                          LOWER(m.Name) LIKE LOWER ('%' || @query || '%')
                                          OR LOWER (a.Name) LIKE LOWER ('%' || @query || '%')
-                                         OR LOWER (a.Description) LIKE LOWER('%' || @query || '%')
-                                   ";
+                                         OR LOWER (a.Description) LIKE LOWER('%' || @query || '%')";
 
                 var result = await connection.QueryAsync<Music, Artist, Music>(
                     sqlQuery,
@@ -331,8 +330,8 @@ namespace DataAccessLayer.Sql
                 return result;
             }
         }
-
-        public async Task<IEnumerable<Playlist>> GetPlaylistsByListenerIdAsync(string listenerId)
+        
+        public async Task<IEnumerable<Playlist>> GetPlaylistsWithMusicsByListenerIdAsync(string listenerId)
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
             {
@@ -346,38 +345,51 @@ namespace DataAccessLayer.Sql
                                 p.CreateAt,
                                 p.Image,
                                 m.Id,
-                                m.Id AS MusicId,
+                                m.ArtistId,
                                 m.Name,
                                 m.DateCreation,
                                 m.GenreId,
                                 m.Date,
-                                m.Duration
+                                m.Duration,
+                                a.Id,
+                                a.Name,
+                                a.PictureProfile,
+                                l.Id,
+                                l.Name,
+                                l.Email,
+                                l.PictureProfile
                             FROM 
                                 Playlists p 
                             INNER JOIN
                                 PlaylistMusic pm ON p.Id = pm.PlaylistId
                             INNER JOIN
                                 Musics m ON pm.MusicId = m.Id
+                            INNER JOIN
+                                Artists a ON a.Id = m.ArtistId
+                            INNER JOIN
+                                Listeners l ON p.ListenerId = l.Id
                             WHERE 
                                 p.ListenerId = @listenerId";
 
                 var playlistsDictionary = new Dictionary<string, Playlist>();
 
-                var result = await connection.QueryAsync<Playlist, Music, Playlist>(
+                var result = await connection.QueryAsync<Playlist, Music, Artist, Listener, Playlist>(
                     sqlQuery,
-                    (playlist, music) =>
+                    (playlist, music, artist, listener) =>
                     {
                         if (!playlistsDictionary.TryGetValue(playlist.Id, out var playlistEntry))
                         {
                             playlistEntry = playlist;
+                            playlistEntry.Listener = listener;
                             playlistEntry.Musics = new List<Music>();
                             playlistsDictionary.Add(playlist.Id, playlistEntry);
                         }
+                        music.Artist = artist;
                         ((List<Music>)playlistEntry.Musics).Add(music);
 
                         return playlistEntry;
                     },
-                    splitOn: "MusicId",
+                    splitOn: "Id",
                     param: new { listenerId = listenerId }
                 );
 
@@ -416,11 +428,27 @@ namespace DataAccessLayer.Sql
                 await connection.OpenAsync();
 
                 string tableName = TableNameSanitization.GetAssociationTableGenre<T>();
-                string sqlQuery = $"INSERT INTO {tableName} (Id, GenreId) VALUES (@Id, @GenreId)";
-
-                foreach (var userGenre in userGenres)
+                string sqlQuery = $"INSERT INTO {tableName} (Id, GenreId) VALUES (@id, @genreId)";
+                using (var transaction = await connection.BeginTransactionAsync())
                 {
-                    await connection.ExecuteAsync(sqlQuery, new { Id = userGenre.Id, GenreId = userGenre.GenreId });
+                    try
+                    {
+                        foreach (var userGenre in userGenres)
+                        {
+                            await connection.ExecuteAsync(sqlQuery, new
+                            {
+                                id = userGenre.Id,
+                                genreId = userGenre.GenreId
+                            });
+                        }
+
+                        await transaction.CommitAsync();
+                    }
+                    catch(Exception ex) 
+                    {
+                        await transaction.RollbackAsync();
+                        throw new RecordAssociationException($"An error unexpected error ocurred while genres were recorded, because this: {ex.Message}");
+                    }
                 }
             }
         }
@@ -474,7 +502,7 @@ namespace DataAccessLayer.Sql
             using (var connection = new NpgsqlConnection(GetConnectionString()))
             {
                 await connection.OpenAsync();
-                string sqlQuery = $@"INSERT INTO PlaylistMusic (PlaylistId, ListenerId, MusicId) VALUES (@playlistId, @listenerId, @musicId)";
+                string sqlQuery = $@"INSERT INTO PlaylistMusic (Id, PlaylistId, ListenerId, MusicId) VALUES (@id, @playlistId, @listenerId, @musicId)";
 
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
@@ -484,6 +512,7 @@ namespace DataAccessLayer.Sql
                         {
                             await connection.ExecuteAsync(sqlQuery, new
                             {
+                                id  = playlistMusic.Id,
                                 playlistId = playlistMusic.PlaylistId,
                                 listenerId = playlistMusic.ListenerId,
                                 musicId = playlistMusic.MusicId

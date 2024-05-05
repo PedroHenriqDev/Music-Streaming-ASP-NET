@@ -109,7 +109,7 @@ namespace ApplicationLayer.Services
 
         public async Task<IEnumerable<Playlist>> FindPlaylistsByListenerIdAsync(string listenerId) 
         {
-            return await _connectionDb.GetPlaylistsByListenerIdAsync(listenerId);
+            return await _connectionDb.GetPlaylistsWithMusicsByListenerIdAsync(listenerId);
         }
     }
 }

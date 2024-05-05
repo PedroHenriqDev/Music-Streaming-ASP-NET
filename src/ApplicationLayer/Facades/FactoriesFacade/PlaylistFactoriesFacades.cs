@@ -9,30 +9,35 @@ namespace ApplicationLayer.Facades.FactoriesFacade
         private readonly ViewModelFactory _viewModelFactory;
         private readonly ModelFactory _modelFactory;
 
-        public PlaylistFactoriesFacades(ViewModelFactory viewModelFactory, ModelFactory modelFactory) 
+        public PlaylistFactoriesFacades(ViewModelFactory viewModelFactory, ModelFactory modelFactory)
         {
             _viewModelFactory = viewModelFactory;
             _modelFactory = modelFactory;
         }
 
-        public async Task<SearchMusics> FacSearchMusicVMAsync(Listener listener) 
+        public async Task<SearchMusics> FacSearchMusicVMAsync(Listener listener)
         {
             return await _viewModelFactory.FacSearchMusicVMAsync(listener);
         }
 
-        public async Task<SearchMusics> FacSearchMusicVMAsync(List<string> foundMusicsIds, Listener listener) 
+        public async Task<SearchMusics> FacSearchMusicVMAsync(List<string> foundMusicsIds, Listener listener)
         {
             return await _viewModelFactory.FacSearchMusicVMAsync(foundMusicsIds, listener);
         }
 
-        public IEnumerable<PlaylistMusic> FacPlaylistMusics(string playlistId, string listenerId, IEnumerable<string> musicIds) 
+        public IEnumerable<PlaylistMusic> FacPlaylistMusics(string playlistId, string listenerId, IEnumerable<string> musicIds)
         {
             return _modelFactory.FacPlaylistMusics(playlistId, listenerId, musicIds);
         }
 
-        public async Task<Playlist> FacPlaylistAsync(PlaylistViewModel playlistVM, string listenerId) 
+        public async Task<Playlist> FacPlaylistAsync(PlaylistViewModel playlistVM, string listenerId)
         {
             return await _modelFactory.FacPlaylistAsync(playlistVM, listenerId);
+        }
+
+        public async Task<IEnumerable<PlaylistViewModel>> FacPlaylistViewModelsAsync(IEnumerable<Playlist> playlists) 
+        {
+            return await _viewModelFactory.FacPlaylistViewModels(playlists);
         }
     }
 }

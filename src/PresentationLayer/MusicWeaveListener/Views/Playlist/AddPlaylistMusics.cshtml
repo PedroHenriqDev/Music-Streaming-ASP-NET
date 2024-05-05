@@ -190,6 +190,7 @@
                 if (!selectedMusicIds.includes(musicId)) {
                     selectedMusicIds.push(musicId);
                     $('#selectedMusics').append('<div class="selected-music-item">' +
+                        '<input type="hidden" class="music-id-input" value="' + musicId + '" />' +
                         '<span class="music-name">' + musicName + '</span>' +
                         '<span class="artist-name">' + artistName + '</span>' +
                         '<button type="button" class="btn btn-danger btn-sm remove-music">Remove</button>' +
@@ -198,7 +199,7 @@
             });
 
             $(document).on('click', '.remove-music', function () {
-                var musicId = $(this).closest('.selected-music-item').find('input[name="selectedMusicIds"]').val();
+                var musicId = $(this).closest('.selected-music-item').find('.music-id-input').val();
                 var index = selectedMusicIds.indexOf(musicId);
                 if (index !== -1) {
                     selectedMusicIds.splice(index, 1);
