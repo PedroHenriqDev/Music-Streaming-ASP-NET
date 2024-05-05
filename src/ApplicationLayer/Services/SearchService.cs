@@ -106,5 +106,10 @@ namespace ApplicationLayer.Services
         {
             return await _connectionDb.GetMusicsByIdsAsync(ids);
         }
+
+        public async Task<IEnumerable<Playlist>> FindPlaylistsByListenerIdAsync(string listenerId) 
+        {
+            return await _connectionDb.GetPlaylistsByListenerIdAsync(listenerId);
+        }
     }
 }

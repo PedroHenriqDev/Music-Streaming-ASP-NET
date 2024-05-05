@@ -318,7 +318,7 @@ namespace DataAccessLayer.Sql
                         sqlQuery,
                         (music, artist) =>
                         {
-                            if (artist != null)
+                            if (!(artist is null))
                             {
                                 music.Artist = artist;
                                 return music;
@@ -329,6 +329,59 @@ namespace DataAccessLayer.Sql
                         param: new { fkIds });
 
                 return result;
+            }
+        }
+
+        public async Task<IEnumerable<Playlist>> GetPlaylistsByListenerIdAsync(string listenerId)
+        {
+            using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
+            {
+                await connection.OpenAsync();
+                string sqlQuery = @"
+                            SELECT 
+                                p.Id,
+                                p.ListenerId,
+                                p.Name,
+                                p.Description,
+                                p.CreateAt,
+                                p.Image,
+                                m.Id,
+                                m.Id AS MusicId,
+                                m.Name,
+                                m.DateCreation,
+                                m.GenreId,
+                                m.Date,
+                                m.Duration
+                            FROM 
+                                Playlists p 
+                            INNER JOIN
+                                PlaylistMusic pm ON p.Id = pm.PlaylistId
+                            INNER JOIN
+                                Musics m ON pm.MusicId = m.Id
+                            WHERE 
+                                p.ListenerId = @listenerId";
+
+                var playlistsDictionary = new Dictionary<string, Playlist>();
+
+                var result = await connection.QueryAsync<Playlist, Music, Playlist>(
+                    sqlQuery,
+                    (playlist, music) =>
+                    {
+                        if (!playlistsDictionary.TryGetValue(playlist.Id, out var playlistEntry))
+                        {
+                            playlistEntry = playlist;
+                            playlistEntry.Musics = new List<Music>();
+                            playlistsDictionary.Add(playlist.Id, playlistEntry);
+                        }
+                        ((List<Music>)playlistEntry.Musics).Add(music);
+
+                        return playlistEntry;
+                    },
+                    splitOn: "MusicId",
+                    param: new { listenerId = listenerId }
+                );
+
+                return playlistsDictionary.Values;
             }
         }
 
@@ -429,9 +482,9 @@ namespace DataAccessLayer.Sql
                     {
                         foreach (var playlistMusic in playlistMusics)
                         {
-                            await connection.ExecuteAsync(sqlQuery, new 
-                            { 
-                                playlistId = playlistMusic.PlaylistId, 
+                            await connection.ExecuteAsync(sqlQuery, new
+                            {
+                                playlistId = playlistMusic.PlaylistId,
                                 listenerId = playlistMusic.ListenerId,
                                 musicId = playlistMusic.MusicId
                             },
@@ -452,15 +505,16 @@ namespace DataAccessLayer.Sql
         public async Task RecordPlaylistAsync(Playlist playlist)
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
-            {   
+            {
                 await connection.OpenAsync();
-                string sqlQuery = @"INSERT INTO Playlists (Id, Name, Image, CreateAt, Description) 
-                                    VALUES(@id, @name, @image, @createAt, @description)";
+                string sqlQuery = @"INSERT INTO Playlists (Id, ListenerId, Name, Image, CreateAt, Description) 
+                                    VALUES(@id, @listenerId, @name, @image, @createAt, @description)";
 
                 await connection.QueryAsync(sqlQuery, new
                 {
                     id = playlist.Id,
                     name = playlist.Name,
+                    listenerId = playlist.ListenerId,
                     image = playlist.Image,
                     createAt = playlist.CreateAt,
                     description = playlist.Description

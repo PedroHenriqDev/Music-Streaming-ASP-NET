@@ -32,6 +32,11 @@ namespace ApplicationLayer.Facades.ServicesFacade
             return await _searchService.FindCurrentUserAsync<Listener>();
         }
 
+        public async Task<IEnumerable<Playlist>> FindPlaylistByListenerIdAsync(string listenerId) 
+        {
+            return await _searchService.FindPlaylistsByListenerIdAsync(listenerId);
+        }
+
         public async Task<EntityQuery<IEnumerable<PlaylistMusic>>> CreatePlaylistMusicsAsync(IEnumerable<PlaylistMusic> playlistMusics) 
         {
             return await _recordService.CreatePlaylistMusicsAsync(playlistMusics);

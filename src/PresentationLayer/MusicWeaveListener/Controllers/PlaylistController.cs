@@ -40,15 +40,18 @@ namespace MusicWeaveListener.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> CreatePlaylist(PlaylistViewModel playlistVM, IFormFile playlistImage)
         {
-            playlistVM.FileImage = playlistImage; 
+            playlistVM.FileImage = playlistImage;
+
             string playlistId = Guid.NewGuid().ToString();
             playlistVM.Id = playlistId;
+
+            var listener = await _servicesFacade.FindCurrentListenerAsync();
             var playlistVerify = _servicesFacade.VerifyPlaylistVM(playlistVM);
             try
             {
                 if (playlistVerify.IsValid)
                 {
-                    EntityQuery<Playlist> playlistQuery = await _servicesFacade.RecordPlaylistAsnyc(await _factoriesFacade.FacPlaylistAsync(playlistVM));
+                    EntityQuery<Playlist> playlistQuery = await _servicesFacade.RecordPlaylistAsnyc(await _factoriesFacade.FacPlaylistAsync(playlistVM, listener.Id));
                     if (playlistQuery.Result)
                     {
                         HttpHelper.SetSessionValue(_httpAccessor, "PlaylistId", playlistId);
@@ -59,13 +62,13 @@ namespace MusicWeaveListener.Controllers
                 return View(playlistVM);
             }
             catch (Exception ex)
-            {   
+            {
                 return RedirectToAction("Error", new { message = ex.Message });
             }
         }
 
         [HttpGet]
-        public async Task<IActionResult> AddPlaylistMusics() 
+        public async Task<IActionResult> AddPlaylistMusics()
         {
             var model = await _factoriesFacade.FacSearchMusicVMAsync(await _servicesFacade.FindCurrentListenerAsync());
             return View(model);
@@ -76,7 +79,7 @@ namespace MusicWeaveListener.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> AddPlaylistMusics(string musicsToAdd)
         {
-            if (string.IsNullOrWhiteSpace(musicsToAdd)) 
+            if (string.IsNullOrWhiteSpace(musicsToAdd))
             {
                 return RedirectToAction(nameof(AddPlaylistMusics));
             }
@@ -85,16 +88,16 @@ namespace MusicWeaveListener.Controllers
             var playlistQuery = await _servicesFacade.CreatePlaylistMusicsAsync(_factoriesFacade.FacPlaylistMusics(HttpHelper.GetSessionValue<string>(_httpAccessor, "PlaylistId"), listener.Id, musicsToAdd.ConvertStringJoinInList()));
             HttpHelper.RemoveSessionValue(_httpAccessor, "PlaylistId");
 
-            if (playlistQuery.Result) 
+            if (playlistQuery.Result)
             {
                 return RedirectToAction(nameof(Index));
             }
 
-            return RedirectToAction(nameof(Error), new { message = playlistQuery.Message});
+            return RedirectToAction(nameof(Error), new { message = playlistQuery.Message });
         }
 
         [HttpGet]
-        public async Task<IActionResult> AddPlaylistFoundMusics(string foundMusicsIds) 
+        public async Task<IActionResult> AddPlaylistFoundMusics(string foundMusicsIds)
         {
             var model = await _factoriesFacade.FacSearchMusicVMAsync(foundMusicsIds.ConvertStringJoinInList(), await _servicesFacade.FindCurrentListenerAsync());
             return View("AddPlaylistMusics", model);
@@ -103,7 +106,11 @@ namespace MusicWeaveListener.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error(string message)
         {
-            return View(new ErrorViewModel { Message = message, RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View(new ErrorViewModel
+            {
+                Message = message,
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+            });
         }
     }
 }

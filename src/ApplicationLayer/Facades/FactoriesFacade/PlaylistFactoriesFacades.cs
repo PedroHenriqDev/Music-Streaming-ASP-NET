@@ -30,9 +30,9 @@ namespace ApplicationLayer.Facades.FactoriesFacade
             return _modelFactory.FacPlaylistMusics(playlistId, listenerId, musicIds);
         }
 
-        public async Task<Playlist> FacPlaylistAsync(PlaylistViewModel playlistVM) 
+        public async Task<Playlist> FacPlaylistAsync(PlaylistViewModel playlistVM, string listenerId) 
         {
-            return await _modelFactory.FacPlaylistAsync(playlistVM);
+            return await _modelFactory.FacPlaylistAsync(playlistVM, listenerId);
         }
     }
 }
