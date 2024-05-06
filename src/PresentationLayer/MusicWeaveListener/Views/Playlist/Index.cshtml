@@ -3,6 +3,11 @@
 @model IEnumerable<PlaylistViewModel>
 
 <style>
+    .playlist-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
     .playlist-container {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -14,11 +19,11 @@
 
     .playlist-item {
         text-align: center;
-        padding: 10px;
-        background-color: #282828;
-        width: 220px;
+        padding: 15px;
+        background-color: white;
         border-radius: 10px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
     }
 
         .playlist-item:hover {
@@ -27,15 +32,16 @@
 
     .playlist-info {
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        flex-direction: column;
     }
 
     .playlist-name {
         font-weight: bold;
-        color: white;
+        color: black;
         margin-top: 10px;
+        font-size: 18px;
     }
 
     .playlist-count {
@@ -71,7 +77,18 @@
         border-radius: 10px;
         margin-bottom: 10px;
     }
+
+    .add-playlist-button {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+    }
 </style>
+
+<div class="playlist-header">
+    <h2>Your Playlists</h2>
+    <i class="bi bi-text-center" style="font-size: 40px;"></i>
+</div>
 
 <div class="playlist-container text-center mx-auto" style="display: flex; flex-wrap: wrap; justify-content: center;">
     @if (Model != null)
@@ -84,7 +101,7 @@
                     <span class="playlist-name">@playlist.Name</span>
                     <span class="playlist-count">@playlist.Musics.Count() songs</span>
                     <button type="button" class="btn btn-dark text-black rounded-circle play-button" onclick="playPlaylist('@playlist.Name', '@playlist.Id')">
-                        <i class="bi bi-play-fill"></i>
+                        <i class="bi bi-text-center"></i>
                     </button>
                 </div>
             </div>

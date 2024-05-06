@@ -27,6 +27,7 @@ namespace MusicWeaveListener.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             try 
@@ -41,6 +42,7 @@ namespace MusicWeaveListener.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult CreatePlaylist()
         {
             return View();
@@ -79,6 +81,7 @@ namespace MusicWeaveListener.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> AddPlaylistMusics()
         {
             var model = await _factoriesFacade.FacSearchMusicVMAsync(await _servicesFacade.FindCurrentListenerAsync());
@@ -108,6 +111,7 @@ namespace MusicWeaveListener.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> AddPlaylistFoundMusics(string foundMusicsIds)
         {
             var model = await _factoriesFacade.FacSearchMusicVMAsync(foundMusicsIds.ConvertStringJoinInList(), await _servicesFacade.FindCurrentListenerAsync());
