@@ -10,7 +10,10 @@ namespace ApplicationLayer.Facades.ServicesFacade
         private readonly VerifyService _verifyService;
         private readonly SearchService _searchService;
 
-        public PlaylistServicesFacade(RecordService recordService, VerifyService verifyService, SearchService searchService)
+        public PlaylistServicesFacade(
+            RecordService recordService,
+            VerifyService verifyService, 
+            SearchService searchService)
         {
             _recordService = recordService;
             _verifyService = verifyService;

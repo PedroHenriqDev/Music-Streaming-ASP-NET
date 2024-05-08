@@ -1,0 +1,40 @@
+﻿@model ApplicationLayer.ViewModels.PlaylistViewModel
+
+@{
+    ViewData["Title"] = "Playlist";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <h2 class="text-center mb-4">@Model.Name</h2>
+            <p class="text-center">@Model.Description</p>
+
+            <div class="text-center mb-4">
+                <img src="data:image/png;base64,@(Convert.ToBase64String(Model.Image))" alt="Playlist Image" class="img-fluid rounded">
+            </div>
+
+            @if (Model.Musics != null && Model.Musics.Any())
+            {
+                <h4 class="text-center mb-3">Musics</h4>
+                <ul class="list-group">
+                    @foreach (var Model in Model.Musics)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>@Model.Music.Name</span>
+                            <span>@Model.Music.Artist.Name</span>
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p class="text-center">No musics found in this playlist.</p>
+            }
+
+            <div class="text-center mt-4">
+                <a href="@Url.Action("Index", "Playlist")" class="btn btn-primary">Back to Playlists</a>
+            </div>
+        </div>
+    </div>
+</div>

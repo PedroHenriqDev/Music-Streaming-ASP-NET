@@ -15,6 +15,7 @@ namespace MusicWeaveListener.Controllers
         private readonly PlaylistServicesFacade _servicesFacade;
         private readonly PlaylistFactoriesFacades _factoriesFacade;
         private readonly IHttpContextAccessor _httpAccessor;
+        private static readonly string _sessionPlaylists = EncryptHelper.GenerateEncryptedString();
 
         public PlaylistController(
             PlaylistServicesFacade servicesFacade, 
@@ -33,12 +34,38 @@ namespace MusicWeaveListener.Controllers
             try 
             {
                 var listener = await _servicesFacade.FindCurrentListenerAsync();
-                return View(await _factoriesFacade.FacPlaylistViewModelsAsync(await _servicesFacade.FindPlaylistByListenerIdAsync(listener.Id)));
+                var playlistsVM = await _factoriesFacade.FacPlaylistViewModelsAsync(await _servicesFacade.FindPlaylistByListenerIdAsync(listener.Id));
+                HttpHelper.SetSessionValue(_httpAccessor, _sessionPlaylists, playlistsVM);
+                return View(playlistsVM);
             }
             catch(Exception ex) 
             {
                 return RedirectToAction(nameof(Error), new { message = ex.Message });
             }
+        }
+
+        [HttpGet]
+        public IActionResult Playlist(string playlistId) 
+        {
+            if(playlistId is null)
+            {
+                return RedirectToAction(nameof(Error), new 
+                {
+                    message = "An error ocurred, because: Playlist choice is null"
+                });
+            }
+
+            var playlistsVM = HttpHelper.GetSessionValue<IEnumerable<PlaylistViewModel>>(_httpAccessor, _sessionPlaylists);
+            var playlist = playlistsVM.FirstOrDefault(p => p.Id == playlistId);
+            if(playlist is null) 
+            {
+                    return RedirectToAction(nameof(Error), new
+                    {
+                        message = "Playlist not found"
+                    });
+            }          
+
+            return View(playlist);
         }
 
         [HttpGet]

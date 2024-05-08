@@ -16,7 +16,7 @@ namespace ApplicationLayer.Services
 
         public string EncryptPasswordSHA512(string password)
         {
-            if (password == null)
+            if (password is null)
             {
                 _logger.LogCritical("Brutal error when encrypting error");
                 throw new EncryptException("Error encrypting password");
@@ -40,7 +40,7 @@ namespace ApplicationLayer.Services
 
         public string GetFileHash(byte[] data)
         {
-            if (data == null)
+            if (data is null)
             {
                 _logger.LogError("A problem occurred when trying to convert data to hash, due to null reference reasons");
                 throw new EncryptException("A problem occurred when trying to convert data to hash, due to null reference reasons!");

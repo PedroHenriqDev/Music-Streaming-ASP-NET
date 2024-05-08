@@ -9,7 +9,9 @@ namespace ApplicationLayer.Facades.FactoriesFacade
         private readonly ViewModelFactory _viewModelFactory;
         private readonly ModelFactory _modelFactory;
 
-        public ArtistFactoriesFacade(ViewModelFactory viewModelFactory, ModelFactory modelFactory)
+        public ArtistFactoriesFacade(
+            ViewModelFactory viewModelFactory, 
+            ModelFactory modelFactory)
         {
             _viewModelFactory = viewModelFactory;
             _modelFactory = modelFactory;

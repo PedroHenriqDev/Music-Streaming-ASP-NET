@@ -9,7 +9,9 @@ namespace MusicWeaveListener.Controllers
         private readonly SearchServicesFacade _servicesFacades;
         private readonly ILogger<SearchController> _logger;
 
-        public SearchController(SearchServicesFacade servicesFacades, ILogger<SearchController> logger) 
+        public SearchController(
+            SearchServicesFacade servicesFacades, 
+            ILogger<SearchController> logger) 
         {
             _servicesFacades = servicesFacades;
             _logger = logger;

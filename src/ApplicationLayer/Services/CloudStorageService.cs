@@ -23,7 +23,7 @@ namespace ApplicationLayer.Services
         {
             try 
             {
-                if(musicData.Audio == null || musicData.Picture == null) 
+                if(musicData.Audio is null || musicData.Picture is null) 
                 {
                     throw new MusicException("Music must have audio and image!");
                 }

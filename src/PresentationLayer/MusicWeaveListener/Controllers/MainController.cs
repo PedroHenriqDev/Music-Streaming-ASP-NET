@@ -10,7 +10,9 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
         private readonly MainFactoriesFacades _factoriesFacades;
         private readonly MainServicesFacade<Listener> _servicesFacade;
 
-        public MainController(MainFactoriesFacades factoriesFacades, MainServicesFacade<Listener> servicesFacades)
+        public MainController(
+            MainFactoriesFacades factoriesFacades, 
+            MainServicesFacade<Listener> servicesFacades)
         {
             _factoriesFacades = factoriesFacades;
             _servicesFacade = servicesFacades;
