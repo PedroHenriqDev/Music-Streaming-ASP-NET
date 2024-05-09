@@ -129,6 +129,7 @@ namespace ApplicationLayer.Factories
                     Description = playlist.Description,
                     Image = playlist.Image,
                     Name = playlist.Name,
+                    Listener = playlist.Listener,
                     Musics = playlist.Musics.Join(musicDatas, 
                         music => music.Id,
                         musicData => musicData.Id,

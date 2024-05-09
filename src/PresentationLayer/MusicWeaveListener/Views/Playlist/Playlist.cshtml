@@ -1,35 +1,44 @@
 ﻿@model ApplicationLayer.ViewModels.PlaylistViewModel
 
-@{
-    ViewData["Title"] = "Playlist";
-}
-
 <div class="container">
     <div class="row">
-        <div class="col-md-6 offset-md-3">
+        <div class="col-md-8 offset-md-2">
             <h2 class="text-center mb-4">@Model.Name</h2>
+            <p class="text-center">Playlist - @Model.Listener.Name</p>
             <p class="text-center">@Model.Description</p>
 
             <div class="text-center mb-4">
-                <img src="data:image/png;base64,@(Convert.ToBase64String(Model.Image))" alt="Playlist Image" class="img-fluid rounded">
+                <div class="playlist-image">
+                    <img src="data:image/png;base64,@(Convert.ToBase64String(Model.Image))" alt="Playlist Image" class="img-fluid rounded">
+                </div>
             </div>
 
             @if (Model.Musics != null && Model.Musics.Any())
             {
-                <h4 class="text-center mb-3">Musics</h4>
-                <ul class="list-group">
-                    @foreach (var Model in Model.Musics)
-                    {
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <span>@Model.Music.Name</span>
-                            <span>@Model.Music.Artist.Name</span>
-                        </li>
-                    }
-                </ul>
+                <div class="card shadow-lg">
+                    <div class="card-body">
+                        <div class="music-container text-center mx-auto" style="display: flex; flex-wrap: wrap; justify-content: center;">
+                            @foreach (var music in Model.Musics)
+                            {
+                                <div class="music-item">
+                                    <div class="music-info">
+                                        <span class="artist-name">@music.DurationText<i class="bi bi-clock mx-2"></i></span>
+                                        <img src="data:image/png;base64,@(Convert.ToBase64String(music.MusicData.Picture))" class="music-image" />
+                                        <button type="button" class="btn btn-dark text-black rounded-circle play-button" id="playButton@(music.Music.Id)" onclick="togglePlayPause('@music.Music.Name', '@Convert.ToBase64String(music.MusicData.Audio)', this)">
+                                            <i class="bi bi-play-fill"></i>
+                                        </button>
+                                        <span class="music-name">@music.Music.Name</span>
+                                        <span class="artist-name">@music.Music.Artist.Name</span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
             }
             else
             {
-                <p class="text-center">No musics found in this playlist.</p>
+                <p class="text-center">No music found in this playlist.</p>
             }
 
             <div class="text-center mt-4">
@@ -38,3 +47,128 @@
         </div>
     </div>
 </div>
+
+<style>
+    .music-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+        padding: 20px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .music-item {
+        text-align: center;
+        padding: 10px;
+        background-color: #282828;
+        width: 220px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+        .music-item:hover {
+            transform: translateY(-5px);
+        }
+
+    .music-info {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+    }
+
+    .music-name {
+        font-weight: bold;
+        color: white;
+        margin-top: 10px;
+    }
+
+    .artist-name {
+        color: #888;
+        margin-top: 5px;
+    }
+
+    .play-button {
+        background-color: #008000;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 20px;
+        transition: background-color 0.3s ease;
+    }
+
+        .play-button:hover {
+            background-color: #15a94d;
+        }
+
+        .play-button i {
+            font-size: 24px;
+            color: white;
+        }
+
+    .music-image {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-bottom: 10px;
+    }
+
+    .card {
+        border-radius: 20px;
+    }
+
+    .playlist-image {
+        width: 300px;
+        height: 300px;
+        overflow: hidden;
+        border-radius: 10px;
+        margin: 0 auto;
+    }
+
+        .playlist-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+</style>
+
+@section Scripts {
+    <script>
+        var currentPlayingButton = null;
+
+        function playMusic(musicName, audioData, playButton) {
+            var audioPlayer = document.getElementById('audioPlayer');
+            if (currentPlayingButton !== null) {
+                currentPlayingButton.innerHTML = '<i class="bi bi-play-fill"></i>';
+            }
+            audioPlayer.src = "data:audio/mp3;base64," + audioData;
+            audioPlayer.play();
+            document.getElementById('songName').textContent = musicName;
+            playButton.innerHTML = '<i class="bi bi-pause-fill"></i>';
+            currentPlayingButton = playButton;
+        }
+
+        function togglePlayPause(musicName, audioData, button) {
+            var audioPlayer = document.getElementById('audioPlayer');
+            if (audioPlayer.paused || audioPlayer.src !== "data:audio/mp3;base64," + audioData) {
+                if (currentPlayingButton !== null && currentPlayingButton !== button) {
+                    currentPlayingButton.innerHTML = '<i class="bi bi-play-fill"></i>';
+                }
+                audioPlayer.src = "data:audio/mp3;base64," + audioData;
+                audioPlayer.play();
+                button.innerHTML = '<i class="bi bi-pause-fill"></i>';
+                document.getElementById('songName').textContent = musicName;
+                currentPlayingButton = button;
+            } else {
+                audioPlayer.pause();
+                button.innerHTML = '<i class="bi bi-play-fill"></i>';
+                currentPlayingButton = null;
+            }
+        }
+    </script>
+}

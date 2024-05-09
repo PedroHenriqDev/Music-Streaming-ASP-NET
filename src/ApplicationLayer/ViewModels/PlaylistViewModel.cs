@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using DomainLayer.Entities;
+using Microsoft.AspNetCore.Http;
 
 namespace ApplicationLayer.ViewModels
 {
@@ -10,5 +11,6 @@ namespace ApplicationLayer.ViewModels
         public IFormFile? FileImage { get; set; }
         public byte[] Image { get; set; }
         public IEnumerable<MusicViewModel>? Musics { get; set; }
+        public Listener Listener { get; set; }
     }
 }
