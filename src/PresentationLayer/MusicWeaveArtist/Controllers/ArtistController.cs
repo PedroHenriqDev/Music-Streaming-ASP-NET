@@ -67,14 +67,14 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
             if (!_servicesFacade.VerifyUserGenres(artistVM))
             {
                 TempData["InvalidGenres"] = "You must select at least one genre!";
-                artistVM.Genres = HttpHelper.GetSessionValue<List<Genre>>(_httpAccessor,"Genres");
+                artistVM.Genres = HttpHelper.GetSessionValue<List<Genre>>(_httpAccessor,_sessionId);
                 return View("SelectGenres", artistVM);
             }
             try
             {
                 if (_servicesFacade.VerifyUser(artistVM))
                 {
-                    HttpHelper.RemoveSessionValue(_httpAccessor, "Genres");
+                    HttpHelper.RemoveSessionValue(_httpAccessor, _sessionId);
                     EntityQuery<Artist> entityQuery = await _servicesFacade.CreateUserAsync(artistVM);
                     await _servicesFacade.SignInUserAsync(entityQuery.Entity);
                     return RedirectToAction(nameof(CompleteRegistration));

@@ -11,7 +11,9 @@ namespace ApplicationLayer.Services
         private readonly ConnectionDb _connectionDb;
         private readonly IHttpContextAccessor _httpAcessor;
 
-        public SearchService(ConnectionDb connectionDb, IHttpContextAccessor httpAcessor)
+        public SearchService(
+            ConnectionDb connectionDb,
+            IHttpContextAccessor httpAcessor)
         {
             _connectionDb = connectionDb;
             _httpAcessor = httpAcessor;

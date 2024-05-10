@@ -19,6 +19,7 @@ namespace PresentationLayer.SharedControllers
         private readonly IHttpContextAccessor _httpAccessor;
         private string UserPageName => typeof(T).Name + "Page";
         private string CreateUser => $"Create{typeof(T).Name}";
+        public static string _sessionId = EncryptHelper.GenerateEncryptedString();
 
         public UserController(
             UserServicesFacade<T> servicesFacade,
@@ -70,7 +71,7 @@ namespace PresentationLayer.SharedControllers
                 if (_servicesFacade.VerifyUser(userVM))
                 {
                     userVM.Genres = (List<Genre>)await _servicesFacade.FindAllEntitiesAsync<Genre>();
-                    HttpHelper.SetSessionValue(_httpAccessor, "Genres", userVM.Genres);
+                    HttpHelper.SetSessionValue(_httpAccessor, _sessionId, userVM.Genres);
                     return View(userVM);
                 }
                 return View(CreateUser, userVM);

@@ -8,7 +8,9 @@ namespace ApplicationLayer.Services
         private readonly EncryptService _encryptService;
         private readonly UpdateService _updateService;
 
-        public PictureService(UpdateService updateService, EncryptService encryptService)
+        public PictureService(
+            UpdateService updateService, 
+            EncryptService encryptService)
         {
             _encryptService = encryptService;
             _updateService = updateService;

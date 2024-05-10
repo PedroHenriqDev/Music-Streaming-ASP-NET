@@ -9,7 +9,9 @@ namespace ApplicationLayer.Services
         private readonly ConnectionDb _connectionDb;
         private readonly VerifyService _verifyService;
 
-        public DeleteService(ConnectionDb connectionDb, VerifyService verifyService) 
+        public DeleteService(
+            ConnectionDb connectionDb,
+            VerifyService verifyService) 
         {
             _connectionDb = connectionDb;
             _verifyService = verifyService;

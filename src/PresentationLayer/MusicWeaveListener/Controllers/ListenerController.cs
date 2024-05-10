@@ -47,13 +47,13 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
                 if (!_servicesFacade.VerifyUserGenres(listenerVM))
                 {
                     TempData["InvalidGenres"] = "You must select at least one genre!";
-                    listenerVM.Genres = HttpHelper.GetSessionValue<List<Genre>>(_httpAccessor, "Genres");
+                    listenerVM.Genres = HttpHelper.GetSessionValue<List<Genre>>(_httpAccessor, _sessionId);
                     return View("SelectGenres", listenerVM);
                 }
 
                 if (_servicesFacade.VerifyUser(listenerVM))
                 {
-                    HttpHelper.RemoveSessionValue(_httpAccessor, "Genres");
+                    HttpHelper.RemoveSessionValue(_httpAccessor, _sessionId);
                     EntityQuery<Listener> listenerQuery = await _servicesFacade.CreateUserAsync(listenerVM);
                     await _servicesFacade.SignInUserAsync(listenerQuery.Entity);
                     return RedirectToAction(nameof(CompleteRegistration));
