@@ -536,12 +536,13 @@ namespace DataAccessLayer.Sql
             using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
             {
                 await connection.OpenAsync();
-                string sqlQuery = @"INSERT INTO Playlists (Id, ListenerId, Name, Image, CreateAt, Description) 
-                                    VALUES(@id, @listenerId, @name, @image, @createAt, @description)";
+                string sqlQuery = @"INSERT INTO Playlists (Id, Visibility, ListenerId, Name, Image, CreateAt, Description) 
+                   VALUES (@id, @visibility::visibilitytype, @listenerId, @name, @image, @createAt, @description)";
 
                 await connection.QueryAsync(sqlQuery, new
                 {
                     id = playlist.Id,
+                    visibility = playlist.Visibility.ToString(),
                     name = playlist.Name,
                     listenerId = playlist.ListenerId,
                     image = playlist.Image,

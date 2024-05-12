@@ -1,6 +1,7 @@
 ﻿@using ApplicationLayer.ViewModels;
 
 @model PlaylistViewModel;
+@using ApplicationLayer.ViewModels;
 
 <div class="container">
     <div class="row justify-content-center">
@@ -22,10 +23,18 @@
                                 <label for="Description" class="form-label text-dark border-bottom text-center">Description:</label>
                                 <textarea class="form-control rounded-pill border-primary text-dark" asp-for="Description" id="Description" rows="3" placeholder="Enter playlist description"></textarea>
                             </div>
+                            <div class="mb-3">
+                                <label for="Visibility" class="form-label text-dark border-bottom text-center">Visibility:</label>
+                                <select class="form-control rounded-pill border-primary text-dark" asp-for="Visibility" id="Visibility">
+                                    <option value="Public">Public</option>
+                                    <option value="Private">Private</option>
+                                    <option value="Friends">Friends Only</option>
+                                </select>
+                            </div>
                         </div>
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                         <div class="text-center">
-                            <button type="submit" class="btn btn-outline-primary rounded-pill">Add Playlist <i class="bi bi-plus-lg"></i></button>
+                            <button type="submit" class="btn btn-outline-primary rounded-pill" onclick="submitForm()">Add Playlist <i class="bi bi-plus-lg"></i></button>
                         </div>
                     </form>
                 </div>

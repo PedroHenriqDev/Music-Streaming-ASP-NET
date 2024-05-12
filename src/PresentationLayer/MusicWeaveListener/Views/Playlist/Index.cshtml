@@ -85,14 +85,16 @@
     }
 </style>
 
-<div class="playlist-header">
-    <h2>Your Playlists</h2>
-    <i class="bi bi-text-center" style="font-size: 40px;"></i>
-</div>
 
-<div class="playlist-container text-center mx-auto" style="display: flex; flex-wrap: wrap; justify-content: center;">
-    @if (Model != null)
-    {
+
+@if (Model != null && Model.Any())
+{
+    <div class="playlist-header">
+        <h2>Your Playlists</h2>
+        <i class="bi bi-text-center" style="font-size: 40px;"></i>
+    </div>
+
+    <div class="playlist-container text-center mx-auto" style="display: flex; flex-wrap: wrap; justify-content: center;">
         @foreach (var playlist in Model)
         {
             <div class="playlist-item">
@@ -109,14 +111,26 @@
                 </div>
             </div>
         }
-    }
-</div>
+    </div>
 
-<div style="position: fixed; bottom: 20px; right: 20px;">
-    <form method="get" asp-controller="Playlist" asp-action="CreatePlaylist">
-        <button type="submit" class="btn btn-primary rounded-pill">
-            Playlist <i class="bi bi-plus-lg"></i>
-        </button>
-    </form>
-</div>
+    <div style="position: fixed; bottom: 20px; right: 20px;">
+        <form method="get" asp-controller="Playlist" asp-action="CreatePlaylist">
+            <button type="submit" class="btn btn-primary rounded-pill">
+                Playlist <i class="bi bi-plus-lg"></i>
+            </button>
+        </form>
+    </div>
+}
+else
+{
+    <div class="playlist-header">
+        <h2>You no have playlists</h2>
+        <form method="get" asp-controller="Playlist" asp-action="CreatePlaylist">
+            <button type="submit" class="btn btn-primary rounded-pill text-center">
+                Playlist <i class="bi bi-plus-lg"></i>
+            </button>
+        </form>
+    </div>
+      
+}
 

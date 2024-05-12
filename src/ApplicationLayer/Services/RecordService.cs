@@ -77,7 +77,7 @@ namespace ApplicationLayer.Services
 
         public async Task<EntityQuery<Playlist>> CreatePlaylistAsync(Playlist playlist) 
         {
-            try 
+            try     
             {
                 await _connectionDb.RecordPlaylistAsync(playlist);
                 return new EntityQuery<Playlist>(true, "Playlist created succesasfully", playlist, DateTime.Now);

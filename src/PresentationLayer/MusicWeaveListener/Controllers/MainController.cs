@@ -1,6 +1,7 @@
 using ApplicationLayer.Facades.FactoriesFacade;
 using ApplicationLayer.Facades.ServicesFacade;
 using DomainLayer.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace PresentationLayer.MusicWeaveListener.Controllers
@@ -18,6 +19,8 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
             _servicesFacade = servicesFacades;
         }
 
+        [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             if (User.Identity.IsAuthenticated) 
@@ -28,6 +31,8 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
             return View();
         }
 
+        [HttpGet]
+        [AllowAnonymous]
         public IActionResult About()
         {
             return View();

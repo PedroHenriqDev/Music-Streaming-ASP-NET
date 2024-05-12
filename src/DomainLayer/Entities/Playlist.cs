@@ -1,4 +1,5 @@
-﻿using DomainLayer.Interfaces;
+﻿using DomainLayer.Enums;
+using DomainLayer.Interfaces;
 
 namespace DomainLayer.Entities
 {
@@ -12,14 +13,16 @@ namespace DomainLayer.Entities
         public byte[] Image { get; set; }
         public DateTime CreateAt {  get; set; }
         public IEnumerable<Music> Musics { get; set; }
+        public VisibilityType Visibility { get; set; }
 
         public Playlist() 
         {
         }
 
-        public Playlist(string id, string listenerId, string name,  string description, byte[] image, DateTime createdAt)
+        public Playlist(string id, VisibilityType visibility, string listenerId, string name,  string description, byte[] image, DateTime createdAt)
         {
             Id = id;
+            Visibility = visibility;
             ListenerId = listenerId;
             Name = name;
             Description = description;
@@ -27,9 +30,10 @@ namespace DomainLayer.Entities
             CreateAt = createdAt;
         }
 
-        public Playlist(string id, string listenerId, Listener listener, string name, string description, byte[] image, DateTime createdAt)
+        public Playlist(string id, VisibilityType visibility ,string listenerId, Listener listener, string name, string description, byte[] image, DateTime createdAt)
         {
             Id = id;
+            Visibility = visibility;
             ListenerId = listenerId;
             Listener = listener;
             Name = name;

@@ -72,7 +72,7 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ListenerPage()
         {
-            return View(_listenerFactoriesFacade.FacListenerPageVMAsync(await _servicesFacade.FindCurrentUserAsync()));
+            return View(_listenerFactoriesFacade.FacListenerPageVM(await _servicesFacade.FindCurrentUserAsync()));
         }
 
         [HttpGet]

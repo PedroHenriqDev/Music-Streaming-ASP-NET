@@ -13,7 +13,7 @@ namespace ApplicationLayer.Facades.FactoriesFacade
             _viewModelFactory = viewModelFactory;
         }
 
-        public ListenerPageViewModel FacListenerPageVMAsync(Listener listener)
+        public ListenerPageViewModel FacListenerPageVM(Listener listener)
         {
             return _viewModelFactory.FacListenerPageVM(listener);
         }

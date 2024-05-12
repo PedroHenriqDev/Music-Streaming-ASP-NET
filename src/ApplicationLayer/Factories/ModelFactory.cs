@@ -71,7 +71,7 @@ namespace ApplicationLayer.Factories
 
         public async Task<Playlist> FacPlaylistAsync(PlaylistViewModel playlistVM, string listenerId) 
         {
-            return new Playlist(playlistVM.Id, listenerId, playlistVM.Name, playlistVM.Description, await ByteConvertHelper.ConvertIFormFileInByteAsync(playlistVM.FileImage), DateTime.Now);
+            return new Playlist(playlistVM.Id, playlistVM.Visibility, listenerId, playlistVM.Name, playlistVM.Description, await ByteConvertHelper.ConvertIFormFileInByteAsync(playlistVM.FileImage), DateTime.Now);
         }
 
         public IEnumerable<PlaylistMusic> FacPlaylistMusics(string playlistId, string listenerId, IEnumerable<string> musicsIds) 

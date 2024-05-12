@@ -1,5 +1,6 @@
 ﻿using ApplicationLayer.Facades.ServicesFacade;
 using DomainLayer.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MusicWeaveListener.Controllers
@@ -17,6 +18,9 @@ namespace MusicWeaveListener.Controllers
             _logger = logger;
         }
 
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> SearchMusicToPlaylist(string query)
         {
             try
