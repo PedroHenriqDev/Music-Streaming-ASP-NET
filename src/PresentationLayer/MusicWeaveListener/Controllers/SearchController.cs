@@ -39,12 +39,18 @@ namespace MusicWeaveListener.Controllers
             catch(QueryException ex)
             {
                 _logger.LogError("An error occurred while the query was running: 'GetMusicsByQueryAsync'");
-                return RedirectToAction("Error", "Main", new { message = ex.Message });
+                return RedirectToAction("Error", "Main", new 
+                {
+                    message = ex.Message
+                });
             }
             catch(Exception ex)
             {
                 _logger.LogError("An unexpected error ocurred");
-                return RedirectToAction("Error", "Main", new { message = ex.Message });
+                return RedirectToAction("Error", "Main", new 
+                {
+                    message = ex.Message
+                });
             }
         }
     }

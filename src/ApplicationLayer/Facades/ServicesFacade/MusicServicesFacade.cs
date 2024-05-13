@@ -5,7 +5,7 @@ using DomainLayer.Interfaces;
 
 namespace ApplicationLayer.Facades.ServicesFacade
 {
-    public class MusicServicesFacade
+    public class MusicServicesFacade<T> where T : class, IUser<T>
     {
         private readonly RecordService _recordService;
         private readonly SearchService _searchService;
@@ -35,6 +35,11 @@ namespace ApplicationLayer.Facades.ServicesFacade
         public bool VerifyMusic(AddMusicViewModel musicVM) 
         {
             return _verifyService.VerifyMusic(musicVM);
+        }
+
+        public async Task<T> FindCurrentUserAsync() 
+        {
+            return await _searchService.FindCurrentUserAsync<T>();
         }
     }
 }

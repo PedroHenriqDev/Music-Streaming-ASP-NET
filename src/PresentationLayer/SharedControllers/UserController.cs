@@ -56,7 +56,10 @@ namespace PresentationLayer.SharedControllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction(nameof(Error), new { message = ex.Message });
+                return RedirectToAction(nameof(Error), new
+                {
+                    message = ex.Message 
+                });
             }
         }
 
@@ -83,7 +86,10 @@ namespace PresentationLayer.SharedControllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction(nameof(Error), new { message = ex.Message });
+                return RedirectToAction(nameof(Error), new
+                {
+                    message = ex.Message
+                });
             }
         }
 
@@ -106,7 +112,10 @@ namespace PresentationLayer.SharedControllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction(nameof(Error), new { message = ex.Message });
+                return RedirectToAction(nameof(Error), new
+                {
+                    message = ex.Message 
+                });
             }
         }
 
@@ -130,7 +139,10 @@ namespace PresentationLayer.SharedControllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction(nameof(Error), new { message = ex.Message });
+                return RedirectToAction(nameof(Error), new 
+                {
+                    message = ex.Message
+                });
             }
         }
 
@@ -152,7 +164,10 @@ namespace PresentationLayer.SharedControllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction(nameof(Error), new { message = ex.Message });
+                return RedirectToAction(nameof(Error), new
+                { 
+                    message = ex.Message 
+                });
             }
         }
 

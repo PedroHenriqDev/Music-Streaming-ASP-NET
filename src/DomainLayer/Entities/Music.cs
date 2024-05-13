@@ -13,6 +13,7 @@ namespace DomainLayer.Entities
         public Artist Artist { get; set; }
         public Genre Genre { get; set; }
         public TimeSpan Duration { get; set; }
+        public IEnumerable<MusicView> musicViews { get; set; }
 
         public Music() 
         {

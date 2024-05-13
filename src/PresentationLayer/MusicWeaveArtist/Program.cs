@@ -28,7 +28,7 @@ builder.Services.AddScoped<UpdateService>();
 builder.Services.AddScoped<UserServicesFacade<Artist>>();
 builder.Services.AddScoped<ArtistFactoriesFacade>();
 builder.Services.AddScoped<UserFactoriesFacade<Artist>>();
-builder.Services.AddScoped<MusicServicesFacade>();
+builder.Services.AddScoped<MusicServicesFacade<Artist>>();
 builder.Services.AddScoped<ModelFactory>();
 builder.Services.AddScoped<ViewModelFactory>();
 builder.Services.AddScoped<ConnectionDb>();

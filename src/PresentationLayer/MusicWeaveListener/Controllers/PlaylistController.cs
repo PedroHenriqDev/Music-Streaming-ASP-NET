@@ -41,7 +41,10 @@ namespace MusicWeaveListener.Controllers
             }
             catch(Exception ex) 
             {
-                return RedirectToAction(nameof(Error), new { message = ex.Message });
+                return RedirectToAction(nameof(Error), new 
+                {
+                    message = ex.Message
+                });
             }
         }
 
@@ -63,7 +66,7 @@ namespace MusicWeaveListener.Controllers
             {
                     return RedirectToAction(nameof(Error), new
                     {
-                        message = "Playlist not found"
+                        message = "Not found playlist"
                     });
             }          
 
@@ -105,7 +108,10 @@ namespace MusicWeaveListener.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("Error", new { message = ex.Message });
+                return RedirectToAction("Error", new 
+                {
+                    message = ex.Message 
+                });
             }
         }
 
@@ -136,7 +142,10 @@ namespace MusicWeaveListener.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            return RedirectToAction(nameof(Error), new { message = playlistQuery.Message });
+            return RedirectToAction(nameof(Error), new 
+            {
+                message = playlistQuery.Message 
+            });
         }
 
         [HttpGet]

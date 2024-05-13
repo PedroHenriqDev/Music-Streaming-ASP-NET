@@ -11,10 +11,10 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
     public class MusicController : Controller
     {
 
-        private readonly MusicServicesFacade _servicesFacade;
+        private readonly MusicServicesFacade<Artist> _servicesFacade;
 
         public MusicController(
-            MusicServicesFacade servicesFacade)
+            MusicServicesFacade<Artist> servicesFacade)
         {
             _servicesFacade = servicesFacade;
         }

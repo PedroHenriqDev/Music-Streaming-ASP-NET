@@ -37,6 +37,7 @@ builder.Services.AddScoped<ModelFactory>();
 builder.Services.AddScoped<ViewModelFactory>();
 builder.Services.AddScoped<ConnectionDb>();
 builder.Services.AddScoped<ConnectionGoogleCloud>();
+builder.Services.AddScoped<MusicServicesFacade<Listener>>();
 
 builder.Services.AddHttpContextAccessor();
 

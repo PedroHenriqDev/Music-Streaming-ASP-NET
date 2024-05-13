@@ -64,7 +64,10 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
             catch (RecordException<EntityQuery<Listener>> ex)
             {
                 string message = $"Exception: {ex.Message}, result: {ex.EntityQuery.Result}, Query: {ex.EntityQuery.Message}, Moment: {ex.EntityQuery.Moment}";
-                return RedirectToAction(nameof(Error), new { message = message });
+                return RedirectToAction(nameof(Error), new 
+                {
+                    message = message 
+                });
             }
         }
 
