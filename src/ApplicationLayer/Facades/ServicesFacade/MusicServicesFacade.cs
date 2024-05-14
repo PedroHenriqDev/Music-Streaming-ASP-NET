@@ -41,5 +41,10 @@ namespace ApplicationLayer.Facades.ServicesFacade
         {
             return await _searchService.FindCurrentUserAsync<T>();
         }
+
+        public async Task<EntityQuery<MusicView>> CreateMusicViewAsync(MusicView musicView) 
+        {
+            return await _recordService.CreateMusicViewAsync(musicView);    
+        }
     }
 }

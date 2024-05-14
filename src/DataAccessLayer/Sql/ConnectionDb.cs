@@ -531,6 +531,31 @@ namespace DataAccessLayer.Sql
             }
         }
 
+        public async Task RecordMusicViewAsync(MusicView musicView) 
+        {
+            try
+            {
+                using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
+                {
+                    await connection.OpenAsync();
+                    string sqlQuery = @"INSERT INTO MusicViews (Id, MusicId, ListenerId, CreatedAt) 
+                                    VALUES (@id, @musicId, @listenerId, @createdAt)";
+
+                    await connection.QueryAsync(sqlQuery, new
+                    {
+                        id = musicView.Id,
+                        musicId = musicView.MusicId,
+                        listenerId = musicView.ListenerId,
+                        createdAt = musicView.CreatedAt
+                    });
+                }
+            }
+            catch(Exception ex) 
+            {
+                throw;
+            }
+        }
+
         public async Task RecordPlaylistAsync(Playlist playlist)
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))

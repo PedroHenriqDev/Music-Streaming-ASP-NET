@@ -75,6 +75,20 @@ namespace ApplicationLayer.Services
             }
         }
 
+        public async Task<EntityQuery<MusicView>> CreateMusicViewAsync(MusicView musicView) 
+        {
+            try 
+            {
+                await _connectionDb.RecordMusicViewAsync(musicView);
+                return new EntityQuery<MusicView>(true, "View record successfully", musicView, DateTime.Now);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"Error in method 'CreateMusicViewAsync', because: {ex.Message}");
+                return new EntityQuery<MusicView>(false, $"Is impossible record this view, because: {ex.Message}", musicView, DateTime.Now);
+            }
+        }
+
         public async Task<EntityQuery<Playlist>> CreatePlaylistAsync(Playlist playlist) 
         {
             try     

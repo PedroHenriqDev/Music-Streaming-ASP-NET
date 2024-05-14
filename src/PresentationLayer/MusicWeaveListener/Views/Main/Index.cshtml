@@ -89,12 +89,10 @@
                         <div class="music-info">
                             <span class="artist-name">@music.DurationText<i class="bi bi-clock mx-2"></i></span>
                             <img src="data:image/png;base64,@(Convert.ToBase64String(music.MusicData.Picture))" class="music-image" />
-                            <form method="post" asp-controller="Music" asp-action="RecordView">
-                                <input type="hidden" name="musicId" value="@music.Music.Id" />
-                                <button type="submit" class="btn btn-dark text-black rounded-circle play-button" id="playButton@(music.Music.Id)" onclick="togglePlayPause('@music.Music.Name', '@Convert.ToBase64String(music.MusicData.Audio)', this)">
-                                    <i class="bi bi-play-fill"></i>
-                                </button>
-                            </form>
+                            <input type="hidden" name="musicId" value="@music.Music.Id" />
+                            <button type="button" class="btn btn-dark text-black rounded-circle play-button" id="playButton@(music.Music.Id)" onclick="togglePlayPause('@music.Music.Name', '@Convert.ToBase64String(music.MusicData.Audio)', this)">
+                                <i class="bi bi-play-fill"></i>
+                            </button>
                             <span class="music-name">@music.Music.Name</span>
                             <span class="artist-name">@music.Music.Artist.Name</span>
                         </div>
@@ -107,19 +105,15 @@
 
 @section Scripts {
     <script>
+        var audioPlayer = document.getElementById('audioPlayer');
         var currentPlayingButton = null;
 
-        function playMusic(musicName, audioData, playButtonId) {
-            var audioPlayer = document.getElementById('audioPlayer');
+        audioPlayer.addEventListener('ended', function () {
             if (currentPlayingButton !== null) {
-                currentPlayingButton.innerHTML = '<i class="bi bi-play-fill"></i>';
+                var musicId = currentPlayingButton.id.replace('playButton', '');
+                recordView(musicId);
             }
-            audioPlayer.src = "data:audio/mp3;base64," + audioData;
-            audioPlayer.play();
-            document.getElementById('songName').textContent = musicName;
-            document.getElementById(playButtonId).innerHTML = '<i class="bi bi-pause-fill"></i>';
-            currentPlayingButton = document.getElementById(playButtonId);
-        }
+        });
 
         function togglePlayPause(musicName, audioData, button) {
             var audioPlayer = document.getElementById('audioPlayer');
@@ -136,7 +130,20 @@
                 audioPlayer.pause();
                 button.innerHTML = '<i class="bi bi-play-fill"></i>';
                 currentPlayingButton = null;
+
+                var musicId = button.id.replace('playButton', '');
+                recordView(musicId);
             }
+        }
+
+        async function recordView(musicId) {
+            await fetch('@Url.Action("RecordView", "Music")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(musicId)
+            });
         }
     </script>
 }

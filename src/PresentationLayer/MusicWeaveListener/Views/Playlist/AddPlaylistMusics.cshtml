@@ -197,24 +197,5 @@
                         '</div>');
                 }
             });
-
-            $(document).on('click', '.remove-music', function () {
-                var musicId = $(this).closest('.selected-music-item').find('.music-id-input').val();
-                var index = selectedMusicIds.indexOf(musicId);
-                if (index !== -1) {
-                    selectedMusicIds.splice(index, 1);
-                }
-                $(this).closest('.selected-music-item').remove();
-            });
-
-            $('#addMusicForm').submit(function (event) {
-                event.preventDefault();
-
-                var musicsToAdd = selectedMusicIds.join(',');
-                $('#MusicsToAdd').val(musicsToAdd);
-
-                this.submit();
-            });
-        });
     </script>
 }

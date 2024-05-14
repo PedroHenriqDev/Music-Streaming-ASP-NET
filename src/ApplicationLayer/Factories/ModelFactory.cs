@@ -62,6 +62,11 @@ namespace ApplicationLayer.Factories
             return new Music(id, musicVM.Name, artist.Id, musicVM.GenreId, musicVM.Date, DateTime.Now, MusicHelper.GetDuration(musicVM.AudioFile));
         }
 
+        public MusicView FacMusicView(string id, string listenerId, string musicId, DateTime createdAt) 
+        {
+            return new MusicView(id, listenerId, musicId, createdAt);
+        }
+
         public async Task<MusicData> FacMusicDataAsync(AddMusicViewModel musicVM, string Id)
         {
             byte[] audioBytes = await ByteConvertHelper.ConvertIFormFileInByteAsync(musicVM.AudioFile);
