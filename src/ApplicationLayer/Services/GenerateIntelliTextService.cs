@@ -30,7 +30,6 @@ namespace ApplicationLayer.Services
                     allGenres.Append(", ");
                 i++;
             }
-
             descriptions[numberOfGenres] = $"I {action} {allGenres} musical styles.";
             return descriptions;
         }

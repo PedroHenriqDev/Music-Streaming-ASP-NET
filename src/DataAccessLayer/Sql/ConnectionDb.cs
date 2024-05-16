@@ -533,8 +533,6 @@ namespace DataAccessLayer.Sql
 
         public async Task RecordMusicViewAsync(MusicView musicView) 
         {
-            try
-            {
                 using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
                 {
                     await connection.OpenAsync();
@@ -549,11 +547,6 @@ namespace DataAccessLayer.Sql
                         createdAt = musicView.CreatedAt
                     });
                 }
-            }
-            catch(Exception ex) 
-            {
-                throw;
-            }
         }
 
         public async Task RecordPlaylistAsync(Playlist playlist)
