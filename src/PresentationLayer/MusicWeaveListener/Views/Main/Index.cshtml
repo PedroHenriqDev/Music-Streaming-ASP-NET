@@ -20,6 +20,7 @@
         width: 220px;
         border-radius: 10px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        position: relative; 
     }
 
         .music-item:hover {
@@ -76,6 +77,21 @@
     .card {
         border-radius: 20px;
     }
+
+    .favorite-button {
+        position: absolute; 
+        top: 5px; 
+        right: 2px; 
+        background-color: transparent;
+        border: none;
+        color: red;
+        font-size: 18px;
+        cursor: pointer;
+    }
+
+        .favorite-button:hover {
+            color: red;
+        }
 </style>
 
 @if (Model != null)
@@ -86,6 +102,9 @@
                 @foreach (var music in Model)
                 {
                     <div class="music-item">
+                        <button class="favorite-button" onclick="addToFavorites('@music.Music.Id')">
+                            <i class="bi bi-heart"></i>
+                        </button>
                         <div class="music-info">
                             <span class="artist-name">@music.DurationText<i class="bi bi-clock mx-2"></i></span>
                             <img src="data:image/png;base64,@(Convert.ToBase64String(music.MusicData.Picture))" class="music-image" />
@@ -144,6 +163,17 @@
                 },
                 body: JSON.stringify(musicId)
             });
+        }
+
+        async function addToFavorites(musicId) {
+            await fetch('@Url.Action("AddToFavorites", "Music")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(musicId)
+            });
+            alert('Music added to favorites!');
         }
     </script>
 }

@@ -89,6 +89,20 @@ namespace ApplicationLayer.Services
             }
         }
 
+        public async Task<EntityQuery<FavoriteMusic>> CreateFavoriteMusicAsync(FavoriteMusic favoriteMusic) 
+        {
+            try
+            {
+                await _connectionDb.RecordFavoriteMusicAsync(favoriteMusic);
+                return new EntityQuery<FavoriteMusic>(true, "Favorite music record successfully", favoriteMusic, DateTime.Now);
+            }
+            catch(Exception ex) 
+            {
+                return new EntityQuery<FavoriteMusic>(true, $"An unexpected error ocurred, because: {ex.Message}", favoriteMusic, DateTime.Now);
+            }
+        }
+
+
         public async Task<EntityQuery<Playlist>> CreatePlaylistAsync(Playlist playlist) 
         {
             try     

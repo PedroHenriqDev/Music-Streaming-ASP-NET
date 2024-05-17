@@ -397,6 +397,22 @@ namespace DataAccessLayer.Sql
             }
         }
 
+        public async Task RecordFavoriteMusicAsync(FavoriteMusic favoriteMusic) 
+        {
+            using(NpgsqlConnection connection = new NpgsqlConnection( GetConnectionString())) 
+            {
+                await connection.OpenAsync();
+                string sqlQuery = @"INSERT INTO FavoriteMusics (ListenerId, MusicId)
+                                    VALUES (@listenerId, @musicId)";
+
+                await connection.QueryAsync(sqlQuery, new
+                {
+                    listenerId = favoriteMusic.ListenerId,
+                    musicId = favoriteMusic.MusicId
+                });
+            }
+        }
+
         public async Task RecordUserAsync<T>(T user)
             where T : class, IUser<T>
         {

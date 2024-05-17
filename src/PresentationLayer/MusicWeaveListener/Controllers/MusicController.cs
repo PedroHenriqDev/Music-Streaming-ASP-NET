@@ -49,6 +49,18 @@ namespace MusicWeaveListener.Controllers
             return RedirectToAction("Index", "Main");
         }
 
+        public async Task<IActionResult> AddToFavorites([FromBody] string musicId) 
+        {
+            var listener = await _servicesFacade.FindCurrentUserAsync();
+            if(musicId is null || listener is null) 
+            {
+                return RedirectToAction(nameof(Error), new { message = "Any reference null ocurred"});
+            }
+
+            await _servicesFacade.CreateFavoriteMusicAsync(_factoriesFacade.FacFavoriteMusic(musicId, listener.Id));
+            return RedirectToAction("Index", "Main");
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error(string message)
         {

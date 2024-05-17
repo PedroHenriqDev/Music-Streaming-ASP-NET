@@ -46,5 +46,10 @@ namespace ApplicationLayer.Facades.ServicesFacade
         {
             return await _recordService.CreateMusicViewAsync(musicView);    
         }
+
+        public async Task<EntityQuery<FavoriteMusic>> CreateFavoriteMusicAsync(FavoriteMusic favoriteMusic) 
+        {
+            return await _recordService.CreateFavoriteMusicAsync(favoriteMusic);
+        }
     }
 }

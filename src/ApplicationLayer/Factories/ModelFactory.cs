@@ -89,5 +89,10 @@ namespace ApplicationLayer.Factories
                 MusicId = musicId
             });
         }
+
+        public FavoriteMusic FacFavoriteMusic(string musicId, string listenerId) 
+        {
+            return new FavoriteMusic(musicId, listenerId);
+        }
     }
 }
