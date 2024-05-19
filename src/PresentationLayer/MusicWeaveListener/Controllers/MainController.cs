@@ -25,8 +25,9 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
         {
             if (User.Identity.IsAuthenticated) 
             {
-                var completeMusicsVM = await _factoriesFacades.FacCompleteMusicsVMAsync(await _servicesFacade.FindCurrentUserAsync());
-                return View(completeMusicsVM);
+                var listener = await _servicesFacade.FindCurrentUserAsync();
+                var modelVM = await _factoriesFacades.FacMainVMAsync(await _factoriesFacades.FacCompleteMusicsVMAsync(listener), listener.Id);
+                return View(modelVM);
             }
             return View();
         }

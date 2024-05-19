@@ -4,7 +4,17 @@ namespace ApplicationLayer.ViewModels
 {
     public class MainViewModel
     {
-        public IEnumerable<MusicViewModel> MusicViewModel { get; set; }
-        public IEnumerable<FavoriteMusic>? FavoriteMusic { get; set; }
+        public IEnumerable<MusicViewModel>? MusicsViewModel { get; set; }
+        public IEnumerable<FavoriteMusic>? FavoriteMusics { get; set; }
+
+        public MainViewModel() 
+        {
+        }
+
+        public MainViewModel(IEnumerable<MusicViewModel>? musicsViewModel, IEnumerable<FavoriteMusic>? favoriteMusics)
+        {
+            MusicsViewModel = musicsViewModel;
+            FavoriteMusics = favoriteMusics;
+        }
     }
 }

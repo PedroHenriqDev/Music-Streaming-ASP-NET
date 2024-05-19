@@ -69,7 +69,23 @@ namespace DataAccessLayer.Sql
                 string tableName = TableNameSanitization.GetPluralTableName<T>();
                 string fkField = FieldSanitization.ForeignKeyName<TR>();
                 var sqlQuery = $"SELECT * FROM {tableName} WHERE {fkField} = @fkid";
-                return await connection.QueryAsync<T>(sqlQuery, new { fkId = fkId });
+                return await connection.QueryAsync<T>(sqlQuery, new 
+                {
+                    fkId = fkId
+                });
+            }
+        }
+
+        public async Task<IEnumerable<FavoriteMusic>> GetFavoriteMusicsByListenerAsync(string listenerId) 
+        {
+            using(NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
+            {
+                await connection.OpenAsync();
+                string sqlQuery = "SELECT * FROM FavoriteMusics WHERE ListenerId = @listenerId";
+                return await connection.QueryAsync<FavoriteMusic>(sqlQuery, new 
+                {
+                    listenerId = listenerId
+                });
             }
         }
 
@@ -93,7 +109,11 @@ namespace DataAccessLayer.Sql
             {
                 await connection.OpenAsync();
                 string sqlQuery = $"SELECT * FROM {TableNameSanitization.GetPluralTableName<T>()} WHERE Email = @email AND Password = @password";
-                return await connection.QueryFirstOrDefaultAsync<T>(sqlQuery, new { email = email, password = password });
+                return await connection.QueryFirstOrDefaultAsync<T>(sqlQuery, new 
+                {
+                    email = email, 
+                    password = password
+                });
             }
         }
 

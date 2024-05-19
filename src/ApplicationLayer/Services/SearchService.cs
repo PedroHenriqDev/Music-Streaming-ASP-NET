@@ -59,6 +59,11 @@ namespace ApplicationLayer.Services
             }
         }
 
+        public async Task<IEnumerable<FavoriteMusic>> FindFavoriteMusicsByListenerAsync(string listenerId) 
+        {
+            return await _connectionDb.GetFavoriteMusicsByListenerAsync(listenerId);
+        }
+
         public async Task<IEnumerable<T>> FindAllEntitiesAsync<T>()
             where T : class, IEntity
         {
