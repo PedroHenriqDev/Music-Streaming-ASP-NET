@@ -20,12 +20,12 @@
         width: 220px;
         border-radius: 10px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        position: relative; 
+        position: relative;
     }
 
-        .music-item:hover {
-            transform: translateY(-5px);
-        }
+    .music-item:hover {
+        transform: translateY(-5px);
+    }
 
     .music-info {
         display: flex;
@@ -57,14 +57,14 @@
         transition: background-color 0.3s ease;
     }
 
-        .play-button:hover {
-            background-color: #15a94d;
-        }
+    .play-button:hover {
+        background-color: #15a94d;
+    }
 
-        .play-button i {
-            font-size: 24px;
-            color: white;
-        }
+    .play-button i {
+        font-size: 24px;
+        color: white;
+    }
 
     .music-image {
         width: 120px;
@@ -78,10 +78,10 @@
         border-radius: 20px;
     }
 
-    .favorite-button {
-        position: absolute; 
-        top: 5px; 
-        right: 2px; 
+    .unfavorite-button, .favorite-button {
+        position: absolute;
+        top: 5px;
+        right: 2px;
         background-color: transparent;
         border: none;
         color: red;
@@ -89,9 +89,9 @@
         cursor: pointer;
     }
 
-        .favorite-button:hover {
-            color: red;
-        }
+    .favorite-button:hover, .unfavorite-button:hover {
+        color: darkred;
+    }
 </style>
 
 @if (Model != null)
@@ -102,9 +102,18 @@
                 @foreach (var music in Model.MusicsViewModel)
                 {
                     <div class="music-item">
-                        <button class="favorite-button" onclick="addToFavorites('@music.Music.Id')">
-                            <i class="bi bi-heart"></i>
-                        </button>
+                        @if (Model.FavoriteMusics.Any(fm => fm.MusicId == music.Music.Id))
+                        {
+                            <button class="unfavorite-button" onclick="removeToFavorites('@music.Music.Id')">
+                                <i class="bi bi-heart-fill"></i>
+                            </button>
+                        }
+                        else
+                        {
+                            <button class="favorite-button" onclick="addToFavorites('@music.Music.Id')">
+                                <i class="bi bi-heart"></i>
+                            </button>
+                        }
                         <div class="music-info">
                             <span class="artist-name">@music.DurationText<i class="bi bi-clock mx-2"></i></span>
                             <img src="data:image/png;base64,@(Convert.ToBase64String(music.MusicData.Picture))" class="music-image" />
@@ -166,14 +175,41 @@
         }
 
         async function addToFavorites(musicId) {
-            await fetch('@Url.Action("AddToFavorites", "Music")', {
+            const response = await fetch('@Url.Action("AddFromFavorites", "Music")', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(musicId)
             });
-            alert('Music added to favorites!');
+
+            if (response.ok) {
+                const button = document.querySelector(`button[onclick="addToFavorites('${musicId}')"]`);
+                if (button) {
+                    button.className = 'unfavorite-button';
+                    button.setAttribute('onclick', `removeToFavorites('${musicId}')`);
+                    button.innerHTML = '<i class="bi bi-heart-fill"></i>';
+                }
+            }
+        }
+
+        async function removeToFavorites(musicId) {
+            const response = await fetch('@Url.Action("RemoveFromFavorites", "Music")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(musicId)
+            });
+
+            if (response.ok) {
+                const button = document.querySelector(`button[onclick="removeToFavorites('${musicId}')"]`);
+                if (button) {
+                    button.className = 'favorite-button';
+                    button.setAttribute('onclick', `addToFavorites('${musicId}')`);
+                    button.innerHTML = '<i class="bi bi-heart"></i>';
+                }
+            }
         }
     </script>
 }

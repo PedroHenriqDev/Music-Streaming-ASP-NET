@@ -60,7 +60,7 @@ namespace DataAccessLayer.Sql
             }
         }
 
-        public async Task<IEnumerable<T>> GetEntitiesByForeignKeyAsync<T, TR>(string fkId)
+        public async Task<IEnumerable<T>> GetEntitiesByFKAsync<T, TR>(string fkId)
             where T : class, IEntity where TR : class, IEntity
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
@@ -422,11 +422,12 @@ namespace DataAccessLayer.Sql
             using(NpgsqlConnection connection = new NpgsqlConnection( GetConnectionString())) 
             {
                 await connection.OpenAsync();
-                string sqlQuery = @"INSERT INTO FavoriteMusics (ListenerId, MusicId)
-                                    VALUES (@listenerId, @musicId)";
+                string sqlQuery = @"INSERT INTO FavoriteMusics (Id, ListenerId, MusicId)
+                                    VALUES (@id ,@listenerId, @musicId)";
 
                 await connection.QueryAsync(sqlQuery, new
                 {
+                    id = favoriteMusic.Id,
                     listenerId = favoriteMusic.ListenerId,
                     musicId = favoriteMusic.MusicId
                 });
@@ -628,7 +629,7 @@ namespace DataAccessLayer.Sql
             }
         }
 
-        public async Task DeleteEntityByIdAsync<T>(string id)
+        public async Task RemoveEntityByIdAsync<T>(string id)
             where T : IEntity
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
@@ -638,6 +639,21 @@ namespace DataAccessLayer.Sql
                 await connection.QueryAsync(sqlQuery, new { id = id });
             }
         }
+
+        public async Task RemoveFavoriteMusicAsync(string musicId, string listenerId)
+        {
+            using(NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString())) 
+            {
+                await connection.OpenAsync();
+                string sqlQuery = $"DELETE FROM FavoriteMusics WHERE MusicId = @musicId AND ListenerId = @listenerId";
+                await connection.QueryAsync(sqlQuery, new
+                {
+                    musicId = musicId, 
+                    listenerId = listenerId 
+                });
+            }
+        }
+
     }
 }
 

@@ -25,7 +25,6 @@ namespace MusicWeaveListener.Controllers
 
         public async Task<IActionResult> RecordView([FromBody] string musicId)
         {
-            
             var listener = await _servicesFacade.FindCurrentUserAsync();
             if (musicId is null || listener is null) 
             {
@@ -49,7 +48,7 @@ namespace MusicWeaveListener.Controllers
             return RedirectToAction("Index", "Main");
         }
 
-        public async Task<IActionResult> AddToFavorites([FromBody] string musicId) 
+        public async Task<IActionResult> AddFromFavorites([FromBody] string musicId) 
         {
             var listener = await _servicesFacade.FindCurrentUserAsync();
             if(musicId is null || listener is null) 
@@ -57,7 +56,19 @@ namespace MusicWeaveListener.Controllers
                 return RedirectToAction(nameof(Error), new { message = "Any reference null ocurred"});
             }
 
-            await _servicesFacade.CreateFavoriteMusicAsync(_factoriesFacade.FacFavoriteMusic(musicId, listener.Id));
+            await _servicesFacade.CreateFavoriteMusicAsync(_factoriesFacade.FacFavoriteMusic(Guid.NewGuid().ToString(), musicId, listener.Id));
+            return RedirectToAction("Index", "Main");
+        }
+
+        public async Task<IActionResult> RemoveFromFavorites([FromBody] string musicId) 
+        {
+            var listener = await _servicesFacade.FindCurrentUserAsync();
+            if (musicId is null) 
+            {
+                return RedirectToAction(nameof(Error), new { message = "Any reference null ocurred" });
+            }
+
+            await _servicesFacade.DeleteFavoriteMusicAsync(musicId, listener.Id);
             return RedirectToAction("Index", "Main");
         }
 

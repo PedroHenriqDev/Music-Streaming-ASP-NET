@@ -22,8 +22,13 @@ namespace ApplicationLayer.Services
         {
             if (await _verifyService.HasEntityInDbAsync<T>(id)) 
             {
-                await _connectionDb.DeleteEntityByIdAsync<T>(id);
+                await _connectionDb.RemoveEntityByIdAsync<T>(id);
             }
+        }
+
+        public async Task DeleteFavoriteMusic(string musicId, string listenerId)
+        {
+            await _connectionDb.RemoveFavoriteMusicAsync(musicId, listenerId);
         }
     }
 }

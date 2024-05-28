@@ -57,7 +57,7 @@ namespace ApplicationLayer.Factories
 
         public async Task<MainViewModel> FacMainVMAsync(IEnumerable<MusicViewModel> musicsVM, string listenerId) 
         {
-            var favoriteMusics = await _searchService.FindFavoriteMusicsByListenerAsync(listenerId);
+            var favoriteMusics = await _searchService.FindEntitiesByFKAsync<FavoriteMusic, Listener>(listenerId);
             return new MainViewModel(musicsVM, favoriteMusics);
         }
 

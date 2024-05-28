@@ -16,9 +16,9 @@ namespace ApplicationLayer.Facades.FactoriesFacade
             return _modelFactory.FacMusicView(id, listenerId, musicId, createdAt);
         }
 
-        public FavoriteMusic FacFavoriteMusic(string musicId, string listenerId) 
+        public FavoriteMusic FacFavoriteMusic(string id, string musicId, string listenerId) 
         {
-            return _modelFactory.FacFavoriteMusic(musicId, listenerId);
+            return _modelFactory.FacFavoriteMusic(id, musicId, listenerId);
         }
     }
 }

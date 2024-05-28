@@ -83,7 +83,7 @@ namespace ApplicationLayer.Services
                 return ".jpg";
             }
         }
-
+        
         private async Task SaveFileAsync(string filePath, byte[] pictureData)
         {
             await File.WriteAllBytesAsync(filePath, pictureData);

@@ -10,15 +10,18 @@ namespace ApplicationLayer.Facades.ServicesFacade
         private readonly RecordService _recordService;
         private readonly SearchService _searchService;
         private readonly VerifyService _verifyService;
+        private readonly DeleteService _deleteService;
 
         public MusicServicesFacade(
             RecordService recordService,
             SearchService searchService, 
-            VerifyService verifyService)
+            VerifyService verifyService,
+            DeleteService deleteService)
         {
             _recordService = recordService;
             _searchService = searchService;
             _verifyService = verifyService;
+            _deleteService = deleteService;
         }
 
         public async Task<EntityQuery<Music>> CreateMusicAsync(AddMusicViewModel musicVM)
@@ -50,6 +53,11 @@ namespace ApplicationLayer.Facades.ServicesFacade
         public async Task<EntityQuery<FavoriteMusic>> CreateFavoriteMusicAsync(FavoriteMusic favoriteMusic) 
         {
             return await _recordService.CreateFavoriteMusicAsync(favoriteMusic);
+        }
+
+        public async Task DeleteFavoriteMusicAsync(string musicId, string listenerId) 
+        {
+            await _deleteService.DeleteFavoriteMusic(musicId, listenerId);
         }
     }
 }

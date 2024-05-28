@@ -15,6 +15,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddLogging();
 
 builder.Services.AddScoped<RecordService>();
+builder.Services.AddScoped<DeleteService>();
 builder.Services.AddScoped<LoginService>();
 builder.Services.AddScoped<VerifyService>();
 builder.Services.AddScoped<GenerateIntelliTextService>();

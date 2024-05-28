@@ -27,7 +27,7 @@ namespace ApplicationLayer.Services
         public async Task SignInUserAsync<T>(T user) 
             where T : IUser<T>
         {
-            if (user == null)
+            if (user is null)
             {
                 _logger.LogError("Error in authentication");
                 throw new ArgumentNullException("Reference user null!");
@@ -39,7 +39,7 @@ namespace ApplicationLayer.Services
                 new Claim(ClaimTypes.Email, user.Email),
             };
 
-            if (user.PictureProfile != null)
+            if (!(user.PictureProfile is null))
             {
                 string pictureUrl = await _pictureService.SavePictureProfileAsync(user.PictureProfile, _httpAcessor.HttpContext.Request.PathBase);
                 claims.Add(new Claim("ProfilePictureUrl", pictureUrl));

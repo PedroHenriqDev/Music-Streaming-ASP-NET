@@ -36,6 +36,12 @@ namespace ApplicationLayer.Services
             return await _connectionDb.GetEntityByIdAsync<T>(id);
         }
 
+        public async Task<IEnumerable<T>> FindEntitiesByFKAsync<T, TR>(string fkId) 
+            where T : class, IEntity where TR : class, IEntity 
+        {
+            return await _connectionDb.GetEntitiesByFKAsync<T, TR>(fkId);
+        }
+
         public async Task<T> FindCurrentUserAsync<T>()
             where T : IUser<T>
         {
@@ -101,7 +107,7 @@ namespace ApplicationLayer.Services
         public async Task<IEnumerable<T>> FindEntityByFkIdAsync<T, TR>(string artistId)
             where T : class, IEntity where TR : class, IEntity
         {
-            return await _connectionDb.GetEntitiesByForeignKeyAsync<T, TR>(artistId);
+            return await _connectionDb.GetEntitiesByFKAsync<T, TR>(artistId);
         }
 
         public async Task<IEnumerable<Music>> FindMusicsByQueryAsync(string query) 

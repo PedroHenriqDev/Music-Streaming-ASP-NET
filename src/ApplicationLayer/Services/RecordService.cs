@@ -69,7 +69,7 @@ namespace ApplicationLayer.Services
             {
                 if(ex is MusicException) 
                 {
-                    await _connectionDb.DeleteEntityByIdAsync<Music>(id);
+                    await _connectionDb.RemoveEntityByIdAsync<Music>(id);
                 }
                 return new EntityQuery<Music>(false, $"Unable to create song, because this error: {ex.Message}", music, DateTime.Now);
             }
