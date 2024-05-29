@@ -100,5 +100,10 @@ namespace ApplicationLayer.Facades.ServicesFacade
         {
             return _verifyService.VerifyUser(userVM);
         }
+
+        public void SetCookie<TR>(string key, TR value) 
+        {
+            _authenticationService.SetCookie(key, value);
+        }
     }
 }

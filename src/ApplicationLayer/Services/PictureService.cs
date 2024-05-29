@@ -1,18 +1,15 @@
 ﻿using DomainLayer.Interfaces;
 using UtilitiesLayer.Extensions;
+using UtilitiesLayer.Helpers;
 
 namespace ApplicationLayer.Services
 {
     public class PictureService
     {
-        private readonly EncryptService _encryptService;
         private readonly UpdateService _updateService;
 
-        public PictureService(
-            UpdateService updateService, 
-            EncryptService encryptService)
+        public PictureService(UpdateService updateService)
         {
-            _encryptService = encryptService;
             _updateService = updateService;
         }
 
@@ -41,7 +38,7 @@ namespace ApplicationLayer.Services
             string profilePictureDiretory = CreateProfilePictureDirectory(webRootPath);
             string fileExtension = GetImageExtension(pictureData);
 
-            string fileName = _encryptService.GetFileHash(pictureData) + fileExtension;
+            string fileName = EncryptHelper.GetFileHash(pictureData) + fileExtension;
             string filePath = Path.Combine(profilePictureDiretory, fileName);
 
             if (!File.Exists(filePath))

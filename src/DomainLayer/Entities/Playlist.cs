@@ -19,7 +19,7 @@ namespace DomainLayer.Entities
         {
         }
 
-        public Playlist(string id, VisibilityType visibility, string listenerId, string name,  string description, byte[] image, DateTime createdAt)
+        public Playlist(string id, VisibilityType visibility, string listenerId, string name, string description, byte[] image, DateTime createdAt)
         {
             Id = id;
             Visibility = visibility;

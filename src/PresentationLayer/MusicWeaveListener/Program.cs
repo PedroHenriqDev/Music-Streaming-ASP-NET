@@ -19,7 +19,6 @@ builder.Services.AddScoped<DeleteService>();
 builder.Services.AddScoped<LoginService>();
 builder.Services.AddScoped<VerifyService>();
 builder.Services.AddScoped<GenerateIntelliTextService>();
-builder.Services.AddScoped<EncryptService>();
 builder.Services.AddScoped<CloudStorageService>();
 builder.Services.AddScoped<PictureService>();
 builder.Services.AddScoped<SearchService>();

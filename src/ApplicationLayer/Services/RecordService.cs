@@ -5,6 +5,7 @@ using DomainLayer.Entities;
 using DomainLayer.Exceptions;
 using DomainLayer.Interfaces;
 using Microsoft.Extensions.Logging;
+using UtilitiesLayer.Helpers;
 
 namespace ApplicationLayer.Services
 {
@@ -12,23 +13,17 @@ namespace ApplicationLayer.Services
     {
         private readonly ILogger<RecordService> _logger;
         private readonly ConnectionDb _connectionDb;
-        private readonly VerifyService _verifyService;
-        private readonly EncryptService _encryptService;
         private readonly ModelFactory _modelFactory;
         private readonly CloudStorageService _storageService;
 
         public RecordService(
             ILogger<RecordService> logger,
             ConnectionDb connectionDb,
-            VerifyService verifyService,
-            EncryptService encryptService,
             ModelFactory modelFactory, 
             CloudStorageService storageService)
         {
             _logger = logger;
             _connectionDb = connectionDb;
-            _verifyService = verifyService;
-            _encryptService = encryptService;
             _modelFactory = modelFactory;
             _storageService = storageService;
         }
@@ -37,7 +32,7 @@ namespace ApplicationLayer.Services
             where T : class, IUser<T>, new()
         {
             string userType = typeof(T).Name;
-            T user = _modelFactory.FacUser<T>(Guid.NewGuid().ToString(), userVM.Name, userVM.Email, _encryptService.EncryptPasswordSHA512(userVM.Password), userVM.PhoneNumber, userVM.BirthDate, DateTime.Now);
+            T user = _modelFactory.FacUser<T>(Guid.NewGuid().ToString(), userVM.Name, userVM.Email, EncryptHelper.EncryptPasswordSHA512(userVM.Password), userVM.PhoneNumber, userVM.BirthDate, DateTime.Now);
             try
             {
                 await _connectionDb.RecordUserAndUserGenresAsync(user, _modelFactory.FacUserGenres<T>(user.Id, userVM.SelectedGenreIds));

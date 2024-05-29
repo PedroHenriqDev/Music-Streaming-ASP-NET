@@ -10,7 +10,6 @@ namespace ApplicationLayer.Services
 {
     public class UserAuthenticationService
     {
-
         private readonly ILogger<UserAuthenticationService> _logger;
         private readonly PictureService _pictureService;
         private readonly IHttpContextAccessor _httpAcessor;
@@ -46,7 +45,7 @@ namespace ApplicationLayer.Services
             }
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var authProperties = new Microsoft.AspNetCore.Authentication.AuthenticationProperties();
+            var authProperties = new AuthenticationProperties();
 
             await _httpAcessor.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
         }

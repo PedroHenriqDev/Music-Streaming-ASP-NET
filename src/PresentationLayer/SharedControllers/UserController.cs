@@ -19,7 +19,7 @@ namespace PresentationLayer.SharedControllers
         private readonly IHttpContextAccessor _httpAccessor;
         private string UserPageName => typeof(T).Name + "Page";
         private string CreateUser => $"Create{typeof(T).Name}";
-        public static string _sessionId = EncryptHelper.GenerateEncryptedString();
+
 
         public UserController(
             UserServicesFacade<T> servicesFacade,
@@ -49,6 +49,7 @@ namespace PresentationLayer.SharedControllers
                 {
                     T user = await _servicesFacade.FindEntityByEmailAsync<T>(credentialsVM.Email);
                     await _servicesFacade.SignInUserAsync(user);
+                    _servicesFacade.SetCookie(CookiesAndSessionsKeys.UserIdCookieKey, user.Id);
                     return RedirectToAction("Index", "Main");
                 }
                 TempData["InvalidUser"] = "Email or password incorrect!";
@@ -74,7 +75,7 @@ namespace PresentationLayer.SharedControllers
                 if (_servicesFacade.VerifyUser(userVM))
                 {
                     userVM.Genres = (List<Genre>)await _servicesFacade.FindAllEntitiesAsync<Genre>();
-                    HttpHelper.SetSessionValue(_httpAccessor, _sessionId, userVM.Genres);
+                    HttpHelper.SetSessionValue(_httpAccessor, CookiesAndSessionsKeys.UserSessionKey, userVM.Genres);
                     return View(userVM);
                 }
                 return View(CreateUser, userVM);
