@@ -24,15 +24,20 @@ namespace ApplicationLayer.Facades.ServicesFacade
             _deleteService = deleteService;
         }
 
-        public async Task<EntityQuery<Music>> CreateMusicAsync(AddMusicViewModel musicVM)
+        public async Task<EntityQuery<Music>> CreateMusicAsync(AddMusicViewModel musicVM, Artist artist)
         {
-            return await _recordService.CreateMusicAsync(musicVM);
+            return await _recordService.CreateMusicAsync(musicVM, artist);
         }
 
         public async Task<IEnumerable<T>> FindAllEntitiesAsync<T>()
             where T : class, IEntity
         {
             return await _searchService.FindAllEntitiesAsync<T>();
+        }
+
+        public async Task<T> FindUserByIdAsync(string id) 
+        {
+            return await _searchService.FindUserByIdAsync<T>(id);
         }
 
         public bool VerifyMusic(AddMusicViewModel musicVM)

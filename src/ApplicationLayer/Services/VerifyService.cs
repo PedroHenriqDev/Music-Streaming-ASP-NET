@@ -15,7 +15,7 @@ namespace ApplicationLayer.Services
         }
 
         public async Task<bool> HasNameInDbAsync<T>(string name)
-            where T : class, IEntityWithName<T>
+            where T : class, IUser<T>
         {
             if (await _searchService.FindUserByNameAsync<T>(name) != null)
             {

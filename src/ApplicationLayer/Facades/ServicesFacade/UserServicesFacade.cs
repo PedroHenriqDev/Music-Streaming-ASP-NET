@@ -75,9 +75,9 @@ namespace ApplicationLayer.Facades.ServicesFacade
             return await _searchService.FindAllEntitiesAsync<TR>();
         }
 
-        public async Task<IEnumerable<Genre>> FindUserGenresAsync(T user) 
+        public async Task<IEnumerable<Genre>> FindUserGenresAsync(string userId) 
         {
-            return await _searchService.FindUserGenresAsync(user);
+            return await _searchService.FindUserGenresAsync<T>(userId);
         }
 
         public async Task<EntityQuery<T>> CreateUserAsync(RegisterUserViewModel userVM) 

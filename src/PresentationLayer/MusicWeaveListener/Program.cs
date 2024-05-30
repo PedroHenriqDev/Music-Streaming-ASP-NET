@@ -42,12 +42,18 @@ builder.Services.AddScoped<MusicFactoriesFacade>();
 
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
+{
+    options.Cookie.Name = "DefaultCookies";
+    options.Cookie.HttpOnly = true;
+    options.ExpireTimeSpan = TimeSpan.FromDays(360);
+    options.SlidingExpiration = true;
+});
 
 builder.Services.AddSession(options =>
 {
     options.Cookie.Name = "Social.Session";
-    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.IdleTimeout = TimeSpan.FromMinutes(90);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });

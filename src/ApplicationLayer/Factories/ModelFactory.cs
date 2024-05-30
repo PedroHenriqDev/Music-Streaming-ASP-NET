@@ -10,12 +10,10 @@ namespace ApplicationLayer.Factories
     public class ModelFactory
     {
 
-        private readonly SearchService _searchService;
         private readonly ILogger<ModelFactory> _logger;
 
-        public ModelFactory(SearchService searchService, ILogger<ModelFactory> logger) 
+        public ModelFactory(ILogger<ModelFactory> logger) 
         {
-            _searchService = searchService;
             _logger = logger;
         }
 
@@ -50,9 +48,8 @@ namespace ApplicationLayer.Factories
             return ids.Select(genreId => new UserGenre<T> { Id = id, GenreId = genreId }).ToList();
         }
 
-        public async Task<Music> FacMusicAsync(AddMusicViewModel musicVM, string id)
+        public async Task<Music> FacMusicAsync(AddMusicViewModel musicVM, Artist artist, string id)
         {
-            Artist artist = await _searchService.FindCurrentUserAsync<Artist>();
             if (artist is null)
             {
                 _logger.LogWarning("Error occurred due to a null user reference");

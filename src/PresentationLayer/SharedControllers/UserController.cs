@@ -49,7 +49,6 @@ namespace PresentationLayer.SharedControllers
                 {
                     T user = await _servicesFacade.FindEntityByEmailAsync<T>(credentialsVM.Email);
                     await _servicesFacade.SignInUserAsync(user);
-                    _servicesFacade.SetCookie(CookiesAndSessionsKeys.UserIdCookieKey, user.Id);
                     return RedirectToAction("Index", "Main");
                 }
                 TempData["InvalidUser"] = "Email or password incorrect!";

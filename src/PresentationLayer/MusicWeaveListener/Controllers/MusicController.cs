@@ -4,6 +4,7 @@ using ApplicationLayer.ViewModels;
 using DomainLayer.Entities;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Security.Claims;
 using UtilitiesLayer.Helpers;
 
 namespace MusicWeaveListener.Controllers
@@ -25,8 +26,8 @@ namespace MusicWeaveListener.Controllers
 
         public async Task<IActionResult> RecordView([FromBody] string musicId)
         {
-            var listener = await _servicesFacade.FindCurrentUserAsync();
-            if (musicId is null || listener is null) 
+            var listenerId = User.FindFirstValue(CookiesAndSessionsKeys.UserIdClaimKey);
+            if (musicId is null || listenerId is null) 
             {
                 return RedirectToAction(nameof(Error), new 
                 {
@@ -34,41 +35,39 @@ namespace MusicWeaveListener.Controllers
                 });
             }
 
-            if(_lastViewTime.ContainsKey(listener.Id))
+            if(_lastViewTime.ContainsKey(listenerId))
             {
-                DateTime lastViewTime = _lastViewTime[listener.Id];
+                DateTime lastViewTime = _lastViewTime[listenerId];
                 if(!TimeHelper.HasElapsedSinceLastView(lastViewTime))
                 {
                     return RedirectToAction("Index", "Main");
                 }
             }
 
-            _lastViewTime.Add(listener.Id, DateTime.Now);
-            await _servicesFacade.CreateMusicViewAsync(_factoriesFacade.FacMusicView(Guid.NewGuid().ToString(), listener.Id, musicId, DateTime.Now));
+            _lastViewTime.Add(listenerId, DateTime.Now);
+            await _servicesFacade.CreateMusicViewAsync(_factoriesFacade.FacMusicView(Guid.NewGuid().ToString(), listenerId, musicId, DateTime.Now));
             return RedirectToAction("Index", "Main");
         }
 
         public async Task<IActionResult> AddFromFavorites([FromBody] string musicId) 
         {
-            var listener = await _servicesFacade.FindCurrentUserAsync();
-            if(musicId is null || listener is null) 
+            if(musicId is null) 
             {
                 return RedirectToAction(nameof(Error), new { message = "Any reference null ocurred"});
             }
 
-            await _servicesFacade.CreateFavoriteMusicAsync(_factoriesFacade.FacFavoriteMusic(Guid.NewGuid().ToString(), musicId, listener.Id));
+            await _servicesFacade.CreateFavoriteMusicAsync(_factoriesFacade.FacFavoriteMusic(Guid.NewGuid().ToString(), musicId, User.FindFirstValue(CookiesAndSessionsKeys.UserIdClaimKey)));
             return RedirectToAction("Index", "Main");
         }
 
         public async Task<IActionResult> RemoveFromFavorites([FromBody] string musicId) 
         {
-            var listener = await _servicesFacade.FindCurrentUserAsync();
             if (musicId is null) 
             {
                 return RedirectToAction(nameof(Error), new { message = "Any reference null ocurred" });
             }
 
-            await _servicesFacade.DeleteFavoriteMusicAsync(musicId, listener.Id);
+            await _servicesFacade.DeleteFavoriteMusicAsync(musicId, User.FindFirstValue(CookiesAndSessionsKeys.UserIdClaimKey));
             return RedirectToAction("Index", "Main");
         }
 

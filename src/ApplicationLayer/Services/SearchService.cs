@@ -3,6 +3,7 @@ using DomainLayer.Entities;
 using DomainLayer.Exceptions;
 using DomainLayer.Interfaces;
 using Microsoft.AspNetCore.Http;
+using System.Collections.Specialized;
 
 namespace ApplicationLayer.Services
 {
@@ -19,15 +20,22 @@ namespace ApplicationLayer.Services
             _httpAcessor = httpAcessor;
         }
 
-        public T FindUserByName<T>(string name) where T : class, IEntityWithName<T>
+        public T FindUserByName<T>(string name) 
+            where T : class, IEntityWithName<T>
         {
             return _connectionDb.GetUserByName<T>(name);
         }
 
         public async Task<T> FindUserByNameAsync<T>(string name)
-            where T : class, IEntityWithName<T>
+            where T : class, IUser<T>
         {
             return await _connectionDb.GetUserByNameAsync<T>(name);
+        }
+
+        public async Task<T> FindUserByIdAsync<T>(string id) 
+            where T : IUser<T> 
+        {
+            return await _connectionDb.GetUserByIdAsync<T>(id);
         }
 
         public async Task<T> FindEntityByIdAsync<T>(string id)
@@ -48,10 +56,10 @@ namespace ApplicationLayer.Services
             return await _connectionDb.GetUserByNameAsync<T>(_httpAcessor.HttpContext.User.Identity.Name);
         }
 
-        public async Task<IEnumerable<Genre>> FindUserGenresAsync<T>(T user)
+        public async Task<IEnumerable<Genre>> FindUserGenresAsync<T>(string userId)
             where T : class, IUser<T>
         {
-            var userGenres = await _connectionDb.GetUserGenresAsync<T>(user.Id);
+            var userGenres = await _connectionDb.GetUserGenresAsync<T>(userId);
             return await _connectionDb.GetEntitiesByIdsAsync<Genre>(userGenres.Select(g => g.GenreId).ToList());
         }
 

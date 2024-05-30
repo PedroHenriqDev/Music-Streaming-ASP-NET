@@ -42,10 +42,10 @@ namespace ApplicationLayer.Factories
             return new DescriptionViewModel(artist.Description, artist.Name, artist.Id, await _generateTextService.GenerateArtistDescriptionAsync(artist));
         }
 
-        public async Task<IEnumerable<MusicViewModel>> FacMusicsVMAsync<T>(T user)
+        public async Task<IEnumerable<MusicViewModel>> FacMusicsVMAsync<T>(string userId)
            where T : class, IUser<T>
         {
-            IEnumerable<Genre> genres = await _searchService.FindUserGenresAsync(user);
+            IEnumerable<Genre> genres = await _searchService.FindUserGenresAsync<T>(userId);
             IEnumerable<Music> musics = await _searchService.FindMusicsByFkIdsAsync<Genre>(genres.Select(g => g.Id).ToList());
             IEnumerable<MusicData> musicDatas = await _storageService.DownloadMusicsAsync(musics.Select(m => m.Id).ToList());
 
@@ -85,9 +85,9 @@ namespace ApplicationLayer.Factories
             };
         }
 
-        public async Task<SearchMusics> FacSearchMusicVMAsync(Listener listener)
+        public async Task<SearchMusics> FacSearchMusicVMAsync(string listenerId)
         {
-            IEnumerable<Genre> genres = await _searchService.FindUserGenresAsync(listener);
+            IEnumerable<Genre> genres = await _searchService.FindUserGenresAsync<Listener>(listenerId);
             IEnumerable<Music> musics = await _searchService.FindMusicsByFkIdsAsync<Genre>(genres.Select(g => g.Id).ToList());
             IEnumerable<MusicData> musicDatas = await _storageService.DownloadMusicsAsync(musics.Select(m => m.Id).ToList());
 
@@ -100,9 +100,9 @@ namespace ApplicationLayer.Factories
             };
         }
 
-        public async Task<SearchMusics> FacSearchMusicVMAsync(List<string> foundMusicsIds, Listener listener)
+        public async Task<SearchMusics> FacSearchMusicVMAsync(List<string> foundMusicsIds, string listenerId)
         {
-            IEnumerable<Genre> genres = await _searchService.FindUserGenresAsync(listener);
+            IEnumerable<Genre> genres = await _searchService.FindUserGenresAsync<Listener>(listenerId);
             IEnumerable<Music> musicsSuggestion = await _searchService.FindMusicsByFkIdsAsync<Genre>(genres.Select(m => m.Id).ToList());
             IEnumerable<MusicData> musicSuggestionDatas = await _storageService.DownloadMusicsAsync(musicsSuggestion.Select(m => m.Id).ToList());
 

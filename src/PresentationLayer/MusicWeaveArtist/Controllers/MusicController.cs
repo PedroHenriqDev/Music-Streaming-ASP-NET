@@ -4,6 +4,7 @@ using DomainLayer.Entities;
 using DomainLayer.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using UtilitiesLayer.Helpers;
 
 namespace PresentationLayer.MusicWeaveArtist.Controllers
@@ -38,7 +39,7 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
             {
                 musicVM.PictureFile = musicImage;
                 musicVM.AudioFile = musicAudio;
-                await _servicesFacade.CreateMusicAsync(musicVM);
+                await _servicesFacade.CreateMusicAsync(musicVM, await _servicesFacade.FindUserByIdAsync(User.FindFirstValue(CookiesAndSessionsKeys.UserIdClaimKey)));
                 return RedirectToAction("ArtistPage", "Artist");
             }
             catch(MusicException ex) 

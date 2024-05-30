@@ -15,6 +15,7 @@ namespace ApplicationLayer.Services
         private readonly ConnectionDb _connectionDb;
         private readonly ModelFactory _modelFactory;
         private readonly CloudStorageService _storageService;
+        private readonly SearchService _searchService;
 
         public RecordService(
             ILogger<RecordService> logger,
@@ -50,10 +51,10 @@ namespace ApplicationLayer.Services
             }
         }
 
-        public async Task<EntityQuery<Music>> CreateMusicAsync(AddMusicViewModel musicVM)
+        public async Task<EntityQuery<Music>> CreateMusicAsync(AddMusicViewModel musicVM, Artist artist)
         {
             string id = Guid.NewGuid().ToString();
-            var music = await _modelFactory.FacMusicAsync(musicVM, id);
+            var music = await _modelFactory.FacMusicAsync(musicVM, artist, id);
             try 
             {
                 await _connectionDb.RecordMusicAsync(music);

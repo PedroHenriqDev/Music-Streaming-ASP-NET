@@ -197,5 +197,14 @@
                         '</div>');
                 }
             });
+
+            $('#addMusicForm button[type="submit"]').click(function () {
+                var musicIdsString = selectedMusicIds.join(',');
+
+                $('#MusicsToAdd').val(musicIdsString);
+
+                $('#addMusicForm').submit();
+            });
+        });
     </script>
 }

@@ -44,6 +44,11 @@ namespace ApplicationLayer.Services
                 claims.Add(new Claim("ProfilePictureUrl", pictureUrl));
             }
 
+            if(!claims.Any(c => c.Type == CookiesAndSessionsKeys.UserIdClaimKey)) 
+            {
+                claims.Add(new Claim(CookiesAndSessionsKeys.UserIdClaimKey, user.Id));
+            }
+
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var authProperties = new AuthenticationProperties();
 

@@ -140,13 +140,44 @@ namespace DataAccessLayer.Sql
         }
 
         public async Task<T> GetUserByNameAsync<T>(string name)
-            where T : IEntityWithName<T>
+            where T : IUser<T>
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
             {
                 await connection.OpenAsync();
-                string sqlQuery = $"SELECT * FROM {TableNameSanitization.GetPluralTableName<T>()} WHERE Name = @name";
+                string sqlQuery = @$"
+                                     SELECT 
+                                        u.Id,
+                                        u.Name,
+                                        u.PictureProfile,
+                                        u.Description
+                                     FROM {TableNameSanitization.GetPluralTableName<T>()} u 
+                                     WHERE
+                                        Name = @name";
                 return await connection.QueryFirstOrDefaultAsync<T>(sqlQuery, new { name = name });
+            }
+        }
+
+        public async Task<T> GetUserByIdAsync<T>(string id)
+            where T : IUser<T>
+        {
+            using(NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString())) 
+            {
+                await connection.OpenAsync();
+                string sqlQuery = $@"
+                                     SELECT 
+                                        u.Id,
+                                        u.name,
+                                        u.PictureProfile,
+                                        u.Description
+                                     FROM {TableNameSanitization.GetPluralTableName<T>()} u 
+                                     WHERE
+                                        id = id";
+
+                return await connection.QueryFirstOrDefaultAsync<T>(sqlQuery, new 
+                {
+                    id = id
+                });
             }
         }
 
@@ -187,22 +218,23 @@ namespace DataAccessLayer.Sql
             using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
             {
                 await connection.OpenAsync();
-                string sqlQuery = $@"SELECT
-                                m.Id, 
-                                m.Name,
-                                m.ArtistId,
-                                m.GenreId,
-                                m.Date,
-                                m.DateCreation,
-                                m.Duration,
-                                a.Id AS ArtistId,
-                                a.Name AS Name
-                                FROM 
-                                    Musics m
-                                INNER JOIN 
-                                    Artists a ON m.ArtistId = a.Id
-                                WHERE
-                                    m.Id IN ({FieldSanitization.JoinIds(ids)})";
+                string sqlQuery = $@"
+                                      SELECT
+                                        m.Id, 
+                                        m.Name,
+                                        m.ArtistId,
+                                        m.GenreId,
+                                        m.Date,
+                                        m.DateCreation,
+                                        m.Duration,
+                                        a.Id AS ArtistId,
+                                        a.Name AS Name
+                                      FROM 
+                                        Musics m
+                                      INNER JOIN 
+                                        Artists a ON m.ArtistId = a.Id
+                                      WHERE
+                                        m.Id IN ({FieldSanitization.JoinIds(ids)})";
 
                 var result = await connection.QueryAsync<Music, Artist, Music>(
                     sqlQuery, (music, artist) =>
@@ -376,7 +408,6 @@ namespace DataAccessLayer.Sql
                                 a.PictureProfile,
                                 l.Id,
                                 l.Name,
-                                l.Email,
                                 l.PictureProfile
                             FROM 
                                 Playlists p 
@@ -614,7 +645,11 @@ namespace DataAccessLayer.Sql
             {
                 await connection.OpenAsync();
                 string sqlQuery = $"UPDATE {TableNameSanitization.GetPluralTableName<T>()} SET PictureProfile = @pictureProfile WHERE Id = @id";
-                await connection.QueryAsync(sqlQuery, new { pictureProfile = user.PictureProfile, id = user.Id });
+                await connection.QueryAsync(sqlQuery, new 
+                {
+                    pictureProfile = user.PictureProfile, 
+                    id = user.Id
+                });
             }
         }
 
@@ -625,7 +660,10 @@ namespace DataAccessLayer.Sql
             {
                 await connection.OpenAsync();
                 string sqlQuery = $"UPDATE {TableNameSanitization.GetPluralTableName<T>()} SET Description = @description WHERE Id = @id";
-                await connection.QueryAsync<T>(sqlQuery, new { description = entity.Description, id = entity.Id });
+                await connection.QueryAsync<T>(sqlQuery, new 
+                {
+                    description = entity.Description, id = entity.Id 
+                });
             }
         }
 
@@ -636,7 +674,10 @@ namespace DataAccessLayer.Sql
             {
                 await connection.OpenAsync();
                 string sqlQuery = $"DELETE FROM {TableNameSanitization.GetPluralTableName<T>()} WHERE Id = @id";
-                await connection.QueryAsync(sqlQuery, new { id = id });
+                await connection.QueryAsync(sqlQuery, new 
+                {
+                    id = id 
+                });
             }
         }
 
