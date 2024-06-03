@@ -13,9 +13,9 @@ namespace ApplicationLayer.Facades.FactoriesFacade
             _viewModelFactory = viewModelFactory;
         }
 
-        public ListenerPageViewModel FacListenerPageVM(Listener listener)
+        public async Task<ListenerPageViewModel> FacListenerPageVMAsync(Listener listener)
         {
-            return _viewModelFactory.FacListenerPageVM(listener);
+            return await _viewModelFactory.FacListenerPageVMAsync(listener);
         }
 
         public async Task<DescriptionViewModel> FacListenerDescriptionVMAsync(Listener listener)

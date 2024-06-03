@@ -11,10 +11,10 @@ namespace ApplicationLayer.Facades.ServicesFacade
         {
             _searchService = searchService;
         }
-
-        public async Task<T> FindCurrentUserAsync()
+        
+        public async Task<T> FindUserByIdAsync(string userId)
         {
-            return await _searchService.FindCurrentUserAsync<T>();
+            return await _searchService.FindUserByIdAsync<T>(userId);
         }
     }
 }

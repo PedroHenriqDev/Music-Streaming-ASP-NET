@@ -17,7 +17,7 @@ namespace ApplicationLayer.Services
         {
             const int MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
 
-            if (string.IsNullOrWhiteSpace(imageFile) || user == null)
+            if (string.IsNullOrWhiteSpace(imageFile) || user is null)
             {
                 throw new ArgumentNullException("Object null exception.");
             }

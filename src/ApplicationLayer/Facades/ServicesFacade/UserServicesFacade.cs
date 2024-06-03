@@ -80,6 +80,11 @@ namespace ApplicationLayer.Facades.ServicesFacade
             return await _searchService.FindUserGenresAsync<T>(userId);
         }
 
+        public async Task<T> FindUserByIdAsync(string userId) 
+        {
+            return await _searchService.FindUserByIdAsync<T>(userId);
+        }
+
         public async Task<EntityQuery<T>> CreateUserAsync(RegisterUserViewModel userVM) 
         {
            return await _recordService.CreateUserAsync<T>(userVM);

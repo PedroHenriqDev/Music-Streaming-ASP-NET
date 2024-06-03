@@ -7,25 +7,26 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PresentationLayer.SharedControllers;
 using UtilitiesLayer.Helpers;
+using System.Security.Claims;
 
 namespace PresentationLayer.MusicWeaveListener.Controllers
 {
     public class ListenerController : UserController<Listener>
     {
         private readonly UserServicesFacade<Listener> _servicesFacade;
-        private readonly ListenerFactoriesFacade _listenerFactoriesFacade;
+        private readonly ListenerFactoriesFacade _factoriesFacade;
         private readonly UserFactoriesFacade<Listener> _userFactoriesFacade;
         private readonly IHttpContextAccessor _httpAccessor;
 
         public ListenerController(
             UserServicesFacade<Listener> servicesFacade,
-            ListenerFactoriesFacade listenerFactoriesFacade,
+            ListenerFactoriesFacade factoriesFacade,
             UserFactoriesFacade<Listener> userFactoriesFacade, 
             IHttpContextAccessor httpAccessor) 
             : base(servicesFacade, userFactoriesFacade, httpAccessor)
         {
             _servicesFacade = servicesFacade;
-            _listenerFactoriesFacade = listenerFactoriesFacade;
+            _factoriesFacade = factoriesFacade;
             _userFactoriesFacade = userFactoriesFacade;
             _httpAccessor = httpAccessor;
         }
@@ -47,13 +48,13 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
                 if (!_servicesFacade.VerifyUserGenres(listenerVM))
                 {
                     TempData["InvalidGenres"] = "You must select at least one genre!";
-                    listenerVM.Genres = HttpHelper.GetSessionValue<List<Genre>>(_httpAccessor, CookiesAndSessionsKeys.UserSessionKey);
+                    listenerVM.Genres = HttpHelper.GetSessionValue<List<Genre>>(_httpAccessor, SessionKeys.UserSessionKey);
                     return View("SelectGenres", listenerVM);
                 }
 
                 if (_servicesFacade.VerifyUser(listenerVM))
                 {
-                    HttpHelper.RemoveSessionValue(_httpAccessor, CookiesAndSessionsKeys.UserSessionKey);
+                    HttpHelper.RemoveSessionValue(_httpAccessor, SessionKeys.UserSessionKey);
                     EntityQuery<Listener> listenerQuery = await _servicesFacade.CreateUserAsync(listenerVM);
                     await _servicesFacade.SignInUserAsync(listenerQuery.Entity);
                     return RedirectToAction(nameof(CompleteRegistration));
@@ -75,14 +76,15 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ListenerPage()
         {
-            return View(_listenerFactoriesFacade.FacListenerPageVM(await _servicesFacade.FindCurrentUserAsync()));
+            var listenerPage = await _factoriesFacade.FacListenerPageVMAsync(await _servicesFacade.FindUserByIdAsync(User.FindFirstValue(CookieKeys.UserIdCookieKey)));
+            return View(listenerPage);
         }
 
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> EditDescription()
         {
-            var descriptionVM = await _listenerFactoriesFacade.FacListenerDescriptionVMAsync(await _servicesFacade.FindCurrentUserAsync());
+            var descriptionVM = await _factoriesFacade.FacListenerDescriptionVMAsync(await _servicesFacade.FindUserByIdAsync(User.FindFirstValue(CookieKeys.UserIdCookieKey)));
             return View(descriptionVM);
         }
     }

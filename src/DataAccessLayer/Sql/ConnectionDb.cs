@@ -69,20 +69,20 @@ namespace DataAccessLayer.Sql
                 string tableName = TableNameSanitization.GetPluralTableName<T>();
                 string fkField = FieldSanitization.ForeignKeyName<TR>();
                 var sqlQuery = $"SELECT * FROM {tableName} WHERE {fkField} = @fkid";
-                return await connection.QueryAsync<T>(sqlQuery, new 
+                return await connection.QueryAsync<T>(sqlQuery, new
                 {
                     fkId = fkId
                 });
             }
         }
 
-        public async Task<IEnumerable<FavoriteMusic>> GetFavoriteMusicsByListenerAsync(string listenerId) 
+        public async Task<IEnumerable<FavoriteMusic>> GetBasicFavoriteMusicsByListenerIdAsync(string listenerId)
         {
-            using(NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
+            using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
             {
                 await connection.OpenAsync();
                 string sqlQuery = "SELECT * FROM FavoriteMusics WHERE ListenerId = @listenerId";
-                return await connection.QueryAsync<FavoriteMusic>(sqlQuery, new 
+                return await connection.QueryAsync<FavoriteMusic>(sqlQuery, new
                 {
                     listenerId = listenerId
                 });
@@ -109,9 +109,9 @@ namespace DataAccessLayer.Sql
             {
                 await connection.OpenAsync();
                 string sqlQuery = $"SELECT * FROM {TableNameSanitization.GetPluralTableName<T>()} WHERE Email = @email AND Password = @password";
-                return await connection.QueryFirstOrDefaultAsync<T>(sqlQuery, new 
+                return await connection.QueryFirstOrDefaultAsync<T>(sqlQuery, new
                 {
-                    email = email, 
+                    email = email,
                     password = password
                 });
             }
@@ -161,7 +161,7 @@ namespace DataAccessLayer.Sql
         public async Task<T> GetUserByIdAsync<T>(string id)
             where T : IUser<T>
         {
-            using(NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString())) 
+            using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
             {
                 await connection.OpenAsync();
                 string sqlQuery = $@"
@@ -172,9 +172,9 @@ namespace DataAccessLayer.Sql
                                         u.Description
                                      FROM {TableNameSanitization.GetPluralTableName<T>()} u 
                                      WHERE
-                                        id = id";
+                                        id = @id";
 
-                return await connection.QueryFirstOrDefaultAsync<T>(sqlQuery, new 
+                return await connection.QueryFirstOrDefaultAsync<T>(sqlQuery, new
                 {
                     id = id
                 });
@@ -382,7 +382,44 @@ namespace DataAccessLayer.Sql
                 return result;
             }
         }
-        
+
+        public async Task<IEnumerable<Music>> GetDetailedFavoriteMusicsByListenerIdAsync(string listenerId)
+        {
+            using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
+            {
+                await connection.OpenAsync();
+                string sqlQuery = @$"
+                                  SELECT
+                                     m.Id,
+                                     m.Name,
+                                     m.GenreId,
+                                     m.Duration,
+                                     m.ArtistId,
+                                     a.Name,
+                                     a.Description,
+                                     a.PictureProfile,
+                                     f.ListenerId,
+                                     f.MusicId
+                                  FROM 
+                                     FavoriteMusics f
+                                  INNER JOIN
+                                     Musics m ON f.MusicId = m.Id
+                                  INNER JOIN
+                                     Artists a ON a.Id = m.ArtistId                                        
+                                  WHERE
+                                     f.ListenerId = @listenerId";
+
+                return await connection.QueryAsync<Music, Artist, Music>(sqlQuery,
+                     (music, artist) =>
+                     {
+                         music.Artist = artist;
+                         return music;
+                     },
+                     splitOn: "ArtistId",
+                     param: new { listenerId = listenerId });
+            }
+        }
+
         public async Task<IEnumerable<Playlist>> GetPlaylistsWithMusicsByListenerIdAsync(string listenerId)
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
@@ -448,9 +485,9 @@ namespace DataAccessLayer.Sql
             }
         }
 
-        public async Task RecordFavoriteMusicAsync(FavoriteMusic favoriteMusic) 
+        public async Task RecordFavoriteMusicAsync(FavoriteMusic favoriteMusic)
         {
-            using(NpgsqlConnection connection = new NpgsqlConnection( GetConnectionString())) 
+            using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
             {
                 await connection.OpenAsync();
                 string sqlQuery = @"INSERT INTO FavoriteMusics (Id, ListenerId, MusicId)
@@ -512,7 +549,7 @@ namespace DataAccessLayer.Sql
 
                         await transaction.CommitAsync();
                     }
-                    catch(Exception ex) 
+                    catch (Exception ex)
                     {
                         await transaction.RollbackAsync();
                         throw new RecordAssociationException($"An error unexpected error ocurred while genres were recorded, because this: {ex.Message}");
@@ -580,7 +617,7 @@ namespace DataAccessLayer.Sql
                         {
                             await connection.ExecuteAsync(sqlQuery, new
                             {
-                                id  = playlistMusic.Id,
+                                id = playlistMusic.Id,
                                 playlistId = playlistMusic.PlaylistId,
                                 listenerId = playlistMusic.ListenerId,
                                 musicId = playlistMusic.MusicId
@@ -599,22 +636,22 @@ namespace DataAccessLayer.Sql
             }
         }
 
-        public async Task RecordMusicViewAsync(MusicView musicView) 
+        public async Task RecordMusicViewAsync(MusicView musicView)
         {
-                using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
-                {
-                    await connection.OpenAsync();
-                    string sqlQuery = @"INSERT INTO MusicViews (Id, MusicId, ListenerId, CreatedAt) 
+            using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
+            {
+                await connection.OpenAsync();
+                string sqlQuery = @"INSERT INTO MusicViews (Id, MusicId, ListenerId, CreatedAt) 
                                     VALUES (@id, @musicId, @listenerId, @createdAt)";
 
-                    await connection.QueryAsync(sqlQuery, new
-                    {
-                        id = musicView.Id,
-                        musicId = musicView.MusicId,
-                        listenerId = musicView.ListenerId,
-                        createdAt = musicView.CreatedAt
-                    });
-                }
+                await connection.QueryAsync(sqlQuery, new
+                {
+                    id = musicView.Id,
+                    musicId = musicView.MusicId,
+                    listenerId = musicView.ListenerId,
+                    createdAt = musicView.CreatedAt
+                });
+            }
         }
 
         public async Task RecordPlaylistAsync(Playlist playlist)
@@ -645,9 +682,9 @@ namespace DataAccessLayer.Sql
             {
                 await connection.OpenAsync();
                 string sqlQuery = $"UPDATE {TableNameSanitization.GetPluralTableName<T>()} SET PictureProfile = @pictureProfile WHERE Id = @id";
-                await connection.QueryAsync(sqlQuery, new 
+                await connection.QueryAsync(sqlQuery, new
                 {
-                    pictureProfile = user.PictureProfile, 
+                    pictureProfile = user.PictureProfile,
                     id = user.Id
                 });
             }
@@ -660,9 +697,10 @@ namespace DataAccessLayer.Sql
             {
                 await connection.OpenAsync();
                 string sqlQuery = $"UPDATE {TableNameSanitization.GetPluralTableName<T>()} SET Description = @description WHERE Id = @id";
-                await connection.QueryAsync<T>(sqlQuery, new 
+                await connection.QueryAsync<T>(sqlQuery, new
                 {
-                    description = entity.Description, id = entity.Id 
+                    description = entity.Description,
+                    id = entity.Id
                 });
             }
         }
@@ -674,23 +712,23 @@ namespace DataAccessLayer.Sql
             {
                 await connection.OpenAsync();
                 string sqlQuery = $"DELETE FROM {TableNameSanitization.GetPluralTableName<T>()} WHERE Id = @id";
-                await connection.QueryAsync(sqlQuery, new 
+                await connection.QueryAsync(sqlQuery, new
                 {
-                    id = id 
+                    id = id
                 });
             }
         }
 
         public async Task RemoveFavoriteMusicAsync(string musicId, string listenerId)
         {
-            using(NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString())) 
+            using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
             {
                 await connection.OpenAsync();
                 string sqlQuery = $"DELETE FROM FavoriteMusics WHERE MusicId = @musicId AND ListenerId = @listenerId";
                 await connection.QueryAsync(sqlQuery, new
                 {
-                    musicId = musicId, 
-                    listenerId = listenerId 
+                    musicId = musicId,
+                    listenerId = listenerId
                 });
             }
         }

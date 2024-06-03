@@ -36,17 +36,13 @@ namespace ApplicationLayer.Services
             {
                 new Claim(ClaimTypes.Name, user.Name),
                 new Claim(ClaimTypes.Email, user.Email),
+                new Claim(CookieKeys.UserIdCookieKey, user.Id)
             };
 
             if (!(user.PictureProfile is null))
             {
                 string pictureUrl = await _pictureService.SavePictureProfileAsync(user.PictureProfile, _httpAcessor.HttpContext.Request.PathBase);
-                claims.Add(new Claim("ProfilePictureUrl", pictureUrl));
-            }
-
-            if(!claims.Any(c => c.Type == CookiesAndSessionsKeys.UserIdClaimKey)) 
-            {
-                claims.Add(new Claim(CookiesAndSessionsKeys.UserIdClaimKey, user.Id));
+                claims.Add(new Claim(CookieKeys.PictureProfileCookieKey, pictureUrl));
             }
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

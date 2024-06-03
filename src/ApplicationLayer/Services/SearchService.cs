@@ -73,9 +73,9 @@ namespace ApplicationLayer.Services
             }
         }
 
-        public async Task<IEnumerable<FavoriteMusic>> FindFavoriteMusicsByListenerAsync(string listenerId) 
+        public async Task<IEnumerable<FavoriteMusic>> FindBasicFavoriteMusicsByListenerIdAsync(string listenerId) 
         {
-            return await _connectionDb.GetFavoriteMusicsByListenerAsync(listenerId);
+            return await _connectionDb.GetBasicFavoriteMusicsByListenerIdAsync(listenerId);
         }
 
         public async Task<IEnumerable<T>> FindAllEntitiesAsync<T>()
@@ -126,6 +126,11 @@ namespace ApplicationLayer.Services
         public async Task<IEnumerable<Music>> FindMusicByIdsAsync(List<string> ids) 
         {
             return await _connectionDb.GetMusicsByIdsAsync(ids);
+        }
+
+        public async Task<IEnumerable<Music>>  FindDetailedFavoriteMusicsByListenerIdAsync(string listenerId) 
+        {
+            return await _connectionDb.GetDetailedFavoriteMusicsByListenerIdAsync(listenerId);
         }
 
         public async Task<IEnumerable<Playlist>> FindPlaylistsByListenerIdAsync(string listenerId) 

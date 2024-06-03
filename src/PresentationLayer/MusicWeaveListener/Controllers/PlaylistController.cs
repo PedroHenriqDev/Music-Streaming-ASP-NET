@@ -33,8 +33,8 @@ namespace MusicWeaveListener.Controllers
         {
             try 
             {
-                var playlistsVM = await _factoriesFacade.FacPlaylistViewModelsAsync(await _servicesFacade.FindPlaylistByListenerIdAsync(User.FindFirstValue(CookiesAndSessionsKeys.UserIdClaimKey)));
-                HttpHelper.SetSessionValue(_httpAccessor, CookiesAndSessionsKeys.PlaylistSessionKey, playlistsVM);
+                var playlistsVM = await _factoriesFacade.FacPlaylistViewModelsAsync(await _servicesFacade.FindPlaylistByListenerIdAsync(User.FindFirstValue(CookieKeys.UserIdCookieKey)));
+                HttpHelper.SetSessionValue(_httpAccessor, SessionKeys.PlaylistSessionKey, playlistsVM);
                 return View(playlistsVM);
             }
             catch(Exception ex) 
@@ -58,7 +58,7 @@ namespace MusicWeaveListener.Controllers
                 });
             }
 
-            var playlistsVM = HttpHelper.GetSessionValue<IEnumerable<PlaylistViewModel>>(_httpAccessor, CookiesAndSessionsKeys.PlaylistSessionKey);
+            var playlistsVM = HttpHelper.GetSessionValue<IEnumerable<PlaylistViewModel>>(_httpAccessor, SessionKeys.PlaylistSessionKey);
             var playlist = playlistsVM.FirstOrDefault(p => p.Id == playlistId);
             if(playlist is null) 
             {
@@ -92,10 +92,10 @@ namespace MusicWeaveListener.Controllers
             {
                 if (playlistVerify.IsValid)
                 {
-                    EntityQuery<Playlist> playlistQuery = await _servicesFacade.RecordPlaylistAsnyc(await _factoriesFacade.FacPlaylistAsync(playlistVM, User.FindFirstValue(CookiesAndSessionsKeys.UserIdClaimKey)));
+                    EntityQuery<Playlist> playlistQuery = await _servicesFacade.RecordPlaylistAsnyc(await _factoriesFacade.FacPlaylistAsync(playlistVM, User.FindFirstValue(CookieKeys.UserIdCookieKey)));
                     if (playlistQuery.Result)
                     {   
-                        HttpHelper.SetSessionValue(_httpAccessor, CookiesAndSessionsKeys.PlaylistIdSessionKey, playlistId);
+                        HttpHelper.SetSessionValue(_httpAccessor, SessionKeys.PlaylistIdSessionKey, playlistId);
                         return RedirectToAction(nameof(AddPlaylistMusics));
                     }
                     return View(playlistVM);
@@ -115,7 +115,7 @@ namespace MusicWeaveListener.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> AddPlaylistMusics()
         {
-            var model = await _factoriesFacade.FacSearchMusicVMAsync(User.FindFirstValue(CookiesAndSessionsKeys.UserIdClaimKey));
+            var model = await _factoriesFacade.FacSearchMusicVMAsync(User.FindFirstValue(CookieKeys.UserIdCookieKey));
             return View(model);
         }
 
@@ -129,8 +129,8 @@ namespace MusicWeaveListener.Controllers
                 return RedirectToAction(nameof(AddPlaylistMusics));
             }
 
-            var playlistQuery = await _servicesFacade.CreatePlaylistMusicsAsync(_factoriesFacade.FacPlaylistMusics(HttpHelper.GetSessionValue<string>(_httpAccessor, CookiesAndSessionsKeys.PlaylistIdSessionKey), User.FindFirstValue(CookiesAndSessionsKeys.UserIdClaimKey), musicsToAdd.ConvertStringJoinInList()));
-            HttpHelper.RemoveSessionValue(_httpAccessor, CookiesAndSessionsKeys.PlaylistIdSessionKey);
+            var playlistQuery = await _servicesFacade.CreatePlaylistMusicsAsync(_factoriesFacade.FacPlaylistMusics(HttpHelper.GetSessionValue<string>(_httpAccessor, SessionKeys.PlaylistIdSessionKey), User.FindFirstValue(CookieKeys.UserIdCookieKey), musicsToAdd.ConvertStringJoinInList()));
+            HttpHelper.RemoveSessionValue(_httpAccessor, SessionKeys.PlaylistIdSessionKey);
 
             if (playlistQuery.Result)
             {
@@ -147,7 +147,7 @@ namespace MusicWeaveListener.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> AddPlaylistFoundMusics(string foundMusicsIds)
         {
-            var model = await _factoriesFacade.FacSearchMusicVMAsync(foundMusicsIds.ConvertStringJoinInList(), User.FindFirstValue(CookiesAndSessionsKeys.UserIdClaimKey));
+            var model = await _factoriesFacade.FacSearchMusicVMAsync(foundMusicsIds.ConvertStringJoinInList(), User.FindFirstValue(CookieKeys.UserIdCookieKey));
             return View("AddPlaylistMusics", model);
         }
 

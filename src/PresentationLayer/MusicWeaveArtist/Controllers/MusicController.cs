@@ -39,7 +39,7 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
             {
                 musicVM.PictureFile = musicImage;
                 musicVM.AudioFile = musicAudio;
-                await _servicesFacade.CreateMusicAsync(musicVM, await _servicesFacade.FindUserByIdAsync(User.FindFirstValue(CookiesAndSessionsKeys.UserIdClaimKey)));
+                await _servicesFacade.CreateMusicAsync(musicVM, await _servicesFacade.FindUserByIdAsync(User.FindFirstValue(CookieKeys.UserIdCookieKey)));
                 return RedirectToAction("ArtistPage", "Artist");
             }
             catch(MusicException ex) 

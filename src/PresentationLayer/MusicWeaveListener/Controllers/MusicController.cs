@@ -26,7 +26,7 @@ namespace MusicWeaveListener.Controllers
 
         public async Task<IActionResult> RecordView([FromBody] string musicId)
         {
-            var listenerId = User.FindFirstValue(CookiesAndSessionsKeys.UserIdClaimKey);
+            var listenerId = User.FindFirstValue(CookieKeys.UserIdCookieKey);
             if (musicId is null || listenerId is null) 
             {
                 return RedirectToAction(nameof(Error), new 
@@ -56,7 +56,7 @@ namespace MusicWeaveListener.Controllers
                 return RedirectToAction(nameof(Error), new { message = "Any reference null ocurred"});
             }
 
-            await _servicesFacade.CreateFavoriteMusicAsync(_factoriesFacade.FacFavoriteMusic(Guid.NewGuid().ToString(), musicId, User.FindFirstValue(CookiesAndSessionsKeys.UserIdClaimKey)));
+            await _servicesFacade.CreateFavoriteMusicAsync(_factoriesFacade.FacFavoriteMusic(Guid.NewGuid().ToString(), musicId, User.FindFirstValue(CookieKeys.UserIdCookieKey)));
             return RedirectToAction("Index", "Main");
         }
 
@@ -67,7 +67,7 @@ namespace MusicWeaveListener.Controllers
                 return RedirectToAction(nameof(Error), new { message = "Any reference null ocurred" });
             }
 
-            await _servicesFacade.DeleteFavoriteMusicAsync(musicId, User.FindFirstValue(CookiesAndSessionsKeys.UserIdClaimKey));
+            await _servicesFacade.DeleteFavoriteMusicAsync(musicId, User.FindFirstValue(CookieKeys.UserIdCookieKey));
             return RedirectToAction("Index", "Main");
         }
 

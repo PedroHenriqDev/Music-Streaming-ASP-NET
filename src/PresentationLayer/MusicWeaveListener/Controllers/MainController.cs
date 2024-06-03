@@ -1,8 +1,11 @@
 using ApplicationLayer.Facades.FactoriesFacade;
 using ApplicationLayer.Facades.ServicesFacade;
+using ApplicationLayer.ViewModels;
 using DomainLayer.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using UtilitiesLayer.Helpers;
 
 namespace PresentationLayer.MusicWeaveListener.Controllers
 {
@@ -25,8 +28,8 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
         {
             if (User.Identity.IsAuthenticated) 
             {
-                var listener = await _servicesFacade.FindCurrentUserAsync();
-                var modelVM = await _factoriesFacades.FacMainVMAsync(await _factoriesFacades.FacCompleteMusicsVMAsync(listener), listener.Id);
+                Listener listener = await _servicesFacade.FindUserByIdAsync(User.FindFirstValue(CookieKeys.UserIdCookieKey));
+                MainViewModel modelVM = await _factoriesFacades.FacMainVMAsync(await _factoriesFacades.FacCompleteMusicsVMAsync(listener), listener.Id);
                 return View(modelVM);
             }
             return View();
