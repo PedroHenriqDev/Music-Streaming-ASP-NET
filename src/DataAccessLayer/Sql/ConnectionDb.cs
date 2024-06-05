@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using DataAccessLayer.Sanitization;
 using DomainLayer.Entities;
+using DomainLayer.Enums;
 using DomainLayer.Exceptions;
 using DomainLayer.Interfaces;
 using Microsoft.Extensions.Configuration;
@@ -257,28 +258,56 @@ namespace DataAccessLayer.Sql
             using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
             {
                 await connection.OpenAsync();
-                string sqlQuery = $@"
-                                     SELECT 
+                string sqlQuery = @"
+                                    SELECT 
                                         p.Id,
+                                        p.Image, 
                                         p.Name,
                                         p.CreateAt,
                                         p.ListenerId,
-                                        p.Image, 
                                         p.Visibility,
                                         p.Description,
-                                        l.Id,
-                                        l.Name
-                                     FROM 
+                                        l.Id as ListenerId,
+                                        l.Name as ListenerName,
+                                        pm.PlaylistId,
+                                        pm.MusicId,
+                                        m.Id as MusicId,
+                                        m.Name as MusicName
+                                    FROM 
                                         Playlists p
-                                     INNER JOIN
+                                    INNER JOIN
                                         Listeners l ON p.ListenerId = l.Id
-                                     WHERE 
-                                        LOWER(p.Name) LIKE LOWER('%' || @query || '%') 
+                                    INNER JOIN
+                                        PlaylistMusics pm ON pm.PlaylistId = p.Id
+                                    INNER JOIN
+                                        Musics m ON m.Id = pm.MusicId
+                                    WHERE 
+                                        (LOWER(p.Name) LIKE LOWER('%' || @query || '%') 
                                         OR LOWER(p.Description) LIKE LOWER('%' || @query || '%') 
-                                        OR LOWER(l.Name) LIKE LOWER ('%' || @query || '%')
-                                        AND p.Visibility = CAST(@visibility AS VisibilityType)";
+                                        OR LOWER(l.Name) LIKE LOWER('%' || @query || '%'))
+                                        AND p.Visibility = CAST(@visibility AS visibilitytype)";
 
-                return await connection.QueryAsync<Playlist>(sqlQuery, new { query = query, visibility = "public" });
+                var playlistDictionary = new Dictionary<string, Playlist>();
+
+                var result = await connection.QueryAsync<Playlist, Listener, PlaylistMusic, Music, Playlist>(
+                    sqlQuery,
+                    (playlist, listener, playlistMusic, music) =>
+                    {
+                        if (!playlistDictionary.TryGetValue(playlist.Id, out var playlistEntry))
+                        {
+                            playlistEntry = playlist;
+                            playlistEntry.Listener = listener;
+                            playlistEntry.Musics = new List<Music>();
+                            playlistDictionary.Add(playlistEntry.Id, playlistEntry);
+                        }
+
+                        ((List<Music>)playlistEntry.Musics).Add(music);
+                        return playlistEntry;
+                    },
+                    param: new { query = query, visibility = VisibilityType.Public.ToString().ToLower() },
+                    splitOn: "ListenerId,MusicId");
+
+                return playlistDictionary.Values.ToList();
             }
         }
 
@@ -479,7 +508,7 @@ namespace DataAccessLayer.Sql
                             FROM 
                                 Playlists p 
                             INNER JOIN
-                                PlaylistMusic pm ON p.Id = pm.PlaylistId
+                                PlaylistMusics pm ON p.Id = pm.PlaylistId
                             INNER JOIN
                                 Musics m ON pm.MusicId = m.Id
                             INNER JOIN
@@ -490,7 +519,6 @@ namespace DataAccessLayer.Sql
                                 p.ListenerId = @listenerId";
 
                 var playlistsDictionary = new Dictionary<string, Playlist>();
-
                 var result = await connection.QueryAsync<Playlist, Music, Artist, Listener, Playlist>(
                     sqlQuery,
                     (playlist, music, artist, listener) =>
@@ -637,7 +665,7 @@ namespace DataAccessLayer.Sql
             using (var connection = new NpgsqlConnection(GetConnectionString()))
             {
                 await connection.OpenAsync();
-                string sqlQuery = $@"INSERT INTO PlaylistMusic (Id, PlaylistId, ListenerId, MusicId) VALUES (@id, @playlistId, @listenerId, @musicId)";
+                string sqlQuery = $@"INSERT INTO PlaylistMusics (Id, PlaylistId, ListenerId, MusicId) VALUES (@id, @playlistId, @listenerId, @musicId)";
 
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
@@ -686,28 +714,23 @@ namespace DataAccessLayer.Sql
 
         public async Task RecordPlaylistAsync(Playlist playlist)
         {
-            try
+
+            using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
             {
-                using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
-                {
-                    await connection.OpenAsync();
-                    string sqlQuery = @"INSERT INTO Playlists (Id, Visibility, ListenerId, Name, Image, CreateAt, Description) 
+                await connection.OpenAsync();
+                string sqlQuery = @"INSERT INTO Playlists (Id, Visibility, ListenerId, Name, Image, CreateAt, Description) 
                    VALUES (@id, @visibility::visibilitytype, @listenerId, @name, @image, @createAt, @description)";
 
-                    await connection.QueryAsync(sqlQuery, new
-                    {
-                        id = playlist.Id,
-                        visibility = playlist.Visibility.ToString().ToLower(),
-                        name = playlist.Name,
-                        listenerId = playlist.ListenerId,
-                        image = playlist.Image, 
-                        createAt = playlist.CreateAt,
-                        description = playlist.Description
-                    });
-                }
-            }
-            catch(Exception ex) 
-            {
+                await connection.QueryAsync(sqlQuery, new
+                {
+                    id = playlist.Id,
+                    visibility = playlist.Visibility.ToString().ToLower(),
+                    name = playlist.Name,
+                    listenerId = playlist.ListenerId,
+                    image = playlist.Image,
+                    createAt = playlist.CreateAt,
+                    description = playlist.Description
+                });
             }
         }
 

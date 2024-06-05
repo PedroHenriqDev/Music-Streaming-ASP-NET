@@ -1,6 +1,147 @@
-﻿<div class="search-box">
+﻿@using DomainLayer.Entities;
+
+@model IEnumerable<Playlist>
+
+<style>
+    .search-box {
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .search-input {
+        width: 60%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    .search-button {
+        padding: 10px 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #f0f0f0;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+        .search-button:hover {
+            background-color: #e0e0e0;
+        }
+
+    .playlist-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .playlist-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+        padding: 20px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .playlist-item {
+        text-align: center;
+        padding: 15px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+        .playlist-item:hover {
+            transform: translateY(-5px);
+        }
+
+    .playlist-info {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .playlist-name {
+        font-weight: bold;
+        color: black;
+        margin-top: 10px;
+        font-size: 18px;
+    }
+
+    .playlist-count {
+        color: #888;
+        margin-top: 5px;
+    }
+
+    .play-button {
+        background-color: #008000;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 20px;
+        transition: background-color 0.3s ease;
+    }
+
+        .play-button:hover {
+            background-color: #15a94d;
+        }
+
+        .play-button i {
+            font-size: 24px;
+            color: white;
+        }
+
+    .playlist-image {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-bottom: 10px;
+    }
+
+    .add-playlist-button {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+    }
+
+    .card {
+        border-radius: 20px;
+        margin-top: 120px;
+    }
+</style>
+
+<div class="search-box">
     <form id="searchForm" asp-action="SearchPlaylists" asp-controller="Search" method="post">
         <input type="text" name="query" class="search-input bg-light text-dark" placeholder="Enter your search query...">
         <button type="submit" class="search-button bg-black text-light"><i class="bi bi-search"></i></button>
     </form>
 </div>
+
+@if (Model != null)
+{
+    <h2 class="text-center">Result of search</h2>
+    <div class="playlist-container text-center mx-auto" style="display: flex; flex-wrap: wrap; justify-content: center;">
+        @foreach (var playlist in Model)
+        {
+            <div class="playlist-item">
+                <div class="playlist-info">
+                    <img src="data:image/png;base64,@(Convert.ToBase64String(playlist.Image))" class="playlist-image" />
+                    <span class="playlist-name">@playlist.Name</span>
+                    <span class="playlist-count">@playlist.Musics.Count() songs</span>
+                    <form method="get" asp-controller="Playlist" asp-action="Playlist">
+                        <input type="hidden" name="playlistId" value="@playlist.Id" />
+                        <button type="submit" class="btn btn-dark text-black rounded-circle play-button">
+                            <i class="bi bi-text-center"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        }
+    </div>
+}
