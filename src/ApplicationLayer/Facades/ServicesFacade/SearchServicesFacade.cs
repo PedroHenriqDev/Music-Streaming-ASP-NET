@@ -16,5 +16,10 @@ namespace ApplicationLayer.Facades.ServicesFacade
         {
             return await _searchService.FindMusicsByQueryAsync(query);
         }
+
+        public async Task<IEnumerable<Playlist>> FindPlaylistsByQueryAsync(string query) 
+        {
+            return await _searchService.FindPlaylistsByQueryAsync(query);
+        }
     }
 }

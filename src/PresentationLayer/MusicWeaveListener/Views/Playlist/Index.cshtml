@@ -83,43 +83,58 @@
         bottom: 20px;
         right: 20px;
     }
+
+    .card {
+        border-radius: 20px;
+        margin-top: 120px;
+    }
 </style>
-
-
 
 @if (Model != null && Model.Any())
 {
-    <div class="playlist-header">
-        <h2>Your Playlists</h2>
-        <i class="bi bi-text-center" style="font-size: 40px;"></i>
-    </div>
-
-    <div class="playlist-container text-center mx-auto" style="display: flex; flex-wrap: wrap; justify-content: center;">
-        @foreach (var playlist in Model)
-        {
-            <div class="playlist-item">
-                <div class="playlist-info">
-                    <img src="data:image/png;base64,@(Convert.ToBase64String(playlist.Image))" class="playlist-image" />
-                    <span class="playlist-name">@playlist.Name</span>
-                    <span class="playlist-count">@playlist.Musics.Count() songs</span>
-                    <form method="get" asp-controller="Playlist" asp-action="Playlist">
-                        <input type="hidden" name="playlistId" value="@playlist.Id" />
-                        <button type="submit" class="btn btn-dark text-black rounded-circle play-button">
-                            <i class="bi bi-text-center"></i>
-                        </button>
-                    </form>
-                </div>
+    <div class="card shadow-lg">
+        <div class="card-body">
+            <div class="playlist-header">
+                <h2>Your Playlists</h2>
+                <i class="bi bi-text-center" style="font-size: 40px;"></i>
             </div>
-        }
+
+            <div class="playlist-container text-center mx-auto" style="display: flex; flex-wrap: wrap; justify-content: center;">
+                @foreach (var playlist in Model)
+                {
+                    <div class="playlist-item">
+                        <div class="playlist-info">
+                            <img src="data:image/png;base64,@(Convert.ToBase64String(playlist.Image))" class="playlist-image" />
+                            <span class="playlist-name">@playlist.Name</span>
+                            <span class="playlist-count">@playlist.Musics.Count() songs</span>
+                            <form method="get" asp-controller="Playlist" asp-action="Playlist">
+                                <input type="hidden" name="playlistId" value="@playlist.Id" />
+                                <button type="submit" class="btn btn-dark text-black rounded-circle play-button">
+                                    <i class="bi bi-text-center"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div style="position: fixed; bottom: 20px; right: 20px;">
+                <form method="get" asp-controller="Playlist" asp-action="CreatePlaylist">
+                    <button type="submit" class="btn btn-primary rounded-pill">
+                        Playlist <i class="bi bi-plus-lg"></i>
+                    </button>
+                </form>
+            </div>
+            <div style="position: fixed; bottom: 20px; right: 120px;">
+                <form method="get" asp-controller="Search" asp-action="SearchPlaylists">
+                    <button type="submit" class="btn btn-primary rounded-pill">
+                        Search <i class="bi bi-search"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
 
-    <div style="position: fixed; bottom: 20px; right: 20px;">
-        <form method="get" asp-controller="Playlist" asp-action="CreatePlaylist">
-            <button type="submit" class="btn btn-primary rounded-pill">
-                Playlist <i class="bi bi-plus-lg"></i>
-            </button>
-        </form>
-    </div>
 }
 else
 {
@@ -131,6 +146,12 @@ else
             </button>
         </form>
     </div>
-      
+    <div style="position: fixed; bottom: 20px; right: 20px;">
+        <form method="get" asp-controller="Search" asp-action="SearchPlaylists">
+            <button type="submit" class="btn btn-primary rounded-pill">
+                Search <i class="bi bi-search"></i>
+            </button>
+        </form>
+    </div>
 }
 

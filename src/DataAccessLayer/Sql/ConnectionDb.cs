@@ -252,6 +252,36 @@ namespace DataAccessLayer.Sql
             }
         }
 
+        public async Task<IEnumerable<Playlist>> GetPlaylistsByQueryAsync(string query)
+        {
+            using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
+            {
+                await connection.OpenAsync();
+                string sqlQuery = $@"
+                                     SELECT 
+                                        p.Id,
+                                        p.Name,
+                                        p.CreateAt,
+                                        p.ListenerId,
+                                        p.Image, 
+                                        p.Visibility,
+                                        p.Description,
+                                        l.Id,
+                                        l.Name
+                                     FROM 
+                                        Playlists p
+                                     INNER JOIN
+                                        Listeners l ON p.ListenerId = l.Id
+                                     WHERE 
+                                        LOWER(p.Name) LIKE LOWER('%' || @query || '%') 
+                                        OR LOWER(p.Description) LIKE LOWER('%' || @query || '%') 
+                                        OR LOWER(l.Name) LIKE LOWER ('%' || @query || '%')
+                                        AND p.Visibility = CAST(@visibility AS VisibilityType)";
+
+                return await connection.QueryAsync<Playlist>(sqlQuery, new { query = query, visibility = "public" });
+            }
+        }
+
         public async Task<IEnumerable<Music>> GetMusicsByQueryAsync(string query)
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
@@ -273,9 +303,9 @@ namespace DataAccessLayer.Sql
                                     INNER JOIN
                                         Artists a ON m.ArtistId = a.Id
                                     WHERE
-                                         LOWER(m.Name) LIKE LOWER ('%' || @query || '%')
-                                         OR LOWER (a.Name) LIKE LOWER ('%' || @query || '%')
-                                         OR LOWER (a.Description) LIKE LOWER('%' || @query || '%')";
+                                         LOWER(m.Name) LIKE LOWER('%' || @query || '%')
+                                         OR LOWER(a.Name) LIKE LOWER('%' || @query || '%')
+                                         OR LOWER(a.Description) LIKE LOWER('%' || @query || '%')";
 
                 var result = await connection.QueryAsync<Music, Artist, Music>(
                     sqlQuery,
@@ -656,22 +686,28 @@ namespace DataAccessLayer.Sql
 
         public async Task RecordPlaylistAsync(Playlist playlist)
         {
-            using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
+            try
             {
-                await connection.OpenAsync();
-                string sqlQuery = @"INSERT INTO Playlists (Id, Visibility, ListenerId, Name, Image, CreateAt, Description) 
+                using (NpgsqlConnection connection = new NpgsqlConnection(GetConnectionString()))
+                {
+                    await connection.OpenAsync();
+                    string sqlQuery = @"INSERT INTO Playlists (Id, Visibility, ListenerId, Name, Image, CreateAt, Description) 
                    VALUES (@id, @visibility::visibilitytype, @listenerId, @name, @image, @createAt, @description)";
 
-                await connection.QueryAsync(sqlQuery, new
-                {
-                    id = playlist.Id,
-                    visibility = playlist.Visibility.ToString(),
-                    name = playlist.Name,
-                    listenerId = playlist.ListenerId,
-                    image = playlist.Image,
-                    createAt = playlist.CreateAt,
-                    description = playlist.Description
-                });
+                    await connection.QueryAsync(sqlQuery, new
+                    {
+                        id = playlist.Id,
+                        visibility = playlist.Visibility.ToString().ToLower(),
+                        name = playlist.Name,
+                        listenerId = playlist.ListenerId,
+                        image = playlist.Image, 
+                        createAt = playlist.CreateAt,
+                        description = playlist.Description
+                    });
+                }
+            }
+            catch(Exception ex) 
+            {
             }
         }
 

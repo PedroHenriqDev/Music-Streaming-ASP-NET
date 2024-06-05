@@ -133,6 +133,11 @@ namespace ApplicationLayer.Services
             return await _connectionDb.GetDetailedFavoriteMusicsByListenerIdAsync(listenerId);
         }
 
+        public async Task<IEnumerable<Playlist>> FindPlaylistsByQueryAsync(string query)
+        {
+            return await _connectionDb.GetPlaylistsByQueryAsync(query);
+        }
+
         public async Task<IEnumerable<Playlist>> FindPlaylistsByListenerIdAsync(string listenerId) 
         {
             return await _connectionDb.GetPlaylistsWithMusicsByListenerIdAsync(listenerId);

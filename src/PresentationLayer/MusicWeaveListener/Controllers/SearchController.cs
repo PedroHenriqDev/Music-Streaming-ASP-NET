@@ -11,11 +11,32 @@ namespace MusicWeaveListener.Controllers
         private readonly ILogger<SearchController> _logger;
 
         public SearchController(
-            SearchServicesFacade servicesFacades, 
-            ILogger<SearchController> logger) 
+            SearchServicesFacade servicesFacades,
+            ILogger<SearchController> logger)
         {
             _servicesFacades = servicesFacades;
             _logger = logger;
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult SearchPlaylists()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SearchPlaylists(string query)
+        {
+            if (string.IsNullOrWhiteSpace(query)) 
+            {
+                return RedirectToAction(nameof(SearchPlaylists));
+            }
+
+            var foundPlaylists = await _servicesFacades.FindPlaylistsByQueryAsync(query);
+            return View(foundPlaylists);
         }
 
         [HttpPost]

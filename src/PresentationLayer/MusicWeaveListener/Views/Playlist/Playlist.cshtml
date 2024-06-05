@@ -1,49 +1,47 @@
 ﻿@model ApplicationLayer.ViewModels.PlaylistViewModel
 
 <div class="container">
-    <div class="row">
-        <div class="col-md-8 offset-md-2">
-            <h2 class="text-center mb-4">@Model.Name</h2>
-            <p class="text-center">Playlist - @Model.Listener.Name</p>
-            <p class="text-center">@Model.Description</p>
+    <div class="col-md-8 offset-md-2">
+        <h2 class="text-center mb-4">@Model.Name</h2>
+        <p class="text-center">Playlist - @Model.Listener.Name</p>
+        <p class="text-center">@Model.Description</p>
 
-            <div class="text-center mb-4">
-                <div class="playlist-image">
-                    <img src="data:image/png;base64,@(Convert.ToBase64String(Model.Image))" alt="Playlist Image" class="img-fluid rounded">
-                </div>
+        <div class="text-center mb-4">
+            <div class="playlist-image">
+                <img src="data:image/png;base64,@(Convert.ToBase64String(Model.Image))" alt="Playlist Image" class="img-fluid rounded">
             </div>
+        </div>
 
-            @if (Model.Musics != null && Model.Musics.Any())
-            {
-                <div class="card shadow-lg">
-                    <div class="card-body">
-                        <div class="music-container text-center mx-auto" style="display: flex; flex-wrap: wrap; justify-content: center;">
-                            @foreach (var music in Model.Musics)
-                            {
-                                <div class="music-item">
-                                    <div class="music-info">
-                                        <span class="artist-name">@music.DurationText<i class="bi bi-clock mx-2"></i></span>
-                                        <img src="data:image/png;base64,@(Convert.ToBase64String(music.MusicData.Picture))" class="music-image" />
-                                        <button type="button" class="btn btn-dark text-black rounded-circle play-button" id="playButton@(music.Music.Id)" onclick="togglePlayPause('@music.Music.Name', '@Convert.ToBase64String(music.MusicData.Audio)', this)">
-                                            <i class="bi bi-play-fill"></i>
-                                        </button>
-                                        <span class="music-name">@music.Music.Name</span>
-                                        <span class="artist-name">@music.Music.Artist.Name</span>
-                                    </div>
+        @if (Model.Musics != null && Model.Musics.Any())
+        {
+            <div class="card shadow-lg">
+                <div class="card-body">
+                    <div class="music-container text-center mx-auto" style="display: flex; flex-wrap: wrap; justify-content: center;">
+                        @foreach (var music in Model.Musics)
+                        {
+                            <div class="music-item">
+                                <div class="music-info">
+                                    <span class="artist-name">@music.DurationText<i class="bi bi-clock mx-2"></i></span>
+                                    <img src="data:image/png;base64,@(Convert.ToBase64String(music.MusicData.Picture))" class="music-image" />
+                                    <button type="button" class="btn btn-dark text-black rounded-circle play-button" id="playButton@(music.Music.Id)" onclick="togglePlayPause('@music.Music.Name', '@Convert.ToBase64String(music.MusicData.Audio)', this)">
+                                        <i class="bi bi-play-fill"></i>
+                                    </button>
+                                    <span class="music-name">@music.Music.Name</span>
+                                    <span class="artist-name">@music.Music.Artist.Name</span>
                                 </div>
-                            }
-                        </div>
+                            </div>
+                        }
                     </div>
                 </div>
-            }
-            else
-            {
-                <p class="text-center">No music found in this playlist.</p>
-            }
-
-            <div class="text-center mt-4">
-                <a href="@Url.Action("Index", "Playlist")" class="btn btn-primary">Back to Playlists</a>
             </div>
+        }
+        else
+        {
+            <p class="text-center">No music found in this playlist.</p>
+        }
+
+        <div class="text-center mt-4">
+            <a href="@Url.Action("Index", "Playlist")" class="btn btn-primary">Back to Playlists</a>
         </div>
     </div>
 </div>
