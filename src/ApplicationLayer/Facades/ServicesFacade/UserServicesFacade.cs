@@ -1,4 +1,5 @@
-﻿using ApplicationLayer.Services;
+﻿using ApplicationLayer.Factories;
+using ApplicationLayer.Services;
 using ApplicationLayer.ViewModels;
 using DomainLayer.Entities;
 using DomainLayer.Interfaces;
@@ -14,6 +15,8 @@ namespace ApplicationLayer.Facades.ServicesFacade
         private readonly PictureService _pictureService;
         private readonly VerifyService _verifyService;
         private readonly UpdateService _updateService;
+        private readonly DeleteService _deleteService;
+        private readonly ModelFactory _modelFactory;
 
         public UserServicesFacade(
             RecordService recordUserService,
@@ -22,7 +25,8 @@ namespace ApplicationLayer.Facades.ServicesFacade
             PictureService pictureService,
             UserAuthenticationService authenticationService,
             VerifyService verifyService,
-            UpdateService updateService)
+            UpdateService updateService, 
+            ModelFactory modelFactory)
         {
             _recordService = recordUserService;
             _loginService = loginService;
@@ -31,6 +35,7 @@ namespace ApplicationLayer.Facades.ServicesFacade
             _authenticationService = authenticationService;
             _verifyService = verifyService;
             _updateService = updateService;
+            _modelFactory = modelFactory;
         }
 
         public async Task<bool> LoginAsync(LoginViewModel loginVM)
@@ -85,9 +90,14 @@ namespace ApplicationLayer.Facades.ServicesFacade
             return await _searchService.FindUserByIdAsync<T>(userId);
         }
 
-        public async Task<EntityQuery<T>> CreateUserAsync(RegisterUserViewModel userVM) 
+        public async Task<EntityQuery<T>> CreateUserAsync(T user) 
         {
-           return await _recordService.CreateUserAsync<T>(userVM);
+           return await _recordService.CreateUserAsync<T>(user);
+        }
+
+        public async Task<EntityQuery<List<UserGenre<T>>>> CreateUserGenresAsync(List<UserGenre<T>> userGenres) 
+        {
+            return await _recordService.CreateUserGenresAsync<T>(userGenres);
         }
 
         public async Task UpdateDescriptionAsync<TR>(TR user)
@@ -109,6 +119,11 @@ namespace ApplicationLayer.Facades.ServicesFacade
         public void SetCookie<TR>(string key, TR value) 
         {
             _authenticationService.SetCookie(key, value);
+        }
+
+        public async Task DeleteEntityByIdAsync(string id) 
+        {
+            await _deleteService.DeleteEntityByIdAsync<T>(id);
         }
     }
 }

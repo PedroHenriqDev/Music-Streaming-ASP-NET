@@ -13,7 +13,7 @@ namespace ApplicationLayer.Services
             _updateService = updateService;
         }
 
-        public async Task AddPictureProfileAsync<T>(string imageFile, T user) where T : IUser<T>
+        public async Task AddPictureProfileAsync<T>(string imageFile, T user) where T : class, IUser<T>
         {
             const int MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
 

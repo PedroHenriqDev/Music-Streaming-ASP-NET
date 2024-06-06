@@ -3,6 +3,8 @@ using ApplicationLayer.Facades.ServicesFacade;
 using ApplicationLayer.Factories;
 using ApplicationLayer.Services;
 using DataAccessLayer.Cloud;
+using DataAccessLayer.Mappers;
+using DataAccessLayer.Repositories;
 using DataAccessLayer.Sql;
 using DomainLayer.Entities;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -32,7 +34,14 @@ builder.Services.AddScoped<MusicServicesFacade<Artist>>();
 builder.Services.AddScoped<ModelFactory>();
 builder.Services.AddScoped<ViewModelFactory>();
 builder.Services.AddScoped<ConnectionDb>();
+builder.Services.AddScoped<DataMapper>();
 builder.Services.AddScoped<ConnectionGoogleCloud>();
+builder.Services.AddScoped<MusicFactoriesFacade>();
+builder.Services.AddScoped<EntitiesAssociationRepository>();
+builder.Services.AddScoped<GenericRepository>();
+builder.Services.AddScoped<MusicRepository>();
+builder.Services.AddScoped<PlaylistRepository>();
+builder.Services.AddScoped<UserRepository>();
 
 builder.Services.AddHttpContextAccessor();
 

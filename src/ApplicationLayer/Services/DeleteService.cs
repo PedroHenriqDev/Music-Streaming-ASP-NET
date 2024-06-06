@@ -1,4 +1,5 @@
-﻿using DataAccessLayer.Sql;
+﻿using DataAccessLayer.Repositories;
+using DataAccessLayer.Sql;
 using DomainLayer.Interfaces;
 
 namespace ApplicationLayer.Services
@@ -6,14 +7,12 @@ namespace ApplicationLayer.Services
     public class DeleteService
     {
 
-        private readonly ConnectionDb _connectionDb;
         private readonly VerifyService _verifyService;
+        private readonly GenericRepository _genericRepository;
+        private readonly MusicRepository _musicRepository;
 
-        public DeleteService(
-            ConnectionDb connectionDb,
-            VerifyService verifyService) 
+        public DeleteService(VerifyService verifyService) 
         {
-            _connectionDb = connectionDb;
             _verifyService = verifyService;
         }
 
@@ -22,13 +21,13 @@ namespace ApplicationLayer.Services
         {
             if (await _verifyService.HasEntityInDbAsync<T>(id)) 
             {
-                await _connectionDb.RemoveEntityByIdAsync<T>(id);
+                await _genericRepository.RemoveEntityByIdAsync<T>(id);
             }
         }
 
         public async Task DeleteFavoriteMusic(string musicId, string listenerId)
         {
-            await _connectionDb.RemoveFavoriteMusicAsync(musicId, listenerId);
+            await _musicRepository.RemoveFavoriteMusicAsync(musicId, listenerId);
         }
     }
 }

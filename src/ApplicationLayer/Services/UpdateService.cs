@@ -1,27 +1,31 @@
-﻿using DataAccessLayer.Sql;
+﻿using DataAccessLayer.Repositories;
+using DataAccessLayer.Sql;
 using DomainLayer.Interfaces;
 
 namespace ApplicationLayer.Services
 {
     public class UpdateService
     {
-        private readonly ConnectionDb _connectionDb;
 
-        public UpdateService(ConnectionDb connectionDb)
+        private readonly UserRepository _userRepository;
+        private readonly GenericRepository _genericRepository;
+
+        public UpdateService(UserRepository userRepository, GenericRepository genericRepository)
         {
-            _connectionDb = connectionDb;
+            _userRepository = userRepository;
+            _genericRepository = genericRepository;
         }
 
         public async Task UpdateDescriptionAsync<T>(T entity) 
             where T : class, IEntityWithDescription<T>
         {
-            await _connectionDb.UpdateDescriptionAsync<T>(entity);
+            await _genericRepository.UpdateDescriptionAsync(entity);
         }
 
         public async Task UpdateUserPictureProfileAsync<T>(T user)  
-            where T : IUser<T>
+            where T : class, IUser<T>
         {
-            await _connectionDb.UpdateUserProfilePictureAsync(user);
+            await _userRepository.UpdateUserProfilePictureAsync(user);
         }
     }
 }

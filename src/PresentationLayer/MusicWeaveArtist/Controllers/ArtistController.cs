@@ -7,25 +7,26 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PresentationLayer.SharedControllers;
 using UtilitiesLayer.Helpers;
+using System.Security.Claims;
 
 namespace PresentationLayer.MusicWeaveArtist.Controllers
 {
     public class ArtistController : UserController<Artist>
     {
         private readonly UserServicesFacade<Artist> _servicesFacade;
-        private readonly ArtistFactoriesFacade _artistFactoriesFacade;
+        private readonly ArtistFactoriesFacade _factoriesFacade;
         private readonly UserFactoriesFacade<Artist> _userFactoriesFacade;
         private readonly IHttpContextAccessor _httpAccessor;
 
         public ArtistController(
             UserServicesFacade<Artist> servicesFacade, 
-            ArtistFactoriesFacade artistFactoriesFacade,
+            ArtistFactoriesFacade factoriesFacade,
             UserFactoriesFacade<Artist> userFactoriesFacade, 
             IHttpContextAccessor httpAccessor)
             : base(servicesFacade, userFactoriesFacade, httpAccessor)
         {
             _servicesFacade = servicesFacade;
-            _artistFactoriesFacade = artistFactoriesFacade;
+            _factoriesFacade = factoriesFacade;
             _userFactoriesFacade = userFactoriesFacade;
             _httpAccessor = httpAccessor;
         }
@@ -36,7 +37,7 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
         {   
             try
             {
-                ArtistPageViewModel artistPageVM = await _artistFactoriesFacade.FacArtistPageVMAsync(await _servicesFacade.FindCurrentUserAsync());
+                ArtistPageViewModel artistPageVM = await _factoriesFacade.FacArtistPageVMAsync(await _servicesFacade.FindCurrentUserAsync());
                 return View(artistPageVM);
             }
             catch (Exception ex)
@@ -75,9 +76,15 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
                 if (_servicesFacade.VerifyUser(artistVM))
                 {
                     HttpHelper.RemoveSessionValue(_httpAccessor, SessionKeys.UserSessionKey);
-                    EntityQuery<Artist> entityQuery = await _servicesFacade.CreateUserAsync(artistVM);
-                    await _servicesFacade.SignInUserAsync(entityQuery.Entity);
-                    return RedirectToAction(nameof(CompleteRegistration));
+                    EntityQuery<Artist> entityQuery = await _servicesFacade.CreateUserAsync(
+                                                      new Artist(Guid.NewGuid().ToString(), artistVM.Name, EncryptHelper.EncryptPasswordSHA512(artistVM.Password), artistVM.Email, artistVM.PhoneNumber, artistVM.BirthDate, DateTime.Now));
+                    if (entityQuery.Result) 
+                    {
+                        await _servicesFacade.CreateUserGenresAsync(_userFactoriesFacade.FacUserGenres(entityQuery.Entity.Id, artistVM.SelectedGenreIds));
+                        await _servicesFacade.SignInUserAsync(entityQuery.Entity);
+                        return RedirectToAction(nameof(CompleteRegistration));
+                    }
+                    
                 }
                 TempData["ErrorMessage"] = "Error creating object, some null parameter exists";
                 return View(artistVM);
@@ -93,7 +100,7 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> EditDescription()
         {
-            var descriptionVM = await _artistFactoriesFacade.FacArtistDescriptionVMAsync(await _servicesFacade.FindCurrentUserAsync());
+            var descriptionVM = await _factoriesFacade.FacArtistDescriptionVMAsync(await _servicesFacade.FindUserByIdAsync(User.FindFirstValue(CookieKeys.UserIdCookieKey)));
             return View(descriptionVM);
         }
     }

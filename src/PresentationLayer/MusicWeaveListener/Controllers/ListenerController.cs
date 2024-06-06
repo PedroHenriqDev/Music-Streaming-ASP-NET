@@ -21,8 +21,8 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
         public ListenerController(
             UserServicesFacade<Listener> servicesFacade,
             ListenerFactoriesFacade factoriesFacade,
-            UserFactoriesFacade<Listener> userFactoriesFacade, 
-            IHttpContextAccessor httpAccessor) 
+            UserFactoriesFacade<Listener> userFactoriesFacade,
+            IHttpContextAccessor httpAccessor)
             : base(servicesFacade, userFactoriesFacade, httpAccessor)
         {
             _servicesFacade = servicesFacade;
@@ -55,9 +55,15 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
                 if (_servicesFacade.VerifyUser(listenerVM))
                 {
                     HttpHelper.RemoveSessionValue(_httpAccessor, SessionKeys.UserSessionKey);
-                    EntityQuery<Listener> listenerQuery = await _servicesFacade.CreateUserAsync(listenerVM);
-                    await _servicesFacade.SignInUserAsync(listenerQuery.Entity);
-                    return RedirectToAction(nameof(CompleteRegistration));
+                    EntityQuery<Listener> listenerQuery = await _servicesFacade.CreateUserAsync(
+                                                            new Listener(Guid.NewGuid().ToString(), listenerVM.Name, EncryptHelper.EncryptPasswordSHA512(listenerVM.Password), listenerVM.Email, listenerVM.PhoneNumber, listenerVM.BirthDate, DateTime.Now));
+                    if (listenerQuery.Result) 
+                    {
+                        await _servicesFacade.CreateUserGenresAsync(_userFactoriesFacade.FacUserGenres(listenerQuery.Entity.Id, listenerVM.SelectedGenreIds));
+                        await _servicesFacade.SignInUserAsync(listenerQuery.Entity);
+                        return RedirectToAction(nameof(CompleteRegistration));
+                    }
+                    await _servicesFacade.DeleteEntityByIdAsync(listenerQuery.Entity.Id);
                 }
                 TempData["ErrorMessage"] = "Error creating object, some null parameter exists";
                 return View(listenerVM);
@@ -65,9 +71,9 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
             catch (RecordException<EntityQuery<Listener>> ex)
             {
                 string message = $"Exception: {ex.Message}, result: {ex.EntityQuery.Result}, Query: {ex.EntityQuery.Message}, Moment: {ex.EntityQuery.Moment}";
-                return RedirectToAction(nameof(Error), new 
+                return RedirectToAction(nameof(Error), new
                 {
-                    message = message 
+                    message = message
                 });
             }
         }
