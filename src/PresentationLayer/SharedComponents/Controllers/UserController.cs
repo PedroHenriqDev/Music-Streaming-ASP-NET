@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using UtilitiesLayer.Helpers;
 
-namespace PresentationLayer.SharedControllers
+namespace PresentationLayer.SharedComponents.Controllers
 {
     public class UserController<T> : Controller where T : class, IUser<T>, new()
     {
@@ -23,7 +23,7 @@ namespace PresentationLayer.SharedControllers
 
         public UserController(
             UserServicesFacade<T> servicesFacade,
-            UserFactoriesFacade<T> factoriesFacade, 
+            UserFactoriesFacade<T> factoriesFacade,
             IHttpContextAccessor httpAccessor)
         {
             _servicesFacade = servicesFacade;
@@ -58,7 +58,7 @@ namespace PresentationLayer.SharedControllers
             {
                 return RedirectToAction(nameof(Error), new
                 {
-                    message = ex.Message 
+                    message = ex.Message
                 });
             }
         }
@@ -114,7 +114,7 @@ namespace PresentationLayer.SharedControllers
             {
                 return RedirectToAction(nameof(Error), new
                 {
-                    message = ex.Message 
+                    message = ex.Message
                 });
             }
         }
@@ -139,7 +139,7 @@ namespace PresentationLayer.SharedControllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction(nameof(Error), new 
+                return RedirectToAction(nameof(Error), new
                 {
                     message = ex.Message
                 });
@@ -165,8 +165,8 @@ namespace PresentationLayer.SharedControllers
             catch (Exception ex)
             {
                 return RedirectToAction(nameof(Error), new
-                { 
-                    message = ex.Message 
+                {
+                    message = ex.Message
                 });
             }
         }
@@ -190,4 +190,4 @@ namespace PresentationLayer.SharedControllers
             });
         }
     }
-} 
+}

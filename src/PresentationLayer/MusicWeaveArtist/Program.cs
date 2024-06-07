@@ -9,7 +9,6 @@ using DataAccessLayer.Sql;
 using DomainLayer.Entities;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.FileProviders;
-using UtilitiesLayer.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 

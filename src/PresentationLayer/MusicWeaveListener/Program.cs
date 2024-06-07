@@ -9,6 +9,7 @@ using DataAccessLayer.Sql;
 using DomainLayer.Entities;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.FileProviders;
+using SharedComponents.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,6 +50,11 @@ builder.Services.AddScoped<PlaylistRepository>();
 builder.Services.AddScoped<UserRepository>();
 
 builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddControllers(options => 
+{
+    options.Filters.Add(typeof(GlobalExceptionFilter));
+});
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
 {

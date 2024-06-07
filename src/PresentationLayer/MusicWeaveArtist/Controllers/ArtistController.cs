@@ -3,9 +3,9 @@ using ApplicationLayer.Facades.ServicesFacade;
 using ApplicationLayer.Facades.FactoriesFacade;
 using DomainLayer.Entities;
 using DomainLayer.Exceptions;
+using PresentationLayer.SharedComponents.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PresentationLayer.SharedControllers;
 using UtilitiesLayer.Helpers;
 using System.Security.Claims;
 

@@ -6,7 +6,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicWeaveArtist", "src\Pre
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicWeaveListener", "src\PresentationLayer\MusicWeaveListener\MusicWeaveListener.csproj", "{0E028427-0AA8-42C9-8D52-CBCAB8335D4F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharedControllers", "src\PresentationLayer\SharedControllers\SharedControllers.csproj", "{1E1E3984-3E3C-456A-920C-8C44AAA82303}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharedComponents", "src\PresentationLayer\SharedComponents\SharedComponents.csproj", "{1E1E3984-3E3C-456A-920C-8C44AAA82303}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApplicationLayer", "src\ApplicationLayer\ApplicationLayer.csproj", "{E65865EE-001F-4EF4-AD60-1795689E62FD}"
 EndProject

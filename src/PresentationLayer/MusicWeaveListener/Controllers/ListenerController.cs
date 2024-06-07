@@ -5,7 +5,7 @@ using DomainLayer.Entities;
 using DomainLayer.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PresentationLayer.SharedControllers;
+using PresentationLayer.SharedComponents.Controllers;
 using UtilitiesLayer.Helpers;
 using System.Security.Claims;
 

@@ -16,7 +16,7 @@
     <ProjectReference Include="..\..\ApplicationLayer\ApplicationLayer.csproj" />
     <ProjectReference Include="..\..\DomainLayer\DomainLayer.csproj" />
     <ProjectReference Include="..\..\UtilitiesLayer\UtilitiesLayer.csproj" />
-    <ProjectReference Include="..\SharedControllers\SharedControllers.csproj" />
+    <ProjectReference Include="..\SharedComponents\SharedComponents.csproj" />
   </ItemGroup>
 
 </Project>
