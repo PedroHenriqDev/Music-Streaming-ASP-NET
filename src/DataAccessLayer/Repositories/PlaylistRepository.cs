@@ -62,13 +62,65 @@ namespace DataAccessLayer.Repositories
                     sqlQuery,
                     (playlist, music, artist, listener) =>
                     {
-                        return _mapper.MapPlaylist(playlist, playlistsDictionary, music, listener);
+                        return _mapper.MapPlaylistDictionary(playlist, playlistsDictionary, music, listener);
                     },
                     splitOn: "Id",
                     param: new { listenerId = listenerId }
                 );
 
                 return playlistsDictionary.Values;
+            }
+        }
+
+        public async Task<Playlist> GetPlaylistByIdAsync(string playlistId) 
+        {
+            using (NpgsqlConnection connection = new NpgsqlConnection(_connectionDb.GetConnectionString()))
+            {
+                await connection.OpenAsync();
+                string sqlQuery = @"
+                                    SELECT 
+                                        p.Id,
+                                        p.Description,
+                                        p.Image,
+                                        p.Name,
+                                        p.CreateAt,
+                                        p.ListenerId,
+                                        p.Visibility,
+                                        pm.PlaylistId,
+                                        pm.MusicId,
+                                        m.Id,
+                                        m.Name,
+                                        m.Date,
+                                        m.DateCreation,
+                                        m.ArtistId,
+                                        m.Duration,
+                                        a.Id AS ArtistId,
+                                        a.Name,
+                                        l.Id AS ListenerId,
+                                        l.Name
+                                    FROM 
+                                        PlaylistMusics pm 
+                                    INNER JOIN 
+                                        Playlists p ON p.Id = pm.PlaylistId
+                                    INNER JOIN
+                                        Musics m ON m.Id = pm.MusicId
+                                    INNER JOIN 
+                                        Artists a ON a.Id = m.ArtistId
+                                    INNER JOIN
+                                        Listeners l ON l.Id = p.ListenerId
+                                    WHERE
+                                        p.Id = @playlistId";
+
+                var playlistDictionary = new Dictionary<string , Playlist>();
+                var result = await connection.QueryAsync<Playlist, Music, Listener, Artist, Playlist>(sqlQuery, 
+                    (playlist, music, listener, artist) => 
+                    {
+                        return _mapper.MapPlaylistDictionary(playlist, playlistDictionary, _mapper.MapMusic(music, artist), listener);
+                    },
+                    splitOn: "Id,ArtistId,ListenerId",
+                    param: new { playlistId });
+
+                return playlistDictionary.Values.FirstOrDefault();
             }
         }
 
@@ -86,12 +138,12 @@ namespace DataAccessLayer.Repositories
                                         p.ListenerId,
                                         p.Visibility,
                                         p.Description,
-                                        l.Id as ListenerId,
-                                        l.Name as ListenerName,
+                                        l.Id AS ListenerId,
+                                        l.Name AS ListenerName,
                                         pm.PlaylistId,
                                         pm.MusicId,
-                                        m.Id as MusicId,
-                                        m.Name as MusicName
+                                        m.Id AS MusicId,
+                                        m.Name AS MusicName
                                     FROM 
                                         Playlists p
                                     INNER JOIN
@@ -112,7 +164,7 @@ namespace DataAccessLayer.Repositories
                     sqlQuery,
                     (playlist, listener, playlistMusic, music) =>
                     {
-                        return _mapper.MapPlaylist(playlist, playlistDictionary,music, listener);
+                        return _mapper.MapPlaylistDictionary(playlist, playlistDictionary,music, listener);
                     },
                     param: new { query = query, visibility = VisibilityType.Public.ToString().ToLower() },
                     splitOn: "ListenerId,MusicId");

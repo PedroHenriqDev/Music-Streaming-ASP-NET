@@ -6,6 +6,7 @@ using DataAccessLayer.Cloud;
 using DataAccessLayer.Mappers;
 using DataAccessLayer.Repositories;
 using DataAccessLayer.Sql;
+using DataAccessLayer.Validations;
 using DomainLayer.Entities;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.FileProviders;
@@ -48,6 +49,7 @@ builder.Services.AddScoped<GenericRepository>();
 builder.Services.AddScoped<MusicRepository>();
 builder.Services.AddScoped<PlaylistRepository>();
 builder.Services.AddScoped<UserRepository>();
+builder.Services.AddScoped<DataValidation>();
 
 builder.Services.AddHttpContextAccessor();
 

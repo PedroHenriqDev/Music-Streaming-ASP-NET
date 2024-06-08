@@ -37,9 +37,14 @@ namespace ApplicationLayer.Facades.FactoriesFacade
             return await _modelFactory.FacPlaylistAsync(playlistVM, listenerId);
         }
 
+        public async Task<PlaylistViewModel> FacPlaylistViewModelAsync(Playlist playlist) 
+        {
+            return await _viewModelFactory.FacPlaylistViewModelAsync(playlist);
+        }
+
         public async Task<IEnumerable<PlaylistViewModel>> FacPlaylistViewModelsAsync(IEnumerable<Playlist> playlists) 
         {
-            return await _viewModelFactory.FacPlaylistViewModels(playlists);
+            return await _viewModelFactory.FacPlaylistViewModelsAsync(playlists);
         }
     }
 }

@@ -16,11 +16,11 @@ namespace MusicWeaveListener.Controllers
         private readonly PlaylistServicesFacade _servicesFacade;
         private readonly PlaylistFactoriesFacades _factoriesFacade;
         private readonly IHttpContextAccessor _httpAccessor;
-        
-            public PlaylistController(
-            PlaylistServicesFacade servicesFacade, 
-            PlaylistFactoriesFacades factoriesFacades,
-            IHttpContextAccessor httpAccessor)
+
+        public PlaylistController(
+        PlaylistServicesFacade servicesFacade,
+        PlaylistFactoriesFacades factoriesFacades,
+        IHttpContextAccessor httpAccessor)
         {
             _servicesFacade = servicesFacade;
             _factoriesFacade = factoriesFacades;
@@ -31,15 +31,15 @@ namespace MusicWeaveListener.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-            try 
+            try
             {
                 var playlistsVM = await _factoriesFacade.FacPlaylistViewModelsAsync(await _servicesFacade.FindPlaylistByListenerIdAsync(User.FindFirstValue(CookieKeys.UserIdCookieKey)));
                 HttpHelper.SetSessionValue(_httpAccessor, SessionKeys.PlaylistSessionKey, playlistsVM);
                 return View(playlistsVM);
             }
-            catch(Exception ex) 
+            catch (Exception ex)
             {
-                return RedirectToAction(nameof(Error), new 
+                return RedirectToAction(nameof(Error), new
                 {
                     message = ex.Message
                 });
@@ -48,11 +48,26 @@ namespace MusicWeaveListener.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Playlist(string playlistId) 
+        public async Task<IActionResult> Playlist(string playlistId)
         {
-            if(playlistId is null)
+            if (playlistId is null)
             {
-                return RedirectToAction(nameof(Error), new 
+                return RedirectToAction(nameof(Error), new
+                {
+                    message = "An error ocurred, because reference null"
+                });
+            }
+
+            return View(await _factoriesFacade.FacPlaylistViewModelAsync(await _servicesFacade.FindPlaylistByIdAsync(playlistId)));
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult PlaylistFromSession(string playlistId)
+        {
+            if (playlistId is null)
+            {
+                return RedirectToAction(nameof(Error), new
                 {
                     message = "An error ocurred, because: Playlist choice is null"
                 });
@@ -60,13 +75,13 @@ namespace MusicWeaveListener.Controllers
 
             var playlistsVM = HttpHelper.GetSessionValue<IEnumerable<PlaylistViewModel>>(_httpAccessor, SessionKeys.PlaylistSessionKey);
             var playlist = playlistsVM.FirstOrDefault(p => p.Id == playlistId);
-            if(playlist is null) 
+            if (playlist is null)
             {
-                    return RedirectToAction(nameof(Error), new
-                    {
-                        message = "Not found playlist"
-                    });
-            }          
+                return RedirectToAction(nameof(Error), new
+                {
+                    message = "Not found playlist"
+                });
+            }
 
             return View(playlist);
         }
@@ -94,7 +109,7 @@ namespace MusicWeaveListener.Controllers
                 {
                     EntityQuery<Playlist> playlistQuery = await _servicesFacade.RecordPlaylistAsnyc(await _factoriesFacade.FacPlaylistAsync(playlistVM, User.FindFirstValue(CookieKeys.UserIdCookieKey)));
                     if (playlistQuery.Result)
-                    {   
+                    {
                         HttpHelper.SetSessionValue(_httpAccessor, SessionKeys.PlaylistIdSessionKey, playlistId);
                         return RedirectToAction(nameof(AddPlaylistMusics));
                     }
@@ -104,9 +119,9 @@ namespace MusicWeaveListener.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("Error", new 
+                return RedirectToAction("Error", new
                 {
-                    message = ex.Message 
+                    message = ex.Message
                 });
             }
         }
@@ -137,12 +152,12 @@ namespace MusicWeaveListener.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            return RedirectToAction(nameof(Error), new 
+            return RedirectToAction(nameof(Error), new
             {
-                message = playlistQuery.Message 
+                message = playlistQuery.Message
             });
         }
-        
+
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> AddPlaylistFoundMusics(string foundMusicsIds)

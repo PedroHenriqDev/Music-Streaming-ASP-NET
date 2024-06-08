@@ -107,7 +107,7 @@
                             <img src="data:image/png;base64,@(Convert.ToBase64String(playlist.Image))" class="playlist-image" />
                             <span class="playlist-name">@playlist.Name</span>
                             <span class="playlist-count">@playlist.Musics.Count() songs</span>
-                            <form method="get" asp-controller="Playlist" asp-action="Playlist">
+                            <form method="get" asp-controller="Playlist" asp-action="PlaylistFromSession">
                                 <input type="hidden" name="playlistId" value="@playlist.Id" />
                                 <button type="submit" class="btn btn-dark text-black rounded-circle play-button">
                                     <i class="bi bi-text-center"></i>

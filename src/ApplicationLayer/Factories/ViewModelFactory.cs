@@ -131,7 +131,24 @@ namespace ApplicationLayer.Factories
             };
         }
 
-        public async Task<IEnumerable<PlaylistViewModel>> FacPlaylistViewModels(IEnumerable<Playlist> playlists)
+        public async Task<PlaylistViewModel> FacPlaylistViewModelAsync(Playlist playlist) 
+        {
+            IEnumerable<MusicData> musicDatas = await _storageService.DownloadMusicsAsync(playlist.Musics.Select(m => m.Id));
+            return new PlaylistViewModel
+            {
+                Id = playlist.Id,
+                Description = playlist.Description,
+                Image = playlist.Image,
+                Name = playlist.Name,
+                Listener = playlist.Listener,
+                Musics = playlist.Musics.Join(musicDatas,
+                                        music => music.Id,
+                                        musicData => musicData.Id,
+                                        (music, musicData) => new MusicViewModel(music, musicData, MusicHelper.FormatMusicDuration(music.Duration)))
+            };
+        }
+
+        public async Task<IEnumerable<PlaylistViewModel>> FacPlaylistViewModelsAsync(IEnumerable<Playlist> playlists)
         {
             List<PlaylistViewModel> playlistViewModels = new List<PlaylistViewModel>();
 
@@ -146,9 +163,9 @@ namespace ApplicationLayer.Factories
                     Name = playlist.Name,
                     Listener = playlist.Listener,
                     Musics = playlist.Musics.Join(musicDatas, 
-                        music => music.Id,
-                        musicData => musicData.Id,
-                        (music, musicData) => new MusicViewModel(music, musicData, MusicHelper.FormatMusicDuration(music.Duration)))
+                                            music => music.Id,
+                                            musicData => musicData.Id,
+                                            (music, musicData) => new MusicViewModel(music, musicData, MusicHelper.FormatMusicDuration(music.Duration)))
                 });
             }
 
