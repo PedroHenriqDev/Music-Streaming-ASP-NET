@@ -35,6 +35,11 @@ namespace ApplicationLayer.Facades.ServicesFacade
             return await _searchService.FindAllEntitiesAsync<T>();
         }
 
+        public async Task<Music> FindDetailedMusicByIdAsync(string musicId) 
+        {
+            return await _searchService.FindDetailedMusicAsync(musicId);
+        }
+
         public async Task<T> FindUserByIdAsync(string id) 
         {
             return await _searchService.FindUserByIdAsync<T>(id);

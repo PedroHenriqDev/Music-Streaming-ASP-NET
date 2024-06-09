@@ -115,7 +115,7 @@ namespace DataAccessLayer.Repositories
                 var result = await connection.QueryAsync<Playlist, Music, Listener, Artist, Playlist>(sqlQuery, 
                     (playlist, music, listener, artist) => 
                     {
-                        return _mapper.MapPlaylistDictionary(playlist, playlistDictionary, _mapper.MapMusic(music, artist), listener);
+                        return _mapper.MapPlaylistDictionary(playlist, playlistDictionary, _mapper.MapMusicArtist(music, artist), listener);
                     },
                     splitOn: "Id,ArtistId,ListenerId",
                     param: new { playlistId });

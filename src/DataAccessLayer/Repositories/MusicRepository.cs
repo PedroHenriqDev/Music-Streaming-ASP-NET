@@ -45,7 +45,7 @@ namespace DataAccessLayer.Repositories
                 var result = await connection.QueryAsync<Music, Artist, Music>(
                     sqlQuery, (music, artist) =>
                     {
-                        return _mapper.MapMusic(music, artist);
+                        return _mapper.MapMusicArtist(music, artist);
                     },
                     splitOn: "ArtistId");
 
@@ -82,7 +82,7 @@ namespace DataAccessLayer.Repositories
                     sqlQuery,
                     (music, artist) =>
                     {
-                       return _mapper.MapMusic(music, artist);
+                       return _mapper.MapMusicArtist(music, artist);
                     },
                     splitOn: "ArtistId",
                     param: new { query });
@@ -122,7 +122,7 @@ namespace DataAccessLayer.Repositories
                     (sqlQuery,
                     (music, artist) =>
                     {
-                        return _mapper.MapMusic(music, artist);
+                        return _mapper.MapMusicArtist(music, artist);
                     },
                     splitOn: "ArtistId",
                     param: new { fkId });
@@ -161,7 +161,7 @@ namespace DataAccessLayer.Repositories
                         sqlQuery,
                         (music, artist) =>
                         {
-                            return _mapper.MapMusic(music, artist);
+                            return _mapper.MapMusicArtist(music, artist);
                         },
                         splitOn: "ArtistId",
                         param: new { fkIds });
@@ -212,10 +212,58 @@ namespace DataAccessLayer.Repositories
                 return await connection.QueryAsync<Music, Artist, Music>(sqlQuery,
                      (music, artist) =>
                      {
-                         return _mapper.MapMusic(music, artist);
+                         return _mapper.MapMusicArtist(music, artist);
                      },
                      splitOn: "ArtistId",
                      param: new { listenerId = listenerId });
+            }
+        }
+
+        public async Task<Music> GetMusicByIdAsync(string musicId)
+        {
+            using (NpgsqlConnection connection = new NpgsqlConnection(_connectionDb.GetConnectionString()))
+            {
+                await connection.OpenAsync();
+                string sqlQuery = @"
+            SELECT 
+                m.Id,
+                m.Name,
+                m.ArtistId,
+                m.GenreId,
+                m.Duration,
+                m.Date,
+                m.DateCreation,
+                a.Id,
+                a.Name,
+                a.Description,
+                a.DateCreation,
+                a.BirthDate,
+                a.PictureProfile,
+                mv.MusicId,
+                g.Id,
+                g.Name,
+                g.Description
+            FROM 
+                Musics m
+            INNER JOIN
+                Artists a ON a.Id = m.ArtistId
+            INNER JOIN
+                MusicViews mv ON mv.MusicId = m.Id
+            INNER JOIN
+                Genres g ON g.Id = m.GenreId
+            WHERE
+                m.Id = @musicId";
+
+                var musicDictionary = new Dictionary<string, Music>();
+                var result = await connection.QueryAsync<Music, Artist, MusicView, Genre, Music>(
+                    sqlQuery,
+                    (music, artist, musicView, genre) =>
+                    {
+                        return _mapper.MapMusicViews(_mapper.MapMusicArtist(music, artist), musicDictionary, musicView, genre);
+                    },
+                    splitOn: "Id,Id,MusicId,Id",
+                    param: new { musicId });
+                return musicDictionary.Values.FirstOrDefault();
             }
         }
 

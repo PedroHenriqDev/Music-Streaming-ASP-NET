@@ -23,9 +23,9 @@
         position: relative;
     }
 
-    .music-item:hover {
-        transform: translateY(-5px);
-    }
+        .music-item:hover {
+            transform: translateY(-5px);
+        }
 
     .music-info {
         display: flex;
@@ -57,14 +57,14 @@
         transition: background-color 0.3s ease;
     }
 
-    .play-button:hover {
-        background-color: #15a94d;
-    }
+        .play-button:hover {
+            background-color: #15a94d;
+        }
 
-    .play-button i {
-        font-size: 24px;
-        color: white;
-    }
+        .play-button i {
+            font-size: 24px;
+            color: white;
+        }
 
     .music-image {
         width: 120px;
@@ -72,6 +72,7 @@
         object-fit: cover;
         border-radius: 10px;
         margin-bottom: 10px;
+        cursor: pointer;
     }
 
     .card {
@@ -89,9 +90,9 @@
         cursor: pointer;
     }
 
-    .favorite-button:hover, .unfavorite-button:hover {
-        color: darkred;
-    }
+        .favorite-button:hover, .unfavorite-button:hover {
+            color: darkred;
+        }
 </style>
 
 @if (Model != null)
@@ -116,7 +117,9 @@
                         }
                         <div class="music-info">
                             <span class="artist-name">@music.DurationText<i class="bi bi-clock mx-2"></i></span>
-                            <img src="data:image/png;base64,@(Convert.ToBase64String(music.MusicData.Picture))" class="music-image" />
+                            <a href="@Url.Action("MusicDetails", "Music", new { musicId = music.Music.Id })">
+                                <img src="data:image/png;base64,@(Convert.ToBase64String(music.MusicData.Picture))" class="music-image" />
+                            </a>
                             <input type="hidden" name="musicId" value="@music.Music.Id" />
                             <button type="button" class="btn btn-dark text-black rounded-circle play-button" id="playButton@(music.Music.Id)" onclick="togglePlayPause('@music.Music.Name', '@Convert.ToBase64String(music.MusicData.Audio)', this)">
                                 <i class="bi bi-play-fill"></i>

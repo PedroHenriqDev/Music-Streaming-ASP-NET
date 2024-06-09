@@ -31,6 +31,21 @@ namespace DataAccessLayer.Validations
             }
         }
 
+        public void ValidateMusicObject(Music music, MusicView musicView)
+        {
+            if (music is null) 
+            {
+                _logger.LogError($"An error ocurred in method {nameof(ValidateMusicObject)} - because music is null");
+                throw new ArgumentNullException(nameof(music), "Music is null");
+            }
+            if (musicView is null) 
+            {
+                _logger.LogError($"An error ocurred in method {nameof(ValidateMusicObject)} - because music view is null");
+                throw new ArgumentNullException(nameof(musicView), "Music View is null");
+            }
+        }
+
+
         public void ValidateArtistObject(Artist artist) 
         {
             if(artist is null) 

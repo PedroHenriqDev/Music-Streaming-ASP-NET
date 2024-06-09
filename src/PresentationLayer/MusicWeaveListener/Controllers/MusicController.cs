@@ -27,18 +27,18 @@ namespace MusicWeaveListener.Controllers
         public async Task<IActionResult> RecordView([FromBody] string musicId)
         {
             var listenerId = User.FindFirstValue(CookieKeys.UserIdCookieKey);
-            if (musicId is null || listenerId is null) 
+            if (musicId is null || listenerId is null)
             {
-                return RedirectToAction(nameof(Error), new 
+                return RedirectToAction(nameof(Error), new
                 {
-                    message = "Any reference 'id' is null" 
+                    message = "Any reference 'id' is null"
                 });
             }
 
-            if(_lastViewTime.ContainsKey(listenerId))
+            if (_lastViewTime.ContainsKey(listenerId))
             {
                 DateTime lastViewTime = _lastViewTime[listenerId];
-                if(!TimeHelper.HasElapsedSinceLastView(lastViewTime))
+                if (!TimeHelper.HasElapsedSinceLastView(lastViewTime))
                 {
                     return RedirectToAction("Index", "Main");
                 }
@@ -49,20 +49,31 @@ namespace MusicWeaveListener.Controllers
             return RedirectToAction("Index", "Main");
         }
 
-        public async Task<IActionResult> AddFromFavorites([FromBody] string musicId) 
+        public async Task<IActionResult> AddFromFavorites([FromBody] string musicId)
         {
-            if(musicId is null) 
+            if (musicId is null)
             {
-                return RedirectToAction(nameof(Error), new { message = "Any reference null ocurred"});
+                return RedirectToAction(nameof(Error), new { message = "Any reference null ocurred" });
             }
 
             await _servicesFacade.CreateFavoriteMusicAsync(_factoriesFacade.FacFavoriteMusic(Guid.NewGuid().ToString(), musicId, User.FindFirstValue(CookieKeys.UserIdCookieKey)));
             return RedirectToAction("Index", "Main");
         }
 
-        public async Task<IActionResult> RemoveFromFavorites([FromBody] string musicId) 
+        public async Task<IActionResult> MusicDetails(string musicId)
         {
-            if (musicId is null) 
+            if (musicId is null)
+            {
+                return RedirectToAction(nameof(Error), new { message = "Any reference null ocurred" });
+            }
+
+            var music = await _servicesFacade.FindMusicByIdAsync(musicId);
+            return View();
+        }
+
+        public async Task<IActionResult> RemoveFromFavorites([FromBody] string musicId)
+        {
+            if (musicId is null)
             {
                 return RedirectToAction(nameof(Error), new { message = "Any reference null ocurred" });
             }

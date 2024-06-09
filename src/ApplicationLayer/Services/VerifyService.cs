@@ -17,7 +17,7 @@ namespace ApplicationLayer.Services
         public async Task<bool> HasNameInDbAsync<T>(string name)
             where T : class, IUser<T>
         {
-            if (await _searchService.FindUserByNameAsync<T>(name) != null)
+            if (await _searchService.FindUserByNameAsync<T>(name) is not null)
             {
                 return true;
             }
@@ -27,7 +27,7 @@ namespace ApplicationLayer.Services
         public async Task<bool> HasEmailInDbAsync<T>(string email)
             where T : class, IEntityWithEmail<T>
         {
-            if (await _searchService.FindEntityByEmailAsync<T>(email) != null)
+            if (await _searchService.FindEntityByEmailAsync<T>(email) is not null)
             {
                 return true;
             }
@@ -68,7 +68,7 @@ namespace ApplicationLayer.Services
 
         public bool VerifyUserGenres(RegisterUserViewModel userVM)
         {
-            return userVM.SelectedGenreIds != null && userVM.SelectedGenreIds.Any();
+            return userVM.SelectedGenreIds is not null && userVM.SelectedGenreIds.Any();
         }
 
         public bool VerifyUser(RegisterUserViewModel userVM)

@@ -168,7 +168,6 @@ namespace ApplicationLayer.Factories
                                             (music, musicData) => new MusicViewModel(music, musicData, MusicHelper.FormatMusicDuration(music.Duration)))
                 });
             }
-
             return playlistViewModels;
         }
     }
