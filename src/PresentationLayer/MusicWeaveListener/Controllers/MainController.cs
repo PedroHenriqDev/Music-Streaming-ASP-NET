@@ -29,7 +29,7 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
             if (User.Identity.IsAuthenticated) 
             {
                 Listener listener = await _servicesFacade.FindUserByIdAsync(User.FindFirstValue(CookieKeys.UserIdCookieKey));
-                MainViewModel modelVM = await _factoriesFacades.FacMainVMAsync(await _factoriesFacades.FacCompleteMusicsVMAsync(listener), listener.Id);
+                MainViewModel modelVM = await _factoriesFacades.FacMainVMAsync(await _factoriesFacades.FacMusicsVMAsync(listener), listener.Id);
                 return View(modelVM);
             }
             return View();

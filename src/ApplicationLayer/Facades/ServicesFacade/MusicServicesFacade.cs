@@ -1,5 +1,6 @@
 ﻿using ApplicationLayer.Services;
 using ApplicationLayer.ViewModels;
+using DataAccessLayer.Repositories;
 using DomainLayer.Entities;
 using DomainLayer.Interfaces;
 
@@ -11,17 +12,20 @@ namespace ApplicationLayer.Facades.ServicesFacade
         private readonly SearchService _searchService;
         private readonly VerifyService _verifyService;
         private readonly DeleteService _deleteService;
+        private readonly GenericRepository _genericRepository;
 
         public MusicServicesFacade(
             RecordService recordService,
             SearchService searchService,
             VerifyService verifyService,
-            DeleteService deleteService)
+            DeleteService deleteService,
+            GenericRepository genericRepository)
         {
             _recordService = recordService;
             _searchService = searchService;
             _verifyService = verifyService;
             _deleteService = deleteService;
+            _genericRepository = genericRepository;
         }
 
         public async Task<EntityQuery<Music>> CreateMusicAsync(AddMusicViewModel musicVM, Artist artist)
@@ -33,6 +37,12 @@ namespace ApplicationLayer.Facades.ServicesFacade
             where T : class, IEntity
         {
             return await _searchService.FindAllEntitiesAsync<T>();
+        }
+
+        public async Task<IEnumerable<TTable>> GetEntitiesByFKAsync<TTable, TField>(string fkId) 
+            where TField : class, IEntity where TTable : class, IEntity
+        {
+            return await _genericRepository.GetEntitiesByFKAsync<TTable, TField>(fkId);
         }
 
         public async Task<Music> FindDetailedMusicByIdAsync(string musicId) 

@@ -1,1 +1,198 @@
-﻿
+﻿@using ApplicationLayer.ViewModels
+@using System.Linq
+@using UtilitiesLayer.Extensions;
+
+@model MusicViewModel
+
+<style>
+    .music-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .music-item {
+        text-align: center;
+        padding: 20px;
+        background-color: #282828;
+        color: white;
+        width: 300px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        position: relative;
+    }
+
+        .music-item:hover {
+            transform: translateY(-5px);
+            transition: all 0.3s ease;
+        }
+
+    .music-info {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .music-name {
+        font-weight: bold;
+        margin-top: 10px;
+    }
+
+    .artist-name {
+        color: #888;
+        margin-top: 5px;
+    }
+
+    .play-button {
+        background-color: #008000;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 20px;
+        transition: background-color 0.3s ease;
+    }
+
+        .play-button:hover {
+            background-color: #15a94d;
+        }
+
+        .play-button i {
+            font-size: 24px;
+            color: white;
+        }
+
+    .music-image {
+        width: 200px;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-bottom: 10px;
+    }
+
+    .unfavorite-button, .favorite-button {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background-color: transparent;
+        border: none;
+        color: red;
+        font-size: 24px;
+        cursor: pointer;
+    }
+
+        .favorite-button:hover, .unfavorite-button:hover {
+            color: darkred;
+        }
+
+    .duration {
+        color: white;
+        font-size: 14px;
+    }
+</style>
+<div class="music-container">
+    <div class="music-item">
+        @if (Model.IsFavorite)
+        {
+            <button class="unfavorite-button" onclick="removeToFavorites('@Model.Music.Id')">
+                <i class="bi bi-heart-fill"></i>
+            </button>
+        }
+        else
+        {
+            <button class="favorite-button" onclick="addToFavorites('@Model.Music.Id')">
+                <i class="bi bi-heart"></i>
+            </button>
+        }
+
+        <div class="music-info">
+            @if (Model.Music.MusicViews is not null)
+            {
+                <span class="view-count">Views: @Model.Music.MusicViews.CountViews()</span>
+            }
+            <img src="data:image/png;base64,@(Convert.ToBase64String(Model.MusicData.Picture))" class="music-image" alt="@Model.Music.Name" />
+            <span class="music-name">@Model.Music.Name</span>
+            <span class="artist-name">@Model.Music.Artist.Name</span>
+            <span class="duration">@Model.DurationText</span>
+            <button type="button" class="btn play-button" id="playButton" onclick="togglePlayPause('@Model.Music.Name', '@Convert.ToBase64String(Model.MusicData.Audio)', this)">
+                <i class="bi bi-play-fill"></i>
+            </button>
+        </div>
+    </div>
+</div>
+<div class="music-container">
+    <div class="music-item">
+    </div>
+</div>
+
+<audio id="audioPlayer" hidden></audio>
+
+<script>
+    var audioPlayer = document.getElementById('audioPlayer');
+    var currentPlayingButton = null;
+
+    audioPlayer.addEventListener('ended', function () {
+        if (currentPlayingButton !== null) {
+            currentPlayingButton.innerHTML = '<i class="bi bi-play-fill"></i>';
+            currentPlayingButton = null;
+        }
+    });
+
+    function togglePlayPause(musicName, audioData, button) {
+        if (audioPlayer.paused || audioPlayer.src !== "data:audio/mp3;base64," + audioData) {
+            if (currentPlayingButton !== null && currentPlayingButton !== button) {
+                currentPlayingButton.innerHTML = '<i class="bi bi-play-fill"></i>';
+            }
+            audioPlayer.src = "data:audio/mp3;base64," + audioData;
+            audioPlayer.play();
+            button.innerHTML = '<i class="bi bi-pause-fill"></i>';
+            currentPlayingButton = button;
+        } else {
+            audioPlayer.pause();
+            button.innerHTML = '<i class="bi bi-play-fill"></i>';
+            currentPlayingButton = null;
+        }
+    }
+
+    async function addToFavorites(musicId) {
+        const response = await fetch('@Url.Action("AddToFavorites", "Music")', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(musicId)
+        });
+
+        if (response.ok) {
+            const button = document.querySelector(`button[onclick="addToFavorites('${musicId}')"]`);
+            if (button) {
+                button.className = 'unfavorite-button';
+                button.setAttribute('onclick', `removeToFavorites('${musicId}')`);
+                button.innerHTML = '<i class="bi bi-heart-fill"></i>';
+            }
+        }
+    }
+
+    async function removeToFavorites(musicId) {
+        const response = await fetch('@Url.Action("RemoveFromFavorites", "Music")', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(musicId)
+        });
+
+        if (response.ok) {
+            const button = document.querySelector(`button[onclick="removeToFavorites('${musicId}')"]`);
+            if (button) {
+                button.className = 'favorite-button';
+                button.setAttribute('onclick', `addToFavorites('${musicId}')`);
+                button.innerHTML = '<i class="bi bi-heart"></i>';
+            }
+        }
+    }
+</script>

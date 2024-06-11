@@ -14,9 +14,9 @@ namespace PresentationLayer.SharedComponents.Controllers
 {
     public class UserController<T> : Controller where T : class, IUser<T>, new()
     {
-        private readonly UserServicesFacade<T> _servicesFacade;
-        private readonly UserFactoriesFacade<T> _factoriesFacade;
-        private readonly IHttpContextAccessor _httpAccessor;
+        protected readonly UserServicesFacade<T> _servicesFacade;
+        protected readonly UserFactoriesFacade<T> _factoriesFacade;
+        protected readonly IHttpContextAccessor _httpAccessor;
         private string UserPageName => typeof(T).Name + "Page";
         private string CreateUser => $"Create{typeof(T).Name}";
 

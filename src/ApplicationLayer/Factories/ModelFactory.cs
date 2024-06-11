@@ -9,7 +9,6 @@ namespace ApplicationLayer.Factories
 {
     public class ModelFactory
     {
-
         private readonly ILogger<ModelFactory> _logger;
 
         public ModelFactory(ILogger<ModelFactory> logger) 

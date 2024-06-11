@@ -126,9 +126,9 @@ namespace ApplicationLayer.Services
             return await _playlistRepository.GetPlaylistsWithMusicsByListenerIdAsync(listenerId);
         }
         
-        public async Task<Music> FindMusicAsync(string musicId)
+        public async Task<Music> FindDetailedMusicAsync(string musicId)
         {
-            return await _musicRepository.GetMusicByIdAsync(musicId);
+            return await _musicRepository.GetDetailedMusicByIdAsync(musicId);
         }
 
         public async Task<Playlist> FindPlaylistByIdAsync(string playlistId)

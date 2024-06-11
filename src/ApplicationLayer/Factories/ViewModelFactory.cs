@@ -42,7 +42,7 @@ namespace ApplicationLayer.Factories
             return new DescriptionViewModel(artist.Description, artist.Name, artist.Id, await _generateTextService.GenerateArtistDescriptionAsync(artist));
         }
 
-        public async Task<IEnumerable<MusicViewModel>> FacMusicsVMAsync<T>(string userId)
+        public async Task<IEnumerable<MusicViewModel>> FacMusicsViewModelByUserIdAsync<T>(string userId)
            where T : class, IUser<T>
         {
             IEnumerable<Genre> genres = await _searchService.FindUserGenresAsync<T>(userId);
@@ -53,6 +53,18 @@ namespace ApplicationLayer.Factories
                                music => music.Id,
                                musicDatas => musicDatas.Id,
                                (music, musicData) => new MusicViewModel(music, musicData, MusicHelper.FormatMusicDuration(music.Duration)));
+        }
+
+        public async Task<MusicViewModel> FacMusicViewModelAsync(Music music, bool isFavorite) 
+        {
+            var musicData = await _storageService.DownloadMusicAsync(music.Id);
+            return new MusicViewModel
+            {
+                DurationText = MusicHelper.FormatMusicDuration(music.Duration),
+                MusicData = musicData,
+                Music = music,
+                IsFavorite = isFavorite
+            };
         }
 
         public async Task<MainViewModel> FacMainVMAsync(IEnumerable<MusicViewModel> musicsVM, string listenerId) 

@@ -36,6 +36,11 @@ namespace ApplicationLayer.Services
             }
         }
 
+        public async Task<MusicData> DownloadMusicAsync(string musicId) 
+        {
+            return await _connectionCloud.DownloadMusicAsync(musicId);
+        }
+
         public async Task<IEnumerable<MusicData>> DownloadMusicsAsync(IEnumerable<string> musicIds)
         {
            return await _connectionCloud.DownloadMusicsAsync(musicIds);

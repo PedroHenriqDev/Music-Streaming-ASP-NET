@@ -219,40 +219,40 @@ namespace DataAccessLayer.Repositories
             }
         }
 
-        public async Task<Music> GetMusicByIdAsync(string musicId)
+        public async Task<Music> GetDetailedMusicByIdAsync(string musicId)
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(_connectionDb.GetConnectionString()))
             {
                 await connection.OpenAsync();
                 string sqlQuery = @"
-            SELECT 
-                m.Id,
-                m.Name,
-                m.ArtistId,
-                m.GenreId,
-                m.Duration,
-                m.Date,
-                m.DateCreation,
-                a.Id,
-                a.Name,
-                a.Description,
-                a.DateCreation,
-                a.BirthDate,
-                a.PictureProfile,
-                mv.MusicId,
-                g.Id,
-                g.Name,
-                g.Description
-            FROM 
-                Musics m
-            INNER JOIN
-                Artists a ON a.Id = m.ArtistId
-            INNER JOIN
-                MusicViews mv ON mv.MusicId = m.Id
-            INNER JOIN
-                Genres g ON g.Id = m.GenreId
-            WHERE
-                m.Id = @musicId";
+                                    SELECT 
+                                        m.Id,
+                                        m.Name,
+                                        m.ArtistId,
+                                        m.GenreId,
+                                        m.Duration,
+                                        m.Date,
+                                        m.DateCreation,
+                                        a.Id,
+                                        a.Name,
+                                        a.Description,
+                                        a.DateCreation,
+                                        a.BirthDate,
+                                        a.PictureProfile,
+                                        mv.MusicId,
+                                        g.Id,
+                                        g.Name,
+                                        g.Description
+                                    FROM 
+                                        Musics m
+                                    INNER JOIN
+                                        Artists a ON a.Id = m.ArtistId
+                                    LEFT JOIN
+                                        MusicViews mv ON mv.MusicId = m.Id
+                                    INNER JOIN
+                                        Genres g ON g.Id = m.GenreId
+                                    WHERE
+                                        m.Id = @musicId";
 
                 var musicDictionary = new Dictionary<string, Music>();
                 var result = await connection.QueryAsync<Music, Artist, MusicView, Genre, Music>(
@@ -311,7 +311,7 @@ namespace DataAccessLayer.Repositories
             {
                 await connection.OpenAsync();
                 string sqlQuery = @"INSERT INTO FavoriteMusics (Id, ListenerId, MusicId)
-                                    VALUES (@id ,@listenerId, @musicId)";
+                                    VALUES (@id, @listenerId, @musicId)";
 
                 await connection.QueryAsync(sqlQuery, new
                 {

@@ -13,22 +13,15 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
 {
     public class ArtistController : UserController<Artist>
     {
-        private readonly UserServicesFacade<Artist> _servicesFacade;
-        private readonly ArtistFactoriesFacade _factoriesFacade;
-        private readonly UserFactoriesFacade<Artist> _userFactoriesFacade;
-        private readonly IHttpContextAccessor _httpAccessor;
+        private readonly ArtistFactoriesFacade _artistFactoriesFacade;
 
-        public ArtistController(
-            UserServicesFacade<Artist> servicesFacade, 
-            ArtistFactoriesFacade factoriesFacade,
+        public ArtistController(UserServicesFacade<Artist> servicesFacade, 
+            ArtistFactoriesFacade artistFactoriesFacade,
             UserFactoriesFacade<Artist> userFactoriesFacade, 
             IHttpContextAccessor httpAccessor)
             : base(servicesFacade, userFactoriesFacade, httpAccessor)
         {
-            _servicesFacade = servicesFacade;
-            _factoriesFacade = factoriesFacade;
-            _userFactoriesFacade = userFactoriesFacade;
-            _httpAccessor = httpAccessor;
+            _artistFactoriesFacade = artistFactoriesFacade;
         }
 
         [HttpGet]
@@ -37,7 +30,7 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
         {   
             try
             {
-                ArtistPageViewModel artistPageVM = await _factoriesFacade.FacArtistPageVMAsync(await _servicesFacade.FindCurrentUserAsync());
+                ArtistPageViewModel artistPageVM = await _artistFactoriesFacade.FacArtistPageVMAsync(await _servicesFacade.FindCurrentUserAsync());
                 return View(artistPageVM);
             }
             catch (Exception ex)
@@ -80,7 +73,7 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
                                                       new Artist(Guid.NewGuid().ToString(), artistVM.Name, EncryptHelper.EncryptPasswordSHA512(artistVM.Password), artistVM.Email, artistVM.PhoneNumber, artistVM.BirthDate, DateTime.Now));
                     if (entityQuery.Result) 
                     {
-                        await _servicesFacade.CreateUserGenresAsync(_userFactoriesFacade.FacUserGenres(entityQuery.Entity.Id, artistVM.SelectedGenreIds));
+                        await _servicesFacade.CreateUserGenresAsync(_factoriesFacade.FacUserGenres(entityQuery.Entity.Id, artistVM.SelectedGenreIds));
                         await _servicesFacade.SignInUserAsync(entityQuery.Entity);
                         return RedirectToAction(nameof(CompleteRegistration));
                     }
@@ -100,7 +93,7 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> EditDescription()
         {
-            var descriptionVM = await _factoriesFacade.FacArtistDescriptionVMAsync(await _servicesFacade.FindUserByIdAsync(User.FindFirstValue(CookieKeys.UserIdCookieKey)));
+            var descriptionVM = await _artistFactoriesFacade.FacArtistDescriptionVMAsync(await _servicesFacade.FindUserByIdAsync(User.FindFirstValue(CookieKeys.UserIdCookieKey)));
             return View(descriptionVM);
         }
     }

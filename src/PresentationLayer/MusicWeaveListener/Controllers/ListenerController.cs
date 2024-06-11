@@ -13,22 +13,16 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
 {
     public class ListenerController : UserController<Listener>
     {
-        private readonly UserServicesFacade<Listener> _servicesFacade;
-        private readonly ListenerFactoriesFacade _factoriesFacade;
-        private readonly UserFactoriesFacade<Listener> _userFactoriesFacade;
-        private readonly IHttpContextAccessor _httpAccessor;
+        private readonly ListenerFactoriesFacade _listenerFactoriesFacade;
 
         public ListenerController(
             UserServicesFacade<Listener> servicesFacade,
-            ListenerFactoriesFacade factoriesFacade,
-            UserFactoriesFacade<Listener> userFactoriesFacade,
-            IHttpContextAccessor httpAccessor)
-            : base(servicesFacade, userFactoriesFacade, httpAccessor)
+            UserFactoriesFacade<Listener> factoriesFacade,
+            IHttpContextAccessor httpAccessor,
+            ListenerFactoriesFacade listenerFactoriesFacade)
+            : base(servicesFacade, factoriesFacade, httpAccessor)
         {
-            _servicesFacade = servicesFacade;
-            _factoriesFacade = factoriesFacade;
-            _userFactoriesFacade = userFactoriesFacade;
-            _httpAccessor = httpAccessor;
+            _listenerFactoriesFacade = listenerFactoriesFacade;
         }
 
         [HttpGet]
@@ -59,7 +53,7 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
                                                             new Listener(Guid.NewGuid().ToString(), listenerVM.Name, EncryptHelper.EncryptPasswordSHA512(listenerVM.Password), listenerVM.Email, listenerVM.PhoneNumber, listenerVM.BirthDate, DateTime.Now));
                     if (listenerQuery.Result) 
                     {
-                        await _servicesFacade.CreateUserGenresAsync(_userFactoriesFacade.FacUserGenres(listenerQuery.Entity.Id, listenerVM.SelectedGenreIds));
+                        await _servicesFacade.CreateUserGenresAsync(_factoriesFacade.FacUserGenres(listenerQuery.Entity.Id, listenerVM.SelectedGenreIds));
                         await _servicesFacade.SignInUserAsync(listenerQuery.Entity);
                         return RedirectToAction(nameof(CompleteRegistration));
                     }
@@ -82,7 +76,7 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ListenerPage()
         {
-            var listenerPage = await _factoriesFacade.FacListenerPageVMAsync(await _servicesFacade.FindUserByIdAsync(User.FindFirstValue(CookieKeys.UserIdCookieKey)));
+            var listenerPage = await _listenerFactoriesFacade.FacListenerPageVMAsync(await _servicesFacade.FindUserByIdAsync(User.FindFirstValue(CookieKeys.UserIdCookieKey)));
             return View(listenerPage);
         }
 
@@ -90,7 +84,7 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> EditDescription()
         {
-            var descriptionVM = await _factoriesFacade.FacListenerDescriptionVMAsync(await _servicesFacade.FindUserByIdAsync(User.FindFirstValue(CookieKeys.UserIdCookieKey)));
+            var descriptionVM = await _listenerFactoriesFacade.FacListenerDescriptionVMAsync(await _servicesFacade.FindUserByIdAsync(User.FindFirstValue(CookieKeys.UserIdCookieKey)));
             return View(descriptionVM);
         }
     }

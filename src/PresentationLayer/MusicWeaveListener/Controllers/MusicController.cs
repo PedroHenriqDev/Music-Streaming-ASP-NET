@@ -67,8 +67,8 @@ namespace MusicWeaveListener.Controllers
                 return RedirectToAction(nameof(Error), new { message = "Any reference null ocurred" });
             }
 
-            var music = await _servicesFacade.FindMusicByIdAsync(musicId);
-            return View();
+            var favoriteMusics = await _servicesFacade.GetEntitiesByFKAsync<FavoriteMusic, Listener>(User.FindFirstValue(CookieKeys.UserIdCookieKey));
+            return View(await _factoriesFacade.FacMusicViewModelAsync(await _servicesFacade.FindDetailedMusicByIdAsync(musicId), favoriteMusics.Any(fm => fm.MusicId == musicId)));
         }
 
         public async Task<IActionResult> RemoveFromFavorites([FromBody] string musicId)
