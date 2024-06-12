@@ -12,20 +12,17 @@ namespace ApplicationLayer.Facades.ServicesFacade
         private readonly SearchService _searchService;
         private readonly VerifyService _verifyService;
         private readonly DeleteService _deleteService;
-        private readonly GenericRepository _genericRepository;
 
         public MusicServicesFacade(
             RecordService recordService,
             SearchService searchService,
             VerifyService verifyService,
-            DeleteService deleteService,
-            GenericRepository genericRepository)
+            DeleteService deleteService)
         {
             _recordService = recordService;
             _searchService = searchService;
             _verifyService = verifyService;
             _deleteService = deleteService;
-            _genericRepository = genericRepository;
         }
 
         public async Task<EntityQuery<Music>> CreateMusicAsync(AddMusicViewModel musicVM, Artist artist)
@@ -39,18 +36,18 @@ namespace ApplicationLayer.Facades.ServicesFacade
             return await _searchService.FindAllEntitiesAsync<T>();
         }
 
-        public async Task<IEnumerable<TTable>> GetEntitiesByFKAsync<TTable, TField>(string fkId) 
+        public async Task<IEnumerable<TTable>> GetEntitiesByFKAsync<TTable, TField>(string fkId)
             where TField : class, IEntity where TTable : class, IEntity
         {
-            return await _genericRepository.GetEntitiesByFKAsync<TTable, TField>(fkId);
+            return await _searchService.FindEntitiesByFKAsync<TTable, TField>(fkId);
         }
 
-        public async Task<Music> FindDetailedMusicByIdAsync(string musicId) 
+        public async Task<Music> FindDetailedMusicByIdAsync(string musicId)
         {
             return await _searchService.FindDetailedMusicAsync(musicId);
         }
 
-        public async Task<T> FindUserByIdAsync(string id) 
+        public async Task<T> FindUserByIdAsync(string id)
         {
             return await _searchService.FindUserByIdAsync<T>(id);
         }

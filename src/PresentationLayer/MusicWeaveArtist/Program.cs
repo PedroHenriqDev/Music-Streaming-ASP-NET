@@ -6,11 +6,22 @@ using DataAccessLayer.Cloud;
 using DataAccessLayer.Mappers;
 using DataAccessLayer.Repositories;
 using DataAccessLayer.Sql;
+using DataAccessLayer.UnitOfWork;
+using DataAccessLayer.Validations;
 using DomainLayer.Entities;
+using DomainLayer.Interfaces;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+async Task<UnitOfWork> CreateUnitOfWorkAsync(IServiceProvider provider, string connectionString) 
+{
+    var mapper = provider.GetRequiredService<DataMapper>();
+    return await UnitOfWork.CreateAsync(connectionString, mapper);
+}
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -36,11 +47,17 @@ builder.Services.AddScoped<ConnectionDb>();
 builder.Services.AddScoped<DataMapper>();
 builder.Services.AddScoped<ConnectionGoogleCloud>();
 builder.Services.AddScoped<MusicFactoriesFacade>();
-builder.Services.AddScoped<EntitiesAssociationRepository>();
-builder.Services.AddScoped<GenericRepository>();
-builder.Services.AddScoped<MusicRepository>();
-builder.Services.AddScoped<PlaylistRepository>();
-builder.Services.AddScoped<UserRepository>();
+builder.Services.AddScoped<IEntitiesAssociationRepository, EntitiesAssociationRepository>();
+builder.Services.AddScoped<IGenericRepository, GenericRepository>();
+builder.Services.AddScoped<IMusicRepository, MusicRepository>();
+builder.Services.AddScoped<IPlaylistRepository, PlaylistRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<DataValidation>();
+
+builder.Services.AddSingleton<IUnitOfWork>(provider =>
+{
+    return CreateUnitOfWorkAsync(provider, connectionString).GetAwaiter().GetResult();
+});
 
 builder.Services.AddHttpContextAccessor();
 

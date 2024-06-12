@@ -1,6 +1,7 @@
 ﻿using ApplicationLayer.Factories;
 using ApplicationLayer.ViewModels;
 using DataAccessLayer.Repositories;
+using DataAccessLayer.UnitOfWork;
 using DomainLayer.Entities;
 using DomainLayer.Exceptions;
 using DomainLayer.Interfaces;
@@ -13,31 +14,19 @@ namespace ApplicationLayer.Services
     public class RecordService
     {
         private readonly ILogger<RecordService> _logger;
-        private readonly UserRepository _userRepository;
-        private readonly MusicRepository _musicRepository;
-        private readonly GenericRepository _genericRepository;
-        private readonly EntitiesAssociationRepository _associationRepository;
-        private readonly PlaylistRepository _playlistRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly ModelFactory _modelFactory;
         private readonly CloudStorageService _storageService;
 
         public RecordService(ILogger<RecordService> logger,
+                             IUnitOfWork unitOfWork,
                              ModelFactory modelFactory, 
-                             UserRepository userRepository,
-                             MusicRepository musicRepository,
-                             GenericRepository genericRepository,
-                             EntitiesAssociationRepository associationRepository,
-                             PlaylistRepository playlistRepository,
                              CloudStorageService storageService)
         {
             _logger = logger;
             _modelFactory = modelFactory;
             _storageService = storageService;
-            _userRepository = userRepository;
-            _musicRepository = musicRepository;
-            _genericRepository = genericRepository;
-            _associationRepository = associationRepository;
-            _playlistRepository = playlistRepository;
+            _unitOfWork = unitOfWork;
             _storageService = storageService;
         }
 
@@ -46,7 +35,7 @@ namespace ApplicationLayer.Services
         {
             try
             {
-                await _userRepository.RecordUserAsync(user);
+                await _unitOfWork.UserRepository.RecordUserAsync(user);
                 return new EntityQuery<T>(true, $"{typeof(T).Name} created succesfully", user, DateTime.Now);
             }
             catch(Exception ex) 
@@ -61,7 +50,7 @@ namespace ApplicationLayer.Services
         {
             try
             {
-                await _associationRepository.RecordUserGenresAsync(userGenres);
+                await _unitOfWork.EntitiesAssociationRepository.RecordUserGenresAsync(userGenres);
                 return new EntityQuery<List<UserGenre<T>>>(true, $"{typeof(T).Name} created succesfully", userGenres, DateTime.Now);
             }
             catch (Exception ex) 
@@ -78,7 +67,7 @@ namespace ApplicationLayer.Services
             var music = await _modelFactory.FacMusicAsync(musicVM, artist, id);
             try 
             {
-                await _musicRepository.RecordMusicAsync(music);
+                await _unitOfWork.MusicRepository.RecordMusicAsync(music);
                 await _storageService.UploadMusicAsync(await _modelFactory.FacMusicDataAsync(musicVM, music.Id));
                 return new EntityQuery<Music>(true, "Create music successfully", music, DateTime.Now);
             }
@@ -86,7 +75,7 @@ namespace ApplicationLayer.Services
             {
                 if(ex is MusicException) 
                 {
-                    await _genericRepository.RemoveEntityByIdAsync<Music>(id);
+                    await _unitOfWork.GenericRepository.RemoveEntityByIdAsync<Music>(id);
                 }
                 return new EntityQuery<Music>(false, $"Unable to create song, because this error: {ex.Message}", music, DateTime.Now);
             }
@@ -96,7 +85,7 @@ namespace ApplicationLayer.Services
         {
             try 
             {
-                await _musicRepository.RecordMusicViewAsync(musicView);
+                await _unitOfWork.MusicRepository.RecordMusicViewAsync(musicView);
                 return new EntityQuery<MusicView>(true, "View record successfully", musicView, DateTime.Now);
             }
             catch(Exception ex)
@@ -110,7 +99,7 @@ namespace ApplicationLayer.Services
         {
             try
             {
-                await _musicRepository.RecordFavoriteMusicAsync(favoriteMusic);
+                await _unitOfWork.MusicRepository.RecordFavoriteMusicAsync(favoriteMusic);
                 return new EntityQuery<FavoriteMusic>(true, "Favorite music record successfully", favoriteMusic, DateTime.Now);
             }
             catch(Exception ex) 
@@ -124,7 +113,7 @@ namespace ApplicationLayer.Services
         {
             try     
             {
-                await _playlistRepository.RecordPlaylistAsync(playlist);
+                await _unitOfWork.PlaylistRepository.RecordPlaylistAsync(playlist);
                 return new EntityQuery<Playlist>(true, "Playlist created succesasfully", playlist, DateTime.Now);
             }
             catch(Exception ex) 
@@ -137,7 +126,7 @@ namespace ApplicationLayer.Services
         {
             try
             {
-                await _associationRepository.RecordPlaylistMusicsAsync(playlistMusics);
+                await _unitOfWork.EntitiesAssociationRepository.RecordPlaylistMusicsAsync(playlistMusics);
                 return new EntityQuery<IEnumerable<PlaylistMusic>>(true, "Record musics successfully", playlistMusics, DateTime.Now);
             }
             catch (QueryException ex)

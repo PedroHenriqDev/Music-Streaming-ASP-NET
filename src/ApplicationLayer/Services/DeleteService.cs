@@ -1,18 +1,16 @@
-﻿using DataAccessLayer.Repositories;
-using DataAccessLayer.Sql;
+﻿using DataAccessLayer.UnitOfWork;
 using DomainLayer.Interfaces;
 
 namespace ApplicationLayer.Services
 {
     public class DeleteService
     {
-
+        private readonly IUnitOfWork _unitOfWork;
         private readonly VerifyService _verifyService;
-        private readonly GenericRepository _genericRepository;
-        private readonly MusicRepository _musicRepository;
 
-        public DeleteService(VerifyService verifyService) 
+        public DeleteService(IUnitOfWork unitOfWork, VerifyService verifyService) 
         {
+            _unitOfWork = unitOfWork;
             _verifyService = verifyService;
         }
 
@@ -21,13 +19,13 @@ namespace ApplicationLayer.Services
         {
             if (await _verifyService.HasEntityInDbAsync<T>(id)) 
             {
-                await _genericRepository.RemoveEntityByIdAsync<T>(id);
+                await _unitOfWork.GenericRepository.RemoveEntityByIdAsync<T>(id);
             }
         }
 
         public async Task DeleteFavoriteMusic(string musicId, string listenerId)
         {
-            await _musicRepository.RemoveFavoriteMusicAsync(musicId, listenerId);
+            await  _unitOfWork.MusicRepository.RemoveFavoriteMusicAsync(musicId, listenerId);
         }
     }
 }
