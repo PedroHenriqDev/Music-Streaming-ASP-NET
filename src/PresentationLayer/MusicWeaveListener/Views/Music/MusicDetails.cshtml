@@ -1,33 +1,43 @@
 ﻿@using ApplicationLayer.ViewModels
-@using System.Linq
+@using System.Linq;
 @using UtilitiesLayer.Extensions;
 
 @model MusicViewModel
 
 <style>
-    .music-container {
+    .music-details-container {
         display: flex;
-        flex-direction: column;
-        align-items: center;
+        align-items: flex-start;
         justify-content: center;
         margin-top: 20px;
+        gap: 20px;
+        flex-wrap: wrap;
     }
 
-    .music-item {
+    .music-item, .music-details {
         text-align: center;
         padding: 20px;
         background-color: #282828;
         color: white;
-        width: 300px;
         border-radius: 10px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         position: relative;
+        width: 300px;
     }
 
-    .music-item:hover {
-         transform: translateY(-5px);
-         transition: all 0.3s ease;
+    .music-item {
+        width: 300px;
     }
+
+    .music-details {
+        width: 300px;
+        flex-grow: 1;
+    }
+
+        .music-item:hover, .music-details:hover {
+            transform: translateY(-5px);
+            transition: all 0.3s ease;
+        }
 
     .music-info {
         display: flex;
@@ -57,14 +67,14 @@
         transition: background-color 0.3s ease;
     }
 
-    .play-button:hover {
-         background-color: #15a94d;
-    }
+        .play-button:hover {
+            background-color: #15a94d;
+        }
 
-    .play-button i {
-         font-size: 24px;
-         color: white;
-    }
+        .play-button i {
+            font-size: 24px;
+            color: white;
+        }
 
     .music-image {
         width: 200px;
@@ -72,6 +82,11 @@
         object-fit: cover;
         border-radius: 10px;
         margin-bottom: 10px;
+    }
+
+    .info {
+        color: white;
+        margin-top: 10px;
     }
 
     .unfavorite-button, .favorite-button {
@@ -85,16 +100,41 @@
         cursor: pointer;
     }
 
-    .favorite-button:hover, .unfavorite-button:hover {
-        color: darkred;
-    }
+        .favorite-button:hover, .unfavorite-button:hover {
+            color: darkred;
+        }
 
     .duration {
         color: white;
         font-size: 14px;
     }
+
+    .artist-info {
+        display: flex;
+        align-items: center;
+        margin-top: 10px;
+    }
+
+        .artist-info img {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .artist-info button {
+            background-color: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+
+            .artist-info button:hover {
+                text-decoration: underline;
+            }
 </style>
-<div class="music-container">
+
+<div class="music-details-container">
     <div class="music-item">
         @if (Model.IsFavorite)
         {
@@ -110,10 +150,6 @@
         }
 
         <div class="music-info">
-            @if (Model.Music.MusicViews is not null)
-            {
-                <span class="view-count">Views: @Model.Music.MusicViews.CountViews()</span>
-            }
             <img src="data:image/png;base64,@(Convert.ToBase64String(Model.MusicData.Picture))" class="music-image" alt="@Model.Music.Name" />
             <span class="music-name">@Model.Music.Name</span>
             <span class="artist-name">@Model.Music.Artist.Name</span>
@@ -123,9 +159,58 @@
             </button>
         </div>
     </div>
-</div>
-<div class="music-container">
-    <div class="music-item">
+
+    <div class="music-details">
+        <div class="music-info">
+            @if (Model.Music.MusicViews != null)
+            {
+                <span class="info">Views: @Model.Music.MusicViews.CountViews()</span>
+            }
+        </div>
+    </div>
+
+    <div class="music-details">
+        <div class="music-info">
+            <span class="info">Name: @Model.Music.Name</span>
+        </div>
+    </div>
+
+    <div class="music-details">
+        <div class="music-info">
+            <div class="artist-info">
+                <form asp-action="" asp-controller="" method="get" style="display: inline;">
+                    <input type="hidden" name="name" value="@Model.Music.ArtistId" />
+                    <button class="btn text-white">
+                        <img src="data:image/png;base64,@(Convert.ToBase64String(Model.Music.Artist.PictureProfile))" class="img-fluid rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;" />
+                        @Model.Music.Artist.Name
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="music-details">
+        <div class="music-info">
+            <span class="info">Date creation: @Model.Music.DateCreation.ToString("MM/dd/yyyy")</span>
+        </div>
+    </div>
+
+    <div class="music-details">
+        <div class="music-info">
+            <span class="info">Genre: @Model.Music.Genre.Name</span>
+        </div>
+    </div>
+
+    <div class="music-details">
+        <div class="music-info">
+            <span class="info">Duration: @Model.DurationText</span>
+        </div>
+    </div>
+
+    <div class="music-details">
+        <div class="music-info">
+            <span class="info">@Model.Music.Genre.Description</span>
+        </div>
     </div>
 </div>
 

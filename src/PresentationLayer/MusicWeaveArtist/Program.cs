@@ -5,7 +5,6 @@ using ApplicationLayer.Services;
 using DataAccessLayer.Cloud;
 using DataAccessLayer.Mappers;
 using DataAccessLayer.Repositories;
-using DataAccessLayer.Sql;
 using DataAccessLayer.UnitOfWork;
 using DataAccessLayer.Validations;
 using DomainLayer.Entities;
@@ -43,8 +42,6 @@ builder.Services.AddScoped<UserFactoriesFacade<Artist>>();
 builder.Services.AddScoped<MusicServicesFacade<Artist>>();
 builder.Services.AddScoped<ModelFactory>();
 builder.Services.AddScoped<ViewModelFactory>();
-builder.Services.AddScoped<ConnectionDb>();
-builder.Services.AddScoped<DataMapper>();
 builder.Services.AddScoped<ConnectionGoogleCloud>();
 builder.Services.AddScoped<MusicFactoriesFacade>();
 builder.Services.AddScoped<IEntitiesAssociationRepository, EntitiesAssociationRepository>();
@@ -52,7 +49,8 @@ builder.Services.AddScoped<IGenericRepository, GenericRepository>();
 builder.Services.AddScoped<IMusicRepository, MusicRepository>();
 builder.Services.AddScoped<IPlaylistRepository, PlaylistRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<DataValidation>();
+builder.Services.AddTransient<DataMapper>();
+builder.Services.AddTransient<DataValidation>();
 
 builder.Services.AddSingleton<IUnitOfWork>(provider =>
 {
