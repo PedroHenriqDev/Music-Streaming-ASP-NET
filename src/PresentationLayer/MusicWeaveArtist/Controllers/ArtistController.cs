@@ -1,6 +1,4 @@
 ﻿using ApplicationLayer.ViewModels;
-using ApplicationLayer.Facades.ServicesFacade;
-using ApplicationLayer.Facades.FactoriesFacade;
 using DomainLayer.Entities;
 using DomainLayer.Exceptions;
 using PresentationLayer.SharedComponents.Controllers;
@@ -8,20 +6,30 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UtilitiesLayer.Helpers;
 using System.Security.Claims;
+using ApplicationLayer.Factories;
+using ApplicationLayer.Services;
 
 namespace PresentationLayer.MusicWeaveArtist.Controllers
 {
     public class ArtistController : UserController<Artist>
     {
-        private readonly ArtistFactoriesFacade _artistFactoriesFacade;
+        private readonly ViewModelFactory _viewModelFactory;
+        private readonly RecordService _recordService;
 
-        public ArtistController(UserServicesFacade<Artist> servicesFacade, 
-            ArtistFactoriesFacade artistFactoriesFacade,
-            UserFactoriesFacade<Artist> userFactoriesFacade, 
-            IHttpContextAccessor httpAccessor)
-            : base(servicesFacade, userFactoriesFacade, httpAccessor)
+        public ArtistController(LoginService<Artist> loginService,
+                              SearchService searchService,
+                              UserAuthenticationService authenticationService,
+                              VerifyService verifyService,
+                              PictureService pictureService,
+                              UpdateService updateService,
+                              ModelFactory modelFactory,
+                              IHttpContextAccessor httpAccessor,
+                              ViewModelFactory viewModelFactory,
+                              RecordService recordService)
+            : base(loginService, searchService, authenticationService, verifyService, pictureService, updateService, modelFactory, httpAccessor)
         {
-            _artistFactoriesFacade = artistFactoriesFacade;
+            _viewModelFactory = viewModelFactory;
+            _recordService = recordService;
         }
 
         [HttpGet]
@@ -30,7 +38,7 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
         {   
             try
             {
-                ArtistPageViewModel artistPageVM = await _artistFactoriesFacade.FacArtistPageVMAsync(await _servicesFacade.FindCurrentUserAsync());
+                ArtistPageViewModel artistPageVM = await _viewModelFactory.FacArtistPageVMAsync(await _searchService.FindUserByIdAsync<Artist>(User.FindFirstValue(CookieKeys.UserIdCookieKey)));
                 return View(artistPageVM);
             }
             catch (Exception ex)
@@ -58,7 +66,7 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> CreateArtist(RegisterUserViewModel artistVM)
         {
-            if (!_servicesFacade.VerifyUserGenres(artistVM))
+            if (!_verifyService.VerifyUserGenres(artistVM))
             {
                 TempData["InvalidGenres"] = "You must select at least one genre!";
                 artistVM.Genres = HttpHelper.GetSessionValue<List<Genre>>(_httpAccessor, SessionKeys.UserSessionKey);
@@ -66,15 +74,15 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
             }
             try
             {
-                if (_servicesFacade.VerifyUser(artistVM))
+                if (_verifyService.VerifyUser(artistVM))
                 {
                     HttpHelper.RemoveSessionValue(_httpAccessor, SessionKeys.UserSessionKey);
-                    EntityQuery<Artist> entityQuery = await _servicesFacade.CreateUserAsync(
+                    EntityQuery<Artist> entityQuery = await _recordService.CreateUserAsync(
                                                       new Artist(Guid.NewGuid().ToString(), artistVM.Name, EncryptHelper.EncryptPasswordSHA512(artistVM.Password), artistVM.Email, artistVM.PhoneNumber, artistVM.BirthDate, DateTime.Now));
                     if (entityQuery.Result) 
                     {
-                        await _servicesFacade.CreateUserGenresAsync(_factoriesFacade.FacUserGenres(entityQuery.Entity.Id, artistVM.SelectedGenreIds));
-                        await _servicesFacade.SignInUserAsync(entityQuery.Entity);
+                        await _recordService.CreateUserGenresAsync(_modelFactory.FacUserGenres<Artist>(entityQuery.Entity.Id, artistVM.SelectedGenreIds));
+                        await _authenticationService.SignInUserAsync(entityQuery.Entity);
                         return RedirectToAction(nameof(CompleteRegistration));
                     }
                     
@@ -93,7 +101,7 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> EditDescription()
         {
-            var descriptionVM = await _artistFactoriesFacade.FacArtistDescriptionVMAsync(await _servicesFacade.FindUserByIdAsync(User.FindFirstValue(CookieKeys.UserIdCookieKey)));
+            var descriptionVM = await _viewModelFactory.FacArtistDescriptionVMAsync(await _searchService.FindUserByIdAsync<Artist>(User.FindFirstValue(CookieKeys.UserIdCookieKey)));
             return View(descriptionVM);
         }
     }

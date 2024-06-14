@@ -1,5 +1,5 @@
-using ApplicationLayer.Facades.FactoriesFacade;
-using ApplicationLayer.Facades.ServicesFacade;
+using ApplicationLayer.Factories;
+using ApplicationLayer.Services;
 using ApplicationLayer.ViewModels;
 using DomainLayer.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -11,15 +11,13 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
 {
     public class MainController : Controller
     {
-        private readonly MainFactoriesFacades _factoriesFacades;
-        private readonly MainServicesFacade<Listener> _servicesFacade;
+        private readonly SearchService _searchService;
+        private readonly ViewModelFactory _viewModelFactory;
 
-        public MainController(
-            MainFactoriesFacades factoriesFacades, 
-            MainServicesFacade<Listener> servicesFacades)
+        public MainController(SearchService searchService, ViewModelFactory viewModelFactory)
         {
-            _factoriesFacades = factoriesFacades;
-            _servicesFacade = servicesFacades;
+            _searchService = searchService;
+            _viewModelFactory = viewModelFactory;
         }
 
         [HttpGet]
@@ -28,8 +26,8 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
         {
             if (User.Identity.IsAuthenticated) 
             {
-                Listener listener = await _servicesFacade.FindUserByIdAsync(User.FindFirstValue(CookieKeys.UserIdCookieKey));
-                MainViewModel modelVM = await _factoriesFacades.FacMainVMAsync(await _factoriesFacades.FacMusicsVMAsync(listener), listener.Id);
+                Listener listener = await _searchService.FindUserByIdAsync<Listener>(User.FindFirstValue(CookieKeys.UserIdCookieKey));
+                MainViewModel modelVM = await _viewModelFactory.FacMainVMAsync(await _viewModelFactory.FacMusicsViewModelByUserIdAsync<Listener>(listener.Id), listener.Id);
                 return View(modelVM);
             }
             return View();

@@ -42,6 +42,17 @@ namespace ApplicationLayer.Factories
             return new DescriptionViewModel(artist.Description, artist.Name, artist.Id, await _generateTextService.GenerateArtistDescriptionAsync(artist));
         }
 
+        public async Task<SearchPlaylistViewModel> FacSearchPlaylistViewModelAsync(IEnumerable<Playlist> playlists, string listenerId)
+        {
+            var playlistsViewModel = FacPlaylistsViewModelAsync(playlists);
+            var favoritePlaylists = await _searchService.FindEntitiesByFKAsync<FavoritePlaylist, Listener>(listenerId);
+            return new SearchPlaylistViewModel
+            {
+                PlaylistsViewModel = playlistsViewModel as IEnumerable<PlaylistViewModel>,
+                FavoritePlaylists = favoritePlaylists,
+            };
+        }
+
         public async Task<IEnumerable<MusicViewModel>> FacMusicsViewModelByUserIdAsync<T>(string userId)
            where T : class, IUser<T>
         {
@@ -55,7 +66,7 @@ namespace ApplicationLayer.Factories
                                (music, musicData) => new MusicViewModel(music, musicData, MusicHelper.FormatMusicDuration(music.Duration)));
         }
 
-        public async Task<MusicViewModel> FacMusicViewModelAsync(Music music, bool isFavorite) 
+        public async Task<MusicViewModel> FacMusicViewModelAsync(Music music, bool isFavorite)
         {
             var musicData = await _storageService.DownloadMusicAsync(music.Id);
             return new MusicViewModel
@@ -67,7 +78,7 @@ namespace ApplicationLayer.Factories
             };
         }
 
-        public async Task<MainViewModel> FacMainVMAsync(IEnumerable<MusicViewModel> musicsVM, string listenerId) 
+        public async Task<MainViewModel> FacMainVMAsync(IEnumerable<MusicViewModel> musicsVM, string listenerId)
         {
             var favoriteMusics = await _searchService.FindEntitiesByFKAsync<FavoriteMusic, Listener>(listenerId);
             return new MainViewModel(musicsVM, favoriteMusics);
@@ -83,7 +94,7 @@ namespace ApplicationLayer.Factories
                 Description = listener.Description,
                 PictureProfile = listener.PictureProfile,
                 FavoriteMusics = favoriteMusics.Join(musicDatas, music => music.Id,
-                                                                 musicData => musicData.Id, 
+                                                                 musicData => musicData.Id,
                                                                  (music, musicData) => new MusicViewModel(music, musicData, MusicHelper.FormatMusicDuration(music.Duration)))
             };
         }
@@ -105,13 +116,13 @@ namespace ApplicationLayer.Factories
             };
         }
 
-        public async Task<SearchMusics> FacSearchMusicVMAsync(string listenerId)
+        public async Task<SearchMusicsViewModel> FacSearchMusicVMAsync(string listenerId)
         {
             IEnumerable<Genre> genres = await _searchService.FindUserGenresAsync<Listener>(listenerId);
             IEnumerable<Music> musics = await _searchService.FindMusicsByFkIdsAsync<Genre>(genres.Select(g => g.Id).ToList());
             IEnumerable<MusicData> musicDatas = await _storageService.DownloadMusicsAsync(musics.Select(m => m.Id).ToList());
 
-            return new SearchMusics
+            return new SearchMusicsViewModel
             {
                 MusicsSuggestion = musics.Join(musicDatas,
                                               music => music.Id,
@@ -120,7 +131,7 @@ namespace ApplicationLayer.Factories
             };
         }
 
-        public async Task<SearchMusics> FacSearchMusicVMAsync(List<string> foundMusicsIds, string listenerId)
+        public async Task<SearchMusicsViewModel> FacSearchMusicVMAsync(List<string> foundMusicsIds, string listenerId)
         {
             IEnumerable<Genre> genres = await _searchService.FindUserGenresAsync<Listener>(listenerId);
             IEnumerable<Music> musicsSuggestion = await _searchService.FindMusicsByFkIdsAsync<Genre>(genres.Select(m => m.Id).ToList());
@@ -130,7 +141,7 @@ namespace ApplicationLayer.Factories
             IEnumerable<Music> foundMusics = await _searchService.FindMusicByIdsAsync(foundMusicsIds);
             IEnumerable<MusicData> foundMusicsDatas = await _storageService.DownloadMusicsAsync(foundMusics.Select(m => m.Id).ToList());
 
-            return new SearchMusics
+            return new SearchMusicsViewModel
             {
                 MusicsSuggestion = musicsSuggestion.Join(musicSuggestionDatas,
                                                music => music.Id,
@@ -143,7 +154,7 @@ namespace ApplicationLayer.Factories
             };
         }
 
-        public async Task<PlaylistViewModel> FacPlaylistViewModelAsync(Playlist playlist) 
+        public async Task<PlaylistViewModel> FacPlaylistViewModelAsync(Playlist playlist)
         {
             IEnumerable<MusicData> musicDatas = await _storageService.DownloadMusicsAsync(playlist.Musics.Select(m => m.Id));
             return new PlaylistViewModel
@@ -160,6 +171,38 @@ namespace ApplicationLayer.Factories
             };
         }
 
+        public async Task<IEnumerable<PlaylistViewModel>> FacPlaylistsViewModelAsync(IEnumerable<Playlist> playlists)
+        {
+            var playlistsViewModel = new List<PlaylistViewModel>();
+
+            var allMusicsIds = playlists.SelectMany(playlist => playlist.Musics.Select(music => music.Id)).Distinct();
+            var musicDataDictionary = (await Task.WhenAll(allMusicsIds.Select(id => _storageService.DownloadMusicAsync(id))))
+                .ToDictionary(musicData => musicData.Id, musicData => musicData);
+
+            foreach (var playlist in playlists)
+            {
+                var musicsViewModel = playlist.Musics.Select(music => new MusicViewModel 
+                {
+                    Music = music,
+                    MusicData = musicDataDictionary[music.Id],
+                    DurationText = MusicHelper.FormatMusicDuration(music.Duration)
+                }).ToList();
+
+                var playlistViewModel = new PlaylistViewModel
+                {
+                    Id = playlist.Id,
+                    Description = playlist.Description,
+                    Image = playlist.Image,
+                    Name = playlist.Name,
+                    Listener = playlist.Listener,
+                    Musics = musicsViewModel
+                };
+
+                playlistsViewModel.Add(playlistViewModel);
+            }
+            return playlistsViewModel;
+        }
+
         public async Task<IEnumerable<PlaylistViewModel>> FacPlaylistViewModelsAsync(IEnumerable<Playlist> playlists)
         {
             List<PlaylistViewModel> playlistViewModels = new List<PlaylistViewModel>();
@@ -174,7 +217,7 @@ namespace ApplicationLayer.Factories
                     Image = playlist.Image,
                     Name = playlist.Name,
                     Listener = playlist.Listener,
-                    Musics = playlist.Musics.Join(musicDatas, 
+                    Musics = playlist.Musics.Join(musicDatas,
                                             music => music.Id,
                                             musicData => musicData.Id,
                                             (music, musicData) => new MusicViewModel(music, musicData, MusicHelper.FormatMusicDuration(music.Duration)))

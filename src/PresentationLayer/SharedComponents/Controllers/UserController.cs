@@ -1,5 +1,5 @@
-﻿using ApplicationLayer.Facades.FactoriesFacade;
-using ApplicationLayer.Facades.ServicesFacade;
+﻿using ApplicationLayer.Factories;
+using ApplicationLayer.Services;
 using ApplicationLayer.ViewModels;
 using DomainLayer.Entities;
 using DomainLayer.Exceptions;
@@ -14,21 +14,35 @@ namespace PresentationLayer.SharedComponents.Controllers
 {
     public class UserController<T> : Controller where T : class, IUser<T>, new()
     {
-        protected readonly UserServicesFacade<T> _servicesFacade;
-        protected readonly UserFactoriesFacade<T> _factoriesFacade;
+        protected readonly LoginService<T> _loginService;
+        protected readonly SearchService _searchService;
+        protected readonly UserAuthenticationService _authenticationService;
+        protected readonly VerifyService _verifyService;
+        protected readonly PictureService _pictureService;
+        protected readonly UpdateService _updateService;
+        protected readonly ModelFactory _modelFactory;
         protected readonly IHttpContextAccessor _httpAccessor;
         private string UserPageName => typeof(T).Name + "Page";
         private string CreateUser => $"Create{typeof(T).Name}";
 
 
-        public UserController(
-            UserServicesFacade<T> servicesFacade,
-            UserFactoriesFacade<T> factoriesFacade,
-            IHttpContextAccessor httpAccessor)
+        public UserController(LoginService<T> loginService,
+                              SearchService searchService,
+                              UserAuthenticationService authenticationService, 
+                              VerifyService verifyService, 
+                              PictureService pictureService,
+                              UpdateService updateService,
+                              ModelFactory modelFactory,
+                              IHttpContextAccessor httpAccessor)
         {
-            _servicesFacade = servicesFacade;
-            _factoriesFacade = factoriesFacade;
+            _loginService = loginService;
+            _searchService = searchService;
+            _authenticationService = authenticationService;
+            _verifyService = verifyService;
+            _pictureService = pictureService;
             _httpAccessor = httpAccessor;
+            _updateService = updateService;
+            _modelFactory = modelFactory;
         }
 
         [HttpGet]
@@ -45,10 +59,10 @@ namespace PresentationLayer.SharedComponents.Controllers
         {
             try
             {
-                if (ModelState.IsValid && await _servicesFacade.LoginAsync(credentialsVM))
+                if (ModelState.IsValid && await _loginService.LoginAsync(credentialsVM))
                 {
-                    T user = await _servicesFacade.FindEntityByEmailAsync<T>(credentialsVM.Email);
-                    await _servicesFacade.SignInUserAsync(user);
+                    T user = await _searchService.FindEntityByEmailAsync<T>(credentialsVM.Email);
+                    await _authenticationService.SignInUserAsync(user);
                     return RedirectToAction("Index", "Main");
                 }
                 TempData["InvalidUser"] = "Email or password incorrect!";
@@ -70,10 +84,10 @@ namespace PresentationLayer.SharedComponents.Controllers
         {
             try
             {
-                await _servicesFacade.VerifyDuplicateNameOrEmailAsync(userVM.Name, userVM.Email);
-                if (_servicesFacade.VerifyUser(userVM))
+                await _verifyService.VerifyDuplicateNameOrEmailAsync(userVM.Name, userVM.Email);
+                if (_verifyService.VerifyUser(userVM))
                 {
-                    userVM.Genres = (List<Genre>)await _servicesFacade.FindAllEntitiesAsync<Genre>();
+                    userVM.Genres = (List<Genre>)await _searchService.FindAllEntitiesAsync<Genre>();
                     HttpHelper.SetSessionValue(_httpAccessor, SessionKeys.UserSessionKey, userVM.Genres);
                     return View(userVM);
                 }
@@ -107,7 +121,7 @@ namespace PresentationLayer.SharedComponents.Controllers
         {
             try
             {
-                await _servicesFacade.SignOutUserAsync();
+                await _authenticationService.SignOutUserAsync();
                 return RedirectToAction(nameof(Login));
             }
             catch (Exception ex)
@@ -133,8 +147,8 @@ namespace PresentationLayer.SharedComponents.Controllers
         {
             try
             {
-                T user = await _servicesFacade.FindCurrentUserAsync();
-                await _servicesFacade.AddPictureProfileAsync(imageBase64, user);
+                T user = await _searchService.FindCurrentUserAsync<T>();
+                await _pictureService.AddPictureProfileAsync(imageBase64, user);
                 return RedirectToAction(UserPageName);
             }
             catch (Exception ex)
@@ -176,7 +190,7 @@ namespace PresentationLayer.SharedComponents.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> EditDescription(DescriptionViewModel descriptionVM)
         {
-            await _servicesFacade.UpdateDescriptionAsync(_factoriesFacade.FacUser(descriptionVM.Id, descriptionVM.Description));
+            await _updateService.UpdateDescriptionAsync(_modelFactory.FacUser<T>(descriptionVM.Id, descriptionVM.Description));
             return RedirectToAction(UserPageName);
         }
 

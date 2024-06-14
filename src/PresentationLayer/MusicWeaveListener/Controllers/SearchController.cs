@@ -1,20 +1,24 @@
-﻿using ApplicationLayer.Facades.ServicesFacade;
+﻿using ApplicationLayer.Factories;
+using ApplicationLayer.Services;
 using DomainLayer.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using UtilitiesLayer.Helpers;
 
 namespace MusicWeaveListener.Controllers
 {
     public class SearchController : Controller
     {
-        private readonly SearchServicesFacade _servicesFacades;
-        private readonly ILogger<SearchController> _logger;
+        private readonly SearchService _searchService;
+        private readonly ViewModelFactory _viewModelFactory;
+        private readonly ILogger _logger;
 
-        public SearchController(
-            SearchServicesFacade servicesFacades,
-            ILogger<SearchController> logger)
+        public SearchController(SearchService searchService, 
+                                ViewModelFactory viewModelFactory, ILogger logger)
         {
-            _servicesFacades = servicesFacades;
+            _searchService = searchService;
+            _viewModelFactory = viewModelFactory;
             _logger = logger;
         }
 
@@ -35,8 +39,8 @@ namespace MusicWeaveListener.Controllers
                 return RedirectToAction(nameof(SearchPlaylists));
             }
 
-            var foundPlaylists = await _servicesFacades.FindPlaylistsByQueryAsync(query);
-            return View(foundPlaylists);
+            var playlistViewModel = await _viewModelFactory.FacSearchPlaylistViewModelAsync(await _searchService.FindPlaylistsByQueryAsync(query), User.FindFirstValue(CookieKeys.UserIdCookieKey));
+            return View(playlistViewModel);
         }
 
         [HttpPost]
@@ -51,7 +55,7 @@ namespace MusicWeaveListener.Controllers
                     return RedirectToAction("AddPlaylistMusics", "Playlist");
                 }
 
-                var foundMusics = await _servicesFacades.FindMusicByQueryAsync(query);
+                var foundMusics = await _searchService.FindMusicsByQueryAsync(query);
                 return RedirectToAction("AddPlaylistFoundMusics", "Playlist", new 
                 {
                     foundMusicsIds = string.Join(",", foundMusics.Select(m => m.Id))

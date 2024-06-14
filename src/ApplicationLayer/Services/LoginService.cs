@@ -4,7 +4,7 @@ using UtilitiesLayer.Helpers;
 
 namespace ApplicationLayer.Services
 {
-    public class LoginService
+    public class LoginService<T> where T : class, IUser<T>
     {
         private readonly SearchService _searchService;
 
@@ -13,7 +13,7 @@ namespace ApplicationLayer.Services
             _searchService = searchService;
         }
 
-        public async Task<bool> LoginAsync<T>(LoginViewModel credentialsVM) where T : IUser<T>
+        public async Task<bool> LoginAsync(LoginViewModel credentialsVM)
         {
             return await _searchService.FindUserByCredentialsAsync<T>(credentialsVM.Email, EncryptHelper.EncryptPasswordSHA512(credentialsVM.Password)) != null;
         }

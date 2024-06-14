@@ -13,6 +13,8 @@ namespace DomainLayer.Entities
         public byte[] PictureProfile { get; set; }
         public DateTime BirthDate { get; set; }
         public DateTime DateCreation { get; set; }
+        public ICollection<FavoriteMusic> FavoritesMusics { get; set; }
+        public ICollection<FavoritePlaylist> FavoritePlaylists { get; set; }
 
         public Listener()
         {

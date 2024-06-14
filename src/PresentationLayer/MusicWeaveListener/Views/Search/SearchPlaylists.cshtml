@@ -1,6 +1,7 @@
 ﻿@using DomainLayer.Entities;
+@using ApplicationLayer.ViewModels;
 
-@model IEnumerable<Playlist>
+@model SearchPlaylistViewModel
 
 <style>
     .search-box {
@@ -127,7 +128,7 @@
 {
     <h2 class="text-center">Result of search</h2>
     <div class="playlist-container text-center mx-auto" style="display: flex; flex-wrap: wrap; justify-content: center;">
-        @foreach (var playlist in Model)
+        @foreach (var playlist in Model.PlaylistsViewModel)
         {
             <div class="playlist-item">
                 <div class="playlist-info">

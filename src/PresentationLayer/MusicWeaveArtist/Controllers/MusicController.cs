@@ -1,4 +1,4 @@
-﻿using ApplicationLayer.Facades.ServicesFacade;
+﻿using ApplicationLayer.Services;
 using ApplicationLayer.ViewModels;
 using DomainLayer.Entities;
 using DomainLayer.Exceptions;
@@ -11,19 +11,27 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
 {
     public class MusicController : Controller
     {
+        private readonly RecordService _recordService;
+        private readonly SearchService _searchService;
+        private readonly VerifyService _verifyService;
+        private readonly DeleteService _deleteService;
 
-        private readonly MusicServicesFacade<Artist> _servicesFacade;
-
-        public MusicController(MusicServicesFacade<Artist> servicesFacade)
+        public MusicController(RecordService recordService,
+                               SearchService searchService,
+                               VerifyService verifyService, 
+                               DeleteService deleteService)
         { 
-            _servicesFacade = servicesFacade;
+            _recordService = recordService;
+            _searchService = searchService;
+            _verifyService = verifyService;
+            _deleteService = deleteService;
         }
 
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-            IEnumerable<Genre> genres = await _servicesFacade.FindAllEntitiesAsync<Genre>();
+            IEnumerable<Genre> genres = await _searchService.FindAllEntitiesAsync<Genre>();
             ViewBag.Genres = genres;
             return View();
         }
@@ -38,7 +46,7 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
             {
                 musicVM.PictureFile = musicImage;
                 musicVM.AudioFile = musicAudio;
-                await _servicesFacade.CreateMusicAsync(musicVM, await _servicesFacade.FindUserByIdAsync(User.FindFirstValue(CookieKeys.UserIdCookieKey)));
+                await _recordService.CreateMusicAsync(musicVM, await _searchService.FindUserByIdAsync<Artist>(User.FindFirstValue(CookieKeys.UserIdCookieKey)));
                 return RedirectToAction("ArtistPage", "Artist");
             }
             catch(MusicException ex) 
@@ -62,12 +70,12 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> CreateMusicDatas(AddMusicViewModel musicVM) 
         {
-            if (_servicesFacade.VerifyMusic(musicVM)) 
+            if (_verifyService.VerifyMusic(musicVM)) 
             {
                 TempData["AddMusicViewModel"] = JsonSerializationHelper.SerializeObject(musicVM);
                 return View(musicVM);
             }
-            IEnumerable<Genre> genres = await _servicesFacade.FindAllEntitiesAsync<Genre>();
+            IEnumerable<Genre> genres = await _searchService.FindAllEntitiesAsync<Genre>();
             ViewBag.Genres = genres;
             return View("Index", musicVM);
         }

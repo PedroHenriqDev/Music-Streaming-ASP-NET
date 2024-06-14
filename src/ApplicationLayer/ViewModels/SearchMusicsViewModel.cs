@@ -2,7 +2,7 @@
 
 namespace ApplicationLayer.ViewModels
 {
-    public class SearchMusics
+    public class SearchMusicsViewModel
     {
         public Listener Listener { get; set; }
         public IEnumerable<MusicViewModel>? MusicsSuggestion { get; set; }

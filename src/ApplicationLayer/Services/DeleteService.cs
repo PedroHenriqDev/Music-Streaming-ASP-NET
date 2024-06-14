@@ -23,7 +23,7 @@ namespace ApplicationLayer.Services
             }
         }
 
-        public async Task DeleteFavoriteMusic(string musicId, string listenerId)
+        public async Task DeleteFavoriteMusicAsync(string musicId, string listenerId)
         {
             await  _unitOfWork.MusicRepository.RemoveFavoriteMusicAsync(musicId, listenerId);
         }

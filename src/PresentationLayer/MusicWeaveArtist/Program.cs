@@ -1,5 +1,3 @@
-using ApplicationLayer.Facades.FactoriesFacade;
-using ApplicationLayer.Facades.ServicesFacade;
 using ApplicationLayer.Factories;
 using ApplicationLayer.Services;
 using DataAccessLayer.Cloud;
@@ -11,6 +9,7 @@ using DomainLayer.Entities;
 using DomainLayer.Interfaces;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.FileProviders;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,7 +27,7 @@ builder.Services.AddLogging();
 
 builder.Services.AddScoped<RecordService>();
 builder.Services.AddScoped<DeleteService>();
-builder.Services.AddScoped<LoginService>();
+builder.Services.AddScoped<LoginService<Artist>>();
 builder.Services.AddScoped<VerifyService>();
 builder.Services.AddScoped<CloudStorageService>();
 builder.Services.AddScoped<GenerateIntelliTextService>();
@@ -36,14 +35,9 @@ builder.Services.AddScoped<PictureService>();
 builder.Services.AddScoped<SearchService>();
 builder.Services.AddScoped<UserAuthenticationService>();
 builder.Services.AddScoped<UpdateService>();
-builder.Services.AddScoped<UserServicesFacade<Artist>>();
-builder.Services.AddScoped<ArtistFactoriesFacade>();
-builder.Services.AddScoped<UserFactoriesFacade<Artist>>();
-builder.Services.AddScoped<MusicServicesFacade<Artist>>();
 builder.Services.AddScoped<ModelFactory>();
 builder.Services.AddScoped<ViewModelFactory>();
 builder.Services.AddScoped<ConnectionGoogleCloud>();
-builder.Services.AddScoped<MusicFactoriesFacade>();
 builder.Services.AddScoped<IEntitiesAssociationRepository, EntitiesAssociationRepository>();
 builder.Services.AddScoped<IGenericRepository, GenericRepository>();
 builder.Services.AddScoped<IMusicRepository, MusicRepository>();
@@ -51,6 +45,11 @@ builder.Services.AddScoped<IPlaylistRepository, PlaylistRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddTransient<DataMapper>();
 builder.Services.AddTransient<DataValidation>();
+
+builder.Services.AddScoped<NpgsqlConnection>(Npgsql => 
+{
+    return new NpgsqlConnection(connectionString);
+});
 
 builder.Services.AddSingleton<IUnitOfWork>(provider =>
 {

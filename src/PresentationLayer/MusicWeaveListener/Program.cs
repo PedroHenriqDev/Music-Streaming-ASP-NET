@@ -1,5 +1,3 @@
-using ApplicationLayer.Facades.FactoriesFacade;
-using ApplicationLayer.Facades.ServicesFacade;
 using ApplicationLayer.Factories;
 using ApplicationLayer.Services;
 using DataAccessLayer.Cloud;
@@ -21,7 +19,7 @@ builder.Services.AddLogging();
 
 builder.Services.AddScoped<RecordService>();
 builder.Services.AddScoped<DeleteService>();
-builder.Services.AddScoped<LoginService>();
+builder.Services.AddScoped<LoginService<Listener>>();
 builder.Services.AddScoped<VerifyService>();
 builder.Services.AddScoped<GenerateIntelliTextService>();
 builder.Services.AddScoped<CloudStorageService>();
@@ -29,20 +27,9 @@ builder.Services.AddScoped<PictureService>();
 builder.Services.AddScoped<SearchService>();
 builder.Services.AddScoped<UserAuthenticationService>();
 builder.Services.AddScoped<UpdateService>();
-builder.Services.AddScoped<UserServicesFacade<Listener>>();
-builder.Services.AddScoped<ListenerFactoriesFacade>();
-builder.Services.AddScoped<ArtistFactoriesFacade>();
-builder.Services.AddScoped<UserFactoriesFacade<Listener>>();
-builder.Services.AddScoped<MainServicesFacade<Listener>>();
-builder.Services.AddScoped<MainFactoriesFacades>();
-builder.Services.AddScoped<PlaylistServicesFacade>();
-builder.Services.AddScoped<PlaylistFactoriesFacades>();
-builder.Services.AddScoped<SearchServicesFacade>();
 builder.Services.AddScoped<ModelFactory>();
 builder.Services.AddScoped<ViewModelFactory>();
 builder.Services.AddScoped<ConnectionGoogleCloud>();
-builder.Services.AddScoped<MusicServicesFacade<Listener>>();
-builder.Services.AddScoped<MusicFactoriesFacade>();
 builder.Services.AddTransient<DataMapper>();
 builder.Services.AddTransient<DataValidation>();
 

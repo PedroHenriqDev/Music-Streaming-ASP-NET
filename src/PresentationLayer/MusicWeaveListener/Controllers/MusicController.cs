@@ -1,5 +1,5 @@
-﻿using ApplicationLayer.Facades.FactoriesFacade;
-using ApplicationLayer.Facades.ServicesFacade;
+﻿using ApplicationLayer.Factories;
+using ApplicationLayer.Services;
 using ApplicationLayer.ViewModels;
 using DomainLayer.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -11,17 +11,24 @@ namespace MusicWeaveListener.Controllers
 {
     public class MusicController : Controller
     {
-
-        private readonly MusicServicesFacade<Listener> _servicesFacade;
-        private readonly MusicFactoriesFacade _factoriesFacade;
+        private readonly RecordService _recordService;
+        private readonly ModelFactory _modelFactory;
+        private readonly SearchService _searchService;
+        private readonly ViewModelFactory _viewModelFactory;
+        private readonly DeleteService _deleteService;
         private static IDictionary<string, DateTime> _lastViewTime = new Dictionary<string, DateTime>();
 
-        public MusicController(
-            MusicServicesFacade<Listener> servicesFacade,
-            MusicFactoriesFacade factoriesFacade)
+        public MusicController(RecordService recordService,
+                               ModelFactory modelFactory,
+                               SearchService searchService, 
+                               ViewModelFactory viewModelFactory,
+                               DeleteService deleteService)
         {
-            _servicesFacade = servicesFacade;
-            _factoriesFacade = factoriesFacade;
+            _recordService = recordService;
+            _modelFactory = modelFactory;
+            _searchService = searchService;
+            _viewModelFactory = viewModelFactory;
+            _deleteService = deleteService;
         }
 
         public async Task<IActionResult> RecordView([FromBody] string musicId)
@@ -45,7 +52,7 @@ namespace MusicWeaveListener.Controllers
             }
 
             _lastViewTime.Add(listenerId, DateTime.Now);
-            await _servicesFacade.CreateMusicViewAsync(_factoriesFacade.FacMusicView(Guid.NewGuid().ToString(), listenerId, musicId, DateTime.Now));
+            await _recordService.CreateMusicViewAsync(_modelFactory.FacMusicView(Guid.NewGuid().ToString(), listenerId, musicId, DateTime.Now));
             return RedirectToAction("Index", "Main");
         }
 
@@ -56,7 +63,7 @@ namespace MusicWeaveListener.Controllers
                 return RedirectToAction(nameof(Error), new { message = "Any reference null ocurred" });
             }
 
-            await _servicesFacade.CreateFavoriteMusicAsync(_factoriesFacade.FacFavoriteMusic(Guid.NewGuid().ToString(), musicId, User.FindFirstValue(CookieKeys.UserIdCookieKey)));
+            await _recordService.CreateFavoriteMusicAsync(_modelFactory.FacFavoriteMusic(Guid.NewGuid().ToString(), musicId, User.FindFirstValue(CookieKeys.UserIdCookieKey)));
             return RedirectToAction("Index", "Main");
         }
 
@@ -67,8 +74,8 @@ namespace MusicWeaveListener.Controllers
                 return RedirectToAction(nameof(Error), new { message = "Any reference null ocurred" });
             }
 
-            var favoriteMusics = await _servicesFacade.GetEntitiesByFKAsync<FavoriteMusic, Listener>(User.FindFirstValue(CookieKeys.UserIdCookieKey));
-            return View(await _factoriesFacade.FacMusicViewModelAsync(await _servicesFacade.FindDetailedMusicByIdAsync(musicId), favoriteMusics.Any(fm => fm.MusicId == musicId)));
+            var favoriteMusics = await _searchService.FindEntitiesByFKAsync<FavoriteMusic, Listener>(User.FindFirstValue(CookieKeys.UserIdCookieKey));
+            return View(await _viewModelFactory.FacMusicViewModelAsync(await _searchService.FindDetailedMusicAsync(musicId), favoriteMusics.Any(fm => fm.MusicId == musicId)));
         }
 
         public async Task<IActionResult> RemoveFromFavorites([FromBody] string musicId)
@@ -78,7 +85,7 @@ namespace MusicWeaveListener.Controllers
                 return RedirectToAction(nameof(Error), new { message = "Any reference null ocurred" });
             }
 
-            await _servicesFacade.DeleteFavoriteMusicAsync(musicId, User.FindFirstValue(CookieKeys.UserIdCookieKey));
+            await _deleteService.DeleteFavoriteMusicAsync(musicId, User.FindFirstValue(CookieKeys.UserIdCookieKey));
             return RedirectToAction("Index", "Main");
         }
 

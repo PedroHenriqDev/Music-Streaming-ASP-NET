@@ -1,6 +1,4 @@
-﻿using ApplicationLayer.Facades.ServicesFacade;
-using ApplicationLayer.Facades.FactoriesFacade;
-using ApplicationLayer.ViewModels;
+﻿using ApplicationLayer.ViewModels;
 using DomainLayer.Entities;
 using DomainLayer.Exceptions;
 using Microsoft.AspNetCore.Authorization;
@@ -8,21 +6,33 @@ using Microsoft.AspNetCore.Mvc;
 using PresentationLayer.SharedComponents.Controllers;
 using UtilitiesLayer.Helpers;
 using System.Security.Claims;
+using ApplicationLayer.Factories;
+using ApplicationLayer.Services;
 
 namespace PresentationLayer.MusicWeaveListener.Controllers
 {
     public class ListenerController : UserController<Listener>
     {
-        private readonly ListenerFactoriesFacade _listenerFactoriesFacade;
+        private readonly RecordService _recordService;
+        private readonly DeleteService _deleteService;
+        private readonly ViewModelFactory _viewModelFactory;
 
-        public ListenerController(
-            UserServicesFacade<Listener> servicesFacade,
-            UserFactoriesFacade<Listener> factoriesFacade,
-            IHttpContextAccessor httpAccessor,
-            ListenerFactoriesFacade listenerFactoriesFacade)
-            : base(servicesFacade, factoriesFacade, httpAccessor)
+        public ListenerController(LoginService<Listener> loginService,
+                              SearchService searchService,
+                              UserAuthenticationService authenticationService,
+                              VerifyService verifyService,
+                              PictureService pictureService,
+                              UpdateService updateService,
+                              ModelFactory modelFactory,
+                              IHttpContextAccessor httpAccessor,
+                              RecordService recordService, 
+                              DeleteService deleteService,
+                              ViewModelFactory viewModelFactory)
+            : base(loginService, searchService, authenticationService, verifyService, pictureService, updateService, modelFactory, httpAccessor)
         {
-            _listenerFactoriesFacade = listenerFactoriesFacade;
+            _recordService = recordService;
+            _deleteService = deleteService;
+            _viewModelFactory = viewModelFactory;
         }
 
         [HttpGet]
@@ -39,25 +49,25 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
         {
             try
             {
-                if (!_servicesFacade.VerifyUserGenres(listenerVM))
+                if (!_verifyService.VerifyUserGenres(listenerVM))
                 {
                     TempData["InvalidGenres"] = "You must select at least one genre!";
                     listenerVM.Genres = HttpHelper.GetSessionValue<List<Genre>>(_httpAccessor, SessionKeys.UserSessionKey);
                     return View("SelectGenres", listenerVM);
                 }
 
-                if (_servicesFacade.VerifyUser(listenerVM))
+                if (_verifyService.VerifyUser(listenerVM))
                 {
                     HttpHelper.RemoveSessionValue(_httpAccessor, SessionKeys.UserSessionKey);
-                    EntityQuery<Listener> listenerQuery = await _servicesFacade.CreateUserAsync(
+                    EntityQuery<Listener> listenerQuery = await _recordService.CreateUserAsync(
                                                             new Listener(Guid.NewGuid().ToString(), listenerVM.Name, EncryptHelper.EncryptPasswordSHA512(listenerVM.Password), listenerVM.Email, listenerVM.PhoneNumber, listenerVM.BirthDate, DateTime.Now));
                     if (listenerQuery.Result) 
                     {
-                        await _servicesFacade.CreateUserGenresAsync(_factoriesFacade.FacUserGenres(listenerQuery.Entity.Id, listenerVM.SelectedGenreIds));
-                        await _servicesFacade.SignInUserAsync(listenerQuery.Entity);
+                        await _recordService.CreateUserGenresAsync(_modelFactory.FacUserGenres<Listener>(listenerQuery.Entity.Id, listenerVM.SelectedGenreIds));
+                        await _authenticationService.SignInUserAsync(listenerQuery.Entity);
                         return RedirectToAction(nameof(CompleteRegistration));
                     }
-                    await _servicesFacade.DeleteEntityByIdAsync(listenerQuery.Entity.Id);
+                    await _deleteService.DeleteEntityByIdAsync<Listener>(listenerQuery.Entity.Id);
                 }
                 TempData["ErrorMessage"] = "Error creating object, some null parameter exists";
                 return View(listenerVM);
@@ -76,7 +86,7 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ListenerPage()
         {
-            var listenerPage = await _listenerFactoriesFacade.FacListenerPageVMAsync(await _servicesFacade.FindUserByIdAsync(User.FindFirstValue(CookieKeys.UserIdCookieKey)));
+            var listenerPage = await _viewModelFactory.FacListenerPageVMAsync(await _searchService.FindUserByIdAsync<Listener>(User.FindFirstValue(CookieKeys.UserIdCookieKey)));
             return View(listenerPage);
         }
 
@@ -84,7 +94,7 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> EditDescription()
         {
-            var descriptionVM = await _listenerFactoriesFacade.FacListenerDescriptionVMAsync(await _servicesFacade.FindUserByIdAsync(User.FindFirstValue(CookieKeys.UserIdCookieKey)));
+            var descriptionVM = await _viewModelFactory.FacListenerDescriptionVMAsync(await _searchService.FindUserByIdAsync<Listener>(User.FindFirstValue(CookieKeys.UserIdCookieKey)));
             return View(descriptionVM);
         }
     }
