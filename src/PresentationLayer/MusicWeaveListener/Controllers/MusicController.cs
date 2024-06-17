@@ -1,4 +1,4 @@
-﻿using ApplicationLayer.Factories;
+﻿using ApplicationLayer.Mappings;
 using ApplicationLayer.Services;
 using ApplicationLayer.ViewModels;
 using DomainLayer.Entities;
@@ -12,22 +12,22 @@ namespace MusicWeaveListener.Controllers
     public class MusicController : Controller
     {
         private readonly RecordService _recordService;
-        private readonly ModelFactory _modelFactory;
+        private readonly DomainCreationService _domainCreationService;
         private readonly SearchService _searchService;
-        private readonly ViewModelFactory _viewModelFactory;
+        private readonly ViewModelMapper _viewModelMapper;
         private readonly DeleteService _deleteService;
         private static IDictionary<string, DateTime> _lastViewTime = new Dictionary<string, DateTime>();
 
         public MusicController(RecordService recordService,
-                               ModelFactory modelFactory,
+                               DomainCreationService domainCreationService,
                                SearchService searchService, 
-                               ViewModelFactory viewModelFactory,
+                               ViewModelMapper viewModelMapper,
                                DeleteService deleteService)
         {
             _recordService = recordService;
-            _modelFactory = modelFactory;
+            _domainCreationService = domainCreationService;
             _searchService = searchService;
-            _viewModelFactory = viewModelFactory;
+            _viewModelMapper = viewModelMapper;
             _deleteService = deleteService;
         }
 
@@ -52,18 +52,16 @@ namespace MusicWeaveListener.Controllers
             }
 
             _lastViewTime.Add(listenerId, DateTime.Now);
-            await _recordService.CreateMusicViewAsync(_modelFactory.FacMusicView(Guid.NewGuid().ToString(), listenerId, musicId, DateTime.Now));
+            await _recordService.RecordMusicViewAsync(_domainCreationService.CreateMusicView(Guid.NewGuid().ToString(), listenerId, musicId, DateTime.Now));
             return RedirectToAction("Index", "Main");
         }
 
         public async Task<IActionResult> AddFromFavorites([FromBody] string musicId)
         {
             if (musicId is null)
-            {
                 return RedirectToAction(nameof(Error), new { message = "Any reference null ocurred" });
-            }
 
-            await _recordService.CreateFavoriteMusicAsync(_modelFactory.FacFavoriteMusic(Guid.NewGuid().ToString(), musicId, User.FindFirstValue(CookieKeys.UserIdCookieKey)));
+            await _recordService.RecordFavoriteMusicAsync(_domainCreationService.CreateFavoriteMusic(Guid.NewGuid().ToString(), musicId, User.FindFirstValue(CookieKeys.UserIdCookieKey)));
             return RedirectToAction("Index", "Main");
         }
 
@@ -75,7 +73,7 @@ namespace MusicWeaveListener.Controllers
             }
 
             var favoriteMusics = await _searchService.FindEntitiesByFKAsync<FavoriteMusic, Listener>(User.FindFirstValue(CookieKeys.UserIdCookieKey));
-            return View(await _viewModelFactory.FacMusicViewModelAsync(await _searchService.FindDetailedMusicAsync(musicId), favoriteMusics.Any(fm => fm.MusicId == musicId)));
+            return View(await _viewModelMapper.ToMusicViewModelAsync(await _searchService.FindDetailedMusicAsync(musicId), favoriteMusics.Any(fm => fm.MusicId == musicId)));
         }
 
         public async Task<IActionResult> RemoveFromFavorites([FromBody] string musicId)

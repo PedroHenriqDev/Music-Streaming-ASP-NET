@@ -1,4 +1,4 @@
-﻿using ApplicationLayer.Factories;
+﻿using ApplicationLayer.Mappings;
 using ApplicationLayer.Services;
 using ApplicationLayer.ViewModels;
 using DomainLayer.Exceptions;
@@ -13,17 +13,17 @@ namespace MusicWeaveListener.Controllers
     public class SearchController : Controller
     {
         private readonly SearchService _searchService;
-        private readonly ViewModelFactory _viewModelFactory;
+        private readonly ViewModelMapper _viewModelMapper;
         private readonly ILogger<SearchController> _logger;
         private readonly IHttpContextAccessor _httpAccessor;
 
         public SearchController(SearchService searchService, 
-                                ViewModelFactory viewModelFactory, 
+                                ViewModelMapper viewModelMapper, 
                                 ILogger<SearchController> logger,
                                 IHttpContextAccessor httpAccessor)
         {
             _searchService = searchService;
-            _viewModelFactory = viewModelFactory;
+            _viewModelMapper = viewModelMapper;
             _logger = logger;
             _httpAccessor = httpAccessor;
         }
@@ -45,11 +45,11 @@ namespace MusicWeaveListener.Controllers
             var listenerId = User.FindFirstValue(CookieKeys.UserIdCookieKey);
 
             if (string.IsNullOrWhiteSpace(listenerId))
-                return RedirectToAction(nameof(Error), new {messahge = "Listener is null"});
+                return RedirectToAction(nameof(Error), new {message = "Listener is null"});
 
             HttpHelper.SetSessionValue(_httpAccessor, SessionKeys.QuerySessionKey, query);
 
-            var playlistViewModel = await _viewModelFactory.FacSearchPlaylistViewModelAsync(await _searchService.FindPlaylistsByQueryAsync(query, listenerId), User.FindFirstValue(CookieKeys.UserIdCookieKey));
+            var playlistViewModel = await _viewModelMapper.ToSearchPlaylistViewModelAsync(await _searchService.FindPlaylistsByQueryAsync(query, listenerId), User.FindFirstValue(CookieKeys.UserIdCookieKey));
             return View("SearchPlaylists", playlistViewModel);
         }
 

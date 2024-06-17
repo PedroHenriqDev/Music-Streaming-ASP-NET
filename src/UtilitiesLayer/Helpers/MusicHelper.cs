@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using DomainLayer.Entities;
+using Microsoft.AspNetCore.Http;
 using NAudio.Wave;
 
 namespace UtilitiesLayer.Helpers

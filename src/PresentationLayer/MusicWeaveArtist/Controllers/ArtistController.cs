@@ -6,15 +6,16 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UtilitiesLayer.Helpers;
 using System.Security.Claims;
-using ApplicationLayer.Factories;
 using ApplicationLayer.Services;
+using ApplicationLayer.Mappings;
 
 namespace PresentationLayer.MusicWeaveArtist.Controllers
 {
     public class ArtistController : UserController<Artist>
     {
-        private readonly ViewModelFactory _viewModelFactory;
+        private readonly ViewModelMapper _viewModelMapper;
         private readonly RecordService _recordService;
+        private readonly GenerateIntelliTextService _generateIntelliTextService;
 
         public ArtistController(LoginService<Artist> loginService,
                               SearchService searchService,
@@ -22,14 +23,16 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
                               VerifyService verifyService,
                               PictureService pictureService,
                               UpdateService updateService,
-                              ModelFactory modelFactory,
+                              DomainCreationService domainCreationService,
                               IHttpContextAccessor httpAccessor,
-                              ViewModelFactory viewModelFactory,
-                              RecordService recordService)
-            : base(loginService, searchService, authenticationService, verifyService, pictureService, updateService, modelFactory, httpAccessor)
+                              ViewModelMapper viewModelMapper,
+                              RecordService recordService, 
+                              GenerateIntelliTextService generateIntelliTextService)
+            : base(loginService, searchService, authenticationService, verifyService, pictureService, updateService, domainCreationService, httpAccessor)
         {
-            _viewModelFactory = viewModelFactory;
+            _viewModelMapper = viewModelMapper;
             _recordService = recordService;
+            _generateIntelliTextService = generateIntelliTextService;
         }
 
         [HttpGet]
@@ -38,7 +41,7 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
         {   
             try
             {
-                ArtistPageViewModel artistPageVM = await _viewModelFactory.FacArtistPageVMAsync(await _searchService.FindUserByIdAsync<Artist>(User.FindFirstValue(CookieKeys.UserIdCookieKey)));
+                ArtistPageViewModel artistPageVM = await _viewModelMapper.ToArtistPageViewModelAsync(await _searchService.FindUserByIdAsync<Artist>(User.FindFirstValue(CookieKeys.UserIdCookieKey)));
                 return View(artistPageVM);
             }
             catch (Exception ex)
@@ -77,11 +80,11 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
                 if (_verifyService.VerifyUser(artistVM))
                 {
                     HttpHelper.RemoveSessionValue(_httpAccessor, SessionKeys.UserSessionKey);
-                    EntityQuery<Artist> entityQuery = await _recordService.CreateUserAsync(
+                    EntityQuery<Artist> entityQuery = await _recordService.RecordUserAsync(
                                                       new Artist(Guid.NewGuid().ToString(), artistVM.Name, EncryptHelper.EncryptPasswordSHA512(artistVM.Password), artistVM.Email, artistVM.PhoneNumber, artistVM.BirthDate, DateTime.Now));
                     if (entityQuery.Result) 
                     {
-                        await _recordService.CreateUserGenresAsync(_modelFactory.FacUserGenres<Artist>(entityQuery.Entity.Id, artistVM.SelectedGenreIds));
+                        await _recordService.RecordUserGenresAsync(_domainCreationService.CreateUserGenres<Artist>(entityQuery.Entity.Id, artistVM.SelectedGenreIds));
                         await _authenticationService.SignInUserAsync(entityQuery.Entity);
                         return RedirectToAction(nameof(CompleteRegistration));
                     }
@@ -101,7 +104,8 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> EditDescription()
         {
-            var descriptionVM = await _viewModelFactory.FacArtistDescriptionVMAsync(await _searchService.FindUserByIdAsync<Artist>(User.FindFirstValue(CookieKeys.UserIdCookieKey)));
+            var artist = await _searchService.FindUserByIdAsync<Artist>(User.FindFirstValue(CookieKeys.UserIdCookieKey));
+            var descriptionVM = new DescriptionViewModel(artist.Description, artist.Name, artist.Id, await _generateIntelliTextService.GenerateArtistDescriptionAsync(artist));
             return View(descriptionVM);
         }
     }

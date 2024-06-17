@@ -46,7 +46,7 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
             {
                 musicVM.PictureFile = musicImage;
                 musicVM.AudioFile = musicAudio;
-                await _recordService.CreateMusicAsync(musicVM, await _searchService.FindUserByIdAsync<Artist>(User.FindFirstValue(CookieKeys.UserIdCookieKey)));
+                await _recordService.RecordMusicAsync(musicVM, await _searchService.FindUserByIdAsync<Artist>(User.FindFirstValue(CookieKeys.UserIdCookieKey)));
                 return RedirectToAction("ArtistPage", "Artist");
             }
             catch(MusicException ex) 

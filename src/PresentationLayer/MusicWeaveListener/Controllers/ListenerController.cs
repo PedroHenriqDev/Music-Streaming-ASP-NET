@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using PresentationLayer.SharedComponents.Controllers;
 using UtilitiesLayer.Helpers;
 using System.Security.Claims;
-using ApplicationLayer.Factories;
 using ApplicationLayer.Services;
+using ApplicationLayer.Mappings;
 
 namespace PresentationLayer.MusicWeaveListener.Controllers
 {
@@ -15,7 +15,8 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
     {
         private readonly RecordService _recordService;
         private readonly DeleteService _deleteService;
-        private readonly ViewModelFactory _viewModelFactory;
+        private readonly ViewModelMapper _viewModelMapper;
+        private readonly GenerateIntelliTextService _generateIntelliTextService;
 
         public ListenerController(LoginService<Listener> loginService,
                               SearchService searchService,
@@ -23,16 +24,18 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
                               VerifyService verifyService,
                               PictureService pictureService,
                               UpdateService updateService,
-                              ModelFactory modelFactory,
+                              DomainCreationService domainCreationService,
                               IHttpContextAccessor httpAccessor,
                               RecordService recordService, 
                               DeleteService deleteService,
-                              ViewModelFactory viewModelFactory)
-            : base(loginService, searchService, authenticationService, verifyService, pictureService, updateService, modelFactory, httpAccessor)
+                              ViewModelMapper viewModelMapper,
+                              GenerateIntelliTextService generateIntelliTextService)
+            : base(loginService, searchService, authenticationService, verifyService, pictureService, updateService, domainCreationService, httpAccessor)
         {
             _recordService = recordService;
             _deleteService = deleteService;
-            _viewModelFactory = viewModelFactory;
+            _viewModelMapper = viewModelMapper;
+            _generateIntelliTextService = generateIntelliTextService;
         }
 
         [HttpGet]
@@ -59,11 +62,11 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
                 if (_verifyService.VerifyUser(listenerVM))
                 {
                     HttpHelper.RemoveSessionValue(_httpAccessor, SessionKeys.UserSessionKey);
-                    EntityQuery<Listener> listenerQuery = await _recordService.CreateUserAsync(
+                    EntityQuery<Listener> listenerQuery = await _recordService.RecordUserAsync(
                                                             new Listener(Guid.NewGuid().ToString(), listenerVM.Name, EncryptHelper.EncryptPasswordSHA512(listenerVM.Password), listenerVM.Email, listenerVM.PhoneNumber, listenerVM.BirthDate, DateTime.Now));
                     if (listenerQuery.Result) 
                     {
-                        await _recordService.CreateUserGenresAsync(_modelFactory.FacUserGenres<Listener>(listenerQuery.Entity.Id, listenerVM.SelectedGenreIds));
+                        await _recordService.RecordUserGenresAsync(_domainCreationService.CreateUserGenres<Listener>(listenerQuery.Entity.Id, listenerVM.SelectedGenreIds));
                         await _authenticationService.SignInUserAsync(listenerQuery.Entity);
                         return RedirectToAction(nameof(CompleteRegistration));
                     }
@@ -86,7 +89,7 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ListenerPage()
         {
-            var listenerPage = await _viewModelFactory.FacListenerPageVMAsync(await _searchService.FindUserByIdAsync<Listener>(User.FindFirstValue(CookieKeys.UserIdCookieKey)));
+            var listenerPage = await _viewModelMapper.ToListenerPageViewModelAsync(await _searchService.FindUserByIdAsync<Listener>(User.FindFirstValue(CookieKeys.UserIdCookieKey)));
             return View(listenerPage);
         }
 
@@ -94,7 +97,8 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> EditDescription()
         {
-            var descriptionVM = await _viewModelFactory.FacListenerDescriptionVMAsync(await _searchService.FindUserByIdAsync<Listener>(User.FindFirstValue(CookieKeys.UserIdCookieKey)));
+            var listener = await _searchService.FindUserByIdAsync<Listener>(User.FindFirstValue(CookieKeys.UserIdCookieKey));
+            var descriptionVM = new DescriptionViewModel(listener.Description, listener.Name, listener.Id, await _generateIntelliTextService.GenerateListenerDescriptionAsync(listener));
             return View(descriptionVM);
         }
     }

@@ -1,4 +1,4 @@
-﻿using ApplicationLayer.Factories;
+﻿using ApplicationLayer.Mappings;
 using ApplicationLayer.Services;
 using ApplicationLayer.ViewModels;
 using DomainLayer.Entities;
@@ -13,29 +13,29 @@ namespace MusicWeaveListener.Controllers
 {
     public class PlaylistController : Controller
     {
-        private readonly ViewModelFactory _viewModelFactory;
+        private readonly ViewModelMapper _viewModelMapper;
         private readonly SearchService _searchService;
         private readonly VerifyService _verifyService;
         private readonly RecordService _recordService;
-        private readonly ModelFactory _modelFactory;
+        private readonly DomainCreationService _domainCreationService;
         private readonly DeleteService _deleteService;
         private readonly IHttpContextAccessor _httpAccessor;
 
-        public PlaylistController(ViewModelFactory viewModelFactory,
+        public PlaylistController(ViewModelMapper viewModelMapper,
                                    SearchService searchService,
                                    VerifyService verifyService,
                                    RecordService recordService,
-                                   ModelFactory modelFactory,
+                                   DomainCreationService domainCreationService,
                                    DeleteService deleteService,
                                    IHttpContextAccessor httpAccessor)
         {
-            _viewModelFactory = viewModelFactory;
+            _viewModelMapper = viewModelMapper;
             _searchService = searchService;
             _verifyService = verifyService;
             _recordService = recordService;
+            _domainCreationService = domainCreationService;
             _httpAccessor = httpAccessor;
             _deleteService = deleteService;
-            _modelFactory = modelFactory;
         }
 
         [HttpGet]
@@ -44,7 +44,7 @@ namespace MusicWeaveListener.Controllers
         {
             try
             {
-                var playlistsVM = await _viewModelFactory.FacPlaylistViewModelsAsync(await _searchService.FindPlaylistsByListenerIdAsync(User.FindFirstValue(CookieKeys.UserIdCookieKey)));
+                var playlistsVM = await _viewModelMapper.ToPlaylistsViewModelAsync(await _searchService.FindPlaylistsByListenerIdAsync(User.FindFirstValue(CookieKeys.UserIdCookieKey)));
                 HttpHelper.SetSessionValue(_httpAccessor, SessionKeys.PlaylistSessionKey, playlistsVM);
                 return View(playlistsVM);
             }
@@ -65,7 +65,7 @@ namespace MusicWeaveListener.Controllers
             if (playlistId is null || listenerId is null)
                 return RedirectToAction(nameof(Error), new { message = "Playlist or listener is null" });
 
-            var favoritePlaylistQuery = await _recordService.CreateFavoritePlaylistAsync(_modelFactory.FacFavoritePlaylist(Guid.NewGuid().ToString(), playlistId, listenerId));
+            var favoritePlaylistQuery = await _recordService.RecordFavoritePlaylistAsync(_domainCreationService.CreateFavoritePlaylist(Guid.NewGuid().ToString(), playlistId, listenerId));
 
             if (favoritePlaylistQuery.Result)
             {
@@ -108,7 +108,7 @@ namespace MusicWeaveListener.Controllers
                     message = "An error ocurred, because reference null"
                 });
 
-            return View(await _viewModelFactory.FacPlaylistViewModelAsync(await _searchService.FindPlaylistByIdAsync(playlistId)));
+            return View(await _viewModelMapper.ToPlaylistViewModelAsync(await _searchService.FindPlaylistByIdAsync(playlistId)));
         }
 
         [HttpGet]
@@ -153,7 +153,7 @@ namespace MusicWeaveListener.Controllers
             {
                 if (playlistVerify.IsValid)
                 {
-                    EntityQuery<Playlist> playlistQuery = await _recordService.CreatePlaylistAsync(await _modelFactory.FacPlaylistAsync(playlistVM, User.FindFirstValue(CookieKeys.UserIdCookieKey)));
+                    EntityQuery<Playlist> playlistQuery = await _recordService.RecordPlaylistAsync(await _domainCreationService.CreatePlaylistAsync(playlistVM, User.FindFirstValue(CookieKeys.UserIdCookieKey)));
                     if (playlistQuery.Result)
                     {
                         HttpHelper.SetSessionValue(_httpAccessor, SessionKeys.PlaylistIdSessionKey, playlistId);
@@ -177,7 +177,7 @@ namespace MusicWeaveListener.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> AddPlaylistMusics()
         {
-            var model = await _viewModelFactory.FacSearchMusicVMAsync(User.FindFirstValue(CookieKeys.UserIdCookieKey));
+            var model = await _viewModelMapper.ToSearchMusicViewModelAsync(User.FindFirstValue(CookieKeys.UserIdCookieKey));
             return View(model);
         }
 
@@ -191,7 +191,7 @@ namespace MusicWeaveListener.Controllers
                 return RedirectToAction(nameof(AddPlaylistMusics));
             }
 
-            var playlistQuery = await _recordService.CreatePlaylistMusicsAsync(_modelFactory.FacPlaylistMusics(HttpHelper.GetSessionValue<string>(_httpAccessor, SessionKeys.PlaylistIdSessionKey), User.FindFirstValue(CookieKeys.UserIdCookieKey), musicsToAdd.ConvertStringJoinInList()));
+            var playlistQuery = await _recordService.RecordPlaylistMusicsAsync(_domainCreationService.CreatePlaylistMusics(HttpHelper.GetSessionValue<string>(_httpAccessor, SessionKeys.PlaylistIdSessionKey), User.FindFirstValue(CookieKeys.UserIdCookieKey), musicsToAdd.ConvertStringJoinInList()));
             HttpHelper.RemoveSessionValue(_httpAccessor, SessionKeys.PlaylistIdSessionKey);
 
             if (playlistQuery.Result)
@@ -209,7 +209,7 @@ namespace MusicWeaveListener.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> AddPlaylistFoundMusics(string foundMusicsIds)
         {
-            var model = await _viewModelFactory.FacSearchMusicVMAsync(foundMusicsIds.ConvertStringJoinInList(), User.FindFirstValue(CookieKeys.UserIdCookieKey));
+            var model = await _viewModelMapper.ToSearchMusicViewModelAsync(foundMusicsIds.ConvertStringJoinInList(), User.FindFirstValue(CookieKeys.UserIdCookieKey));
             return View("AddPlaylistMusics", model);
         }
 

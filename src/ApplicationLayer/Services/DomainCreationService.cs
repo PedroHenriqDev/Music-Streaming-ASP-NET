@@ -1,22 +1,21 @@
-﻿using ApplicationLayer.Services;
-using ApplicationLayer.ViewModels;
+﻿using ApplicationLayer.ViewModels;
 using DomainLayer.Entities;
 using DomainLayer.Interfaces;
 using Microsoft.Extensions.Logging;
 using UtilitiesLayer.Helpers;
 
-namespace ApplicationLayer.Factories
+namespace ApplicationLayer.Services
 {
-    public class ModelFactory
+    public class DomainCreationService
     {
-        private readonly ILogger<ModelFactory> _logger;
+        private readonly ILogger<DomainCreationService> _logger;
 
-        public ModelFactory(ILogger<ModelFactory> logger) 
+        public DomainCreationService(ILogger<DomainCreationService> logger)
         {
             _logger = logger;
         }
 
-        public T FacUser<T>(string userId, string description)
+        public T CreateUser<T>(string userId, string description)
             where T : class, IUser<T>, new()
         {
             return new T
@@ -26,16 +25,17 @@ namespace ApplicationLayer.Factories
             };
         }
 
-        public List<UserGenre<T>> FacUserGenres<T>(string userIdid, List<string> genreIds)
+        public List<UserGenre<T>> CreateUserGenres<T>(string userIdid, List<string> genreIds)
             where T : class, IUser<T>
         {
-            return genreIds.Select(genreId => new UserGenre<T> 
+            return genreIds.Select(genreId => new UserGenre<T>
             {
-                Id = userIdid, GenreId = genreId 
+                Id = userIdid,
+                GenreId = genreId
             }).ToList();
         }
 
-        public async Task<Music> FacMusicAsync(AddMusicViewModel musicVM, Artist artist, string id)
+        public async Task<Music> CreateMusicAsync(AddMusicViewModel musicVM, Artist artist, string id)
         {
             if (artist is null)
             {
@@ -46,24 +46,24 @@ namespace ApplicationLayer.Factories
             return new Music(id, musicVM.Name, artist.Id, musicVM.GenreId, musicVM.Date, DateTime.Now, MusicHelper.GetDuration(musicVM.AudioFile));
         }
 
-        public MusicView FacMusicView(string id, string listenerId, string musicId, DateTime createdAt) 
+        public MusicView CreateMusicView(string id, string listenerId, string musicId, DateTime createdAt)
         {
             return new MusicView(id, listenerId, musicId, createdAt);
         }
 
-        public async Task<MusicData> FacMusicDataAsync(AddMusicViewModel musicVM, string Id)
+        public async Task<MusicData> CreateMusicDataAsync(AddMusicViewModel musicVM, string Id)
         {
             byte[] audioBytes = await ByteConvertHelper.ConvertIFormFileInByteAsync(musicVM.AudioFile);
             byte[] pictureBytes = await ByteConvertHelper.ConvertIFormFileInByteAsync(musicVM.PictureFile);
             return new MusicData(Id, audioBytes, pictureBytes);
         }
 
-        public async Task<Playlist> FacPlaylistAsync(PlaylistViewModel playlistVM, string listenerId) 
+        public async Task<Playlist> CreatePlaylistAsync(PlaylistViewModel playlistVM, string listenerId)
         {
             return new Playlist(playlistVM.Id, playlistVM.Visibility, listenerId, playlistVM.Name, playlistVM.Description, await ByteConvertHelper.ConvertIFormFileInByteAsync(playlistVM.FileImage), DateTime.Now);
         }
 
-        public FavoritePlaylist FacFavoritePlaylist(string id, string playlistId, string listenerId)
+        public FavoritePlaylist CreateFavoritePlaylist(string id, string playlistId, string listenerId)
         {
             return new FavoritePlaylist
             {
@@ -73,9 +73,9 @@ namespace ApplicationLayer.Factories
             };
         }
 
-        public IEnumerable<PlaylistMusic> FacPlaylistMusics(string playlistId, string listenerId, IEnumerable<string> musicsIds) 
+        public IEnumerable<PlaylistMusic> CreatePlaylistMusics(string playlistId, string listenerId, IEnumerable<string> musicsIds)
         {
-            return musicsIds.Select(musicId => new PlaylistMusic 
+            return musicsIds.Select(musicId => new PlaylistMusic
             {
                 Id = Guid.NewGuid().ToString(),
                 PlaylistId = playlistId,
@@ -84,7 +84,7 @@ namespace ApplicationLayer.Factories
             });
         }
 
-        public FavoriteMusic FacFavoriteMusic(string id, string musicId, string listenerId) 
+        public FavoriteMusic CreateFavoriteMusic(string id, string musicId, string listenerId)
         {
             return new FavoriteMusic(id, musicId, listenerId);
         }

@@ -1,5 +1,4 @@
-﻿using ApplicationLayer.Factories;
-using ApplicationLayer.ViewModels;
+﻿using ApplicationLayer.ViewModels;
 using DataAccessLayer.UnitOfWork;
 using DomainLayer.Entities;
 using DomainLayer.Exceptions;
@@ -12,22 +11,22 @@ namespace ApplicationLayer.Services
     {
         private readonly ILogger<RecordService> _logger;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ModelFactory _modelFactory;
+        private readonly DomainCreationService _domainCreationService;
         private readonly CloudStorageService _storageService;
 
         public RecordService(ILogger<RecordService> logger,
                              IUnitOfWork unitOfWork,
-                             ModelFactory modelFactory, 
+                             DomainCreationService domainCreationService, 
                              CloudStorageService storageService)
         {
             _logger = logger;
-            _modelFactory = modelFactory;
+            _domainCreationService = domainCreationService;
             _storageService = storageService;
             _unitOfWork = unitOfWork;
             _storageService = storageService;
         }
 
-        public async Task<EntityQuery<T>> CreateUserAsync<T>(T user) 
+        public async Task<EntityQuery<T>> RecordUserAsync<T>(T user) 
             where T : class, IUser<T>
         {
             try
@@ -42,7 +41,7 @@ namespace ApplicationLayer.Services
             }
         }
 
-        public async Task<EntityQuery<List<UserGenre<T>>>> CreateUserGenresAsync<T>(List<UserGenre<T>> userGenres) 
+        public async Task<EntityQuery<List<UserGenre<T>>>> RecordUserGenresAsync<T>(List<UserGenre<T>> userGenres) 
             where T : class, IUser<T>
         {
             try
@@ -58,14 +57,14 @@ namespace ApplicationLayer.Services
             }
         }
 
-        public async Task<EntityQuery<Music>> CreateMusicAsync(AddMusicViewModel musicVM, Artist artist)
+        public async Task<EntityQuery<Music>> RecordMusicAsync(AddMusicViewModel musicVM, Artist artist)
         {
             string id = Guid.NewGuid().ToString();
-            var music = await _modelFactory.FacMusicAsync(musicVM, artist, id);
+            var music = await _domainCreationService.CreateMusicAsync(musicVM, artist, id);
             try 
             {
                 await _unitOfWork.MusicRepository.RecordMusicAsync(music);
-                await _storageService.UploadMusicAsync(await _modelFactory.FacMusicDataAsync(musicVM, music.Id));
+                await _storageService.UploadMusicAsync(await _domainCreationService.CreateMusicDataAsync(musicVM, music.Id));
                 return new EntityQuery<Music>(true, "Create music successfully", music, DateTime.Now);
             }
             catch(Exception ex) 
@@ -78,7 +77,7 @@ namespace ApplicationLayer.Services
             }
         }
 
-        public async Task<EntityQuery<MusicView>> CreateMusicViewAsync(MusicView musicView) 
+        public async Task<EntityQuery<MusicView>> RecordMusicViewAsync(MusicView musicView) 
         {
             try 
             {
@@ -92,7 +91,7 @@ namespace ApplicationLayer.Services
             }
         }
 
-        public async Task<EntityQuery<FavoriteMusic>> CreateFavoriteMusicAsync(FavoriteMusic favoriteMusic) 
+        public async Task<EntityQuery<FavoriteMusic>> RecordFavoriteMusicAsync(FavoriteMusic favoriteMusic) 
         {
             try
             {
@@ -105,7 +104,7 @@ namespace ApplicationLayer.Services
             }
         }
 
-        public async Task<EntityQuery<Playlist>> CreatePlaylistAsync(Playlist playlist) 
+        public async Task<EntityQuery<Playlist>> RecordPlaylistAsync(Playlist playlist) 
         {
             try     
             {
@@ -118,7 +117,7 @@ namespace ApplicationLayer.Services
             }
         }
 
-        public async Task<EntityQuery<FavoritePlaylist>> CreateFavoritePlaylistAsync(FavoritePlaylist favoritePlaylist) 
+        public async Task<EntityQuery<FavoritePlaylist>> RecordFavoritePlaylistAsync(FavoritePlaylist favoritePlaylist) 
         {
             try
             {
@@ -131,7 +130,7 @@ namespace ApplicationLayer.Services
             }
         }
 
-        public async Task<EntityQuery<IEnumerable<PlaylistMusic>>> CreatePlaylistMusicsAsync(IEnumerable<PlaylistMusic> playlistMusics) 
+        public async Task<EntityQuery<IEnumerable<PlaylistMusic>>> RecordPlaylistMusicsAsync(IEnumerable<PlaylistMusic> playlistMusics) 
         {
             try
             {

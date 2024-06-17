@@ -1,5 +1,4 @@
-﻿using ApplicationLayer.Factories;
-using DataAccessLayer.Cloud;
+﻿using DataAccessLayer.Cloud;
 using DomainLayer.Entities;
 using DomainLayer.Exceptions;
 
@@ -9,14 +8,10 @@ namespace ApplicationLayer.Services
     {
 
         private readonly ConnectionGoogleCloud _connectionCloud;
-        private readonly ModelFactory _modelFactory;
 
-        public CloudStorageService(
-            ConnectionGoogleCloud connectionCloud, 
-            ModelFactory modelFactory) 
+        public CloudStorageService(ConnectionGoogleCloud connectionCloud) 
         {
             _connectionCloud = connectionCloud;
-            _modelFactory = modelFactory;
         }
 
         public async Task UploadMusicAsync(MusicData musicData) 
