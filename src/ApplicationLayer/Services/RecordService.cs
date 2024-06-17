@@ -1,13 +1,10 @@
 ﻿using ApplicationLayer.Factories;
 using ApplicationLayer.ViewModels;
-using DataAccessLayer.Repositories;
 using DataAccessLayer.UnitOfWork;
 using DomainLayer.Entities;
 using DomainLayer.Exceptions;
 using DomainLayer.Interfaces;
 using Microsoft.Extensions.Logging;
-using System.Management;
-using UtilitiesLayer.Helpers;
 
 namespace ApplicationLayer.Services
 {
@@ -108,17 +105,29 @@ namespace ApplicationLayer.Services
             }
         }
 
-
         public async Task<EntityQuery<Playlist>> CreatePlaylistAsync(Playlist playlist) 
         {
             try     
             {
                 await _unitOfWork.PlaylistRepository.RecordPlaylistAsync(playlist);
-                return new EntityQuery<Playlist>(true, "Playlist created succesasfully", playlist, DateTime.Now);
+                return new EntityQuery<Playlist>(true, "Playlist created successfully", playlist, DateTime.Now);
             }
             catch(Exception ex) 
             {
                 return new EntityQuery<Playlist>(false, $"Unable to create playlist, because this error: {ex.Message}", playlist, DateTime.Now);
+            }
+        }
+
+        public async Task<EntityQuery<FavoritePlaylist>> CreateFavoritePlaylistAsync(FavoritePlaylist favoritePlaylist) 
+        {
+            try
+            {
+                await _unitOfWork.PlaylistRepository.RecordFavoritePlaylistAsync(favoritePlaylist);
+                return new EntityQuery<FavoritePlaylist>(true, "Favorite playlist created successfully", favoritePlaylist, DateTime.Now);
+            }
+            catch(Exception ex) 
+            {
+                return new EntityQuery<FavoritePlaylist>(false, $"An unexpected error ocurred: {ex.Message}", favoritePlaylist, DateTime.Now);
             }
         }
 

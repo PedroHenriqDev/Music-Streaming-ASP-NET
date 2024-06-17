@@ -87,7 +87,6 @@
         margin-top: 20px;
         transition: background-color 0.3s ease;
     }
-
         .play-button:hover {
             background-color: #15a94d;
         }
@@ -115,10 +114,25 @@
         border-radius: 20px;
         margin-top: 120px;
     }
+
+    .unfavorite-button, .favorite-button {
+        position: absolute;
+        top: 5px;
+        right: 2px;
+        background-color: transparent;
+        border: none;
+        color: red;
+        font-size: 18px;
+        cursor: pointer;
+    }
+
+        .favorite-button:hover, .unfavorite-button:hover {
+            color: darkred;
+        }
 </style>
 
 <div class="search-box">
-    <form id="searchForm" asp-action="SearchPlaylists" asp-controller="Search" method="post">
+    <form id="searchForm" asp-action="SearchPlaylistsByQuery" asp-controller="Search" method="get">
         <input type="text" name="query" class="search-input bg-light text-dark" placeholder="Enter your search query...">
         <button type="submit" class="search-button bg-black text-light"><i class="bi bi-search"></i></button>
     </form>
@@ -132,6 +146,28 @@
         {
             <div class="playlist-item">
                 <div class="playlist-info">
+                    @if (!Model.FavoritePlaylists.Any(fp => fp.PlaylistId == playlist.Id))
+                    {
+                        <form method="post" asp-controller="Playlist" asp-action="AddToFavorites">
+                        <input type="hidden" name="playlistId" value="@playlist.Id" />
+                        <input type="hidden" name="controller" value="Search"/>
+                            <input type="hidden" name="action" value="SearchPlaylistsByQuery" />
+                            <button type="submit" class="unfavorite-button">
+                            <i class="bi bi-heart"></i>
+                        </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form method="post" asp-controller="Playlist" asp-action="RemoveToFavorites">
+                        <input type="hidden" name="playlistId" value="@playlist.Id" />
+                        <input type="hidden" name="controller" value="Search" />
+                            <input type="hidden" name="action" value="SearchPlaylistsByQuery" />
+                            <button type="submit" class="favorite-button">
+                            <i class="bi bi-heart-fill"></i>
+                        </button>
+                        </form>
+                    }
                     <img src="data:image/png;base64,@(Convert.ToBase64String(playlist.Image))" class="playlist-image" />
                     <span class="playlist-name">@playlist.Name</span>
                     <span class="playlist-count">@playlist.Musics.Count() songs</span>

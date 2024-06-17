@@ -8,8 +8,12 @@ namespace DomainLayer.Interfaces
    
         Task<Playlist> GetPlaylistByIdAsync(string playlistId);
 
-        Task<IEnumerable<Playlist>> GetPlaylistsByQueryAsync(string query);
+        Task<IEnumerable<Playlist>> GetPlaylistsByQueryAsync(string query, string listenerId);
      
         Task RecordPlaylistAsync(Playlist playlist);
+
+        Task RecordFavoritePlaylistAsync(FavoritePlaylist favoritePlaylist);
+
+        Task RemoveFavoritePlaylistAsync(string playlistId, string listenerId);
     }
 }

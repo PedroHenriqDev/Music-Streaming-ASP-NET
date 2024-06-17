@@ -116,7 +116,7 @@ namespace DataAccessLayer.Repositories
             return playlistDictionary.Values.FirstOrDefault();
         }
 
-        public async Task<IEnumerable<Playlist>> GetPlaylistsByQueryAsync(string query)
+        public async Task<IEnumerable<Playlist>> GetPlaylistsByQueryAsync(string query, string listenerId)
         {
             string sqlQuery = @"
                                 SELECT 
@@ -131,7 +131,7 @@ namespace DataAccessLayer.Repositories
                                     l.Name AS ListenerName,
                                     pm.PlaylistId,
                                     pm.MusicId,
-                                    m.Id AS MusicId,
+                                    m.Id,
                                     m.Name AS MusicName
                                 FROM 
                                    Playlists p
@@ -145,7 +145,8 @@ namespace DataAccessLayer.Repositories
                                    (LOWER(p.Name) LIKE LOWER('%' || @query || '%') 
                                     OR LOWER(p.Description) LIKE LOWER('%' || @query || '%') 
                                     OR LOWER(l.Name) LIKE LOWER('%' || @query || '%'))
-                                    AND p.Visibility = CAST(@visibility AS visibilitytype)";
+                                    AND p.Visibility = CAST(@visibility AS visibilitytype)
+                                    AND l.Id != @listenerId";
 
             var playlistDictionary = new Dictionary<string, Playlist>();
 
@@ -155,27 +156,55 @@ namespace DataAccessLayer.Repositories
                 {
                     return _mapper.MapPlaylistDictionary(playlist, playlistDictionary, music, listener);
                 },
-                param: new { query = query, visibility = VisibilityType.Public.ToString().ToLower() },
+                param: new 
+                {
+                    query = query, visibility = VisibilityType.Public.ToString().ToLower(), 
+                    listenerId = listenerId
+                },
                 splitOn: "ListenerId,MusicId");
 
             return playlistDictionary.Values.ToList();
         }
 
+        public async Task RecordFavoritePlaylistAsync(FavoritePlaylist favoritePlaylist)
+        {
+            string sqlQuery = @"INSERT INTO FavoritePlaylists (Id, PlaylistId, ListenerId) 
+             VALUES (@id, @playlistId, @listenerId)";
+
+            await _connection.QueryAsync(sqlQuery, new
+            {
+                id = favoritePlaylist.Id,
+                playlistId = favoritePlaylist.PlaylistId, 
+                listenerId = favoritePlaylist.ListenerId,
+            });
+        }
+
         public async Task RecordPlaylistAsync(Playlist playlist)
         {
-                string sqlQuery = @"INSERT INTO Playlists (Id, Visibility, ListenerId, Name, Image, CreateAt, Description) 
+            string sqlQuery = @"INSERT INTO Playlists (Id, Visibility, ListenerId, Name, Image, CreateAt, Description) 
                    VALUES (@id, @visibility::visibilitytype, @listenerId, @name, @image, @createAt, @description)";
 
-                await _connection.QueryAsync(sqlQuery, new
-                {
-                    id = playlist.Id,
-                    visibility = playlist.Visibility.ToString().ToLower(),
-                    name = playlist.Name,
-                    listenerId = playlist.ListenerId,
-                    image = playlist.Image,
-                    createAt = playlist.CreateAt,
-                    description = playlist.Description
-                });
-            }
+            await _connection.QueryAsync(sqlQuery, new
+            {
+                id = playlist.Id,
+                visibility = playlist.Visibility.ToString().ToLower(),
+                name = playlist.Name,
+                listenerId = playlist.ListenerId,
+                image = playlist.Image,
+                createAt = playlist.CreateAt,
+                description = playlist.Description
+            });
+        }
+
+        public async Task RemoveFavoritePlaylistAsync(string playlistId, string listenerId) 
+        {
+            string sqlQuery = @"DELETE FROM FavoritePlaylists WHERE PlaylistId = @playlistId AND ListenerId = @listenerId";
+            await _connection.QueryAsync(sqlQuery, new 
+            {
+                playlistId = playlistId,
+                listenerId = listenerId
+            });       
         }
     }
+}
+

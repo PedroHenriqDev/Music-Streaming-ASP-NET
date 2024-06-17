@@ -104,9 +104,9 @@ namespace ApplicationLayer.Services
             return await _unitOfWork.MusicRepository.GetDetailedFavoriteMusicsByListenerIdAsync(listenerId);
         }
 
-        public async Task<IEnumerable<Playlist>> FindPlaylistsByQueryAsync(string query)
+        public async Task<IEnumerable<Playlist>> FindPlaylistsByQueryAsync(string query, string listenerId)
         {
-            return await _unitOfWork.PlaylistRepository.GetPlaylistsByQueryAsync(query);
+            return await _unitOfWork.PlaylistRepository.GetPlaylistsByQueryAsync(query, listenerId);
         }
 
         public async Task<IEnumerable<Playlist>> FindPlaylistsByListenerIdAsync(string listenerId) 

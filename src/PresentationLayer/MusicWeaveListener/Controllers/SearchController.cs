@@ -1,8 +1,10 @@
 ﻿using ApplicationLayer.Factories;
 using ApplicationLayer.Services;
+using ApplicationLayer.ViewModels;
 using DomainLayer.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 using System.Security.Claims;
 using UtilitiesLayer.Helpers;
 
@@ -12,14 +14,18 @@ namespace MusicWeaveListener.Controllers
     {
         private readonly SearchService _searchService;
         private readonly ViewModelFactory _viewModelFactory;
-        private readonly ILogger _logger;
+        private readonly ILogger<SearchController> _logger;
+        private readonly IHttpContextAccessor _httpAccessor;
 
         public SearchController(SearchService searchService, 
-                                ViewModelFactory viewModelFactory, ILogger logger)
+                                ViewModelFactory viewModelFactory, 
+                                ILogger<SearchController> logger,
+                                IHttpContextAccessor httpAccessor)
         {
             _searchService = searchService;
             _viewModelFactory = viewModelFactory;
             _logger = logger;
+            _httpAccessor = httpAccessor;
         }
 
         [HttpGet]
@@ -28,19 +34,23 @@ namespace MusicWeaveListener.Controllers
         {
             return View();
         }
-
-        [HttpPost]
+         
+        [HttpGet]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SearchPlaylists(string query)
+        public async Task<IActionResult> SearchPlaylistsByQuery(string query)
         {
             if (string.IsNullOrWhiteSpace(query)) 
-            {
                 return RedirectToAction(nameof(SearchPlaylists));
-            }
 
-            var playlistViewModel = await _viewModelFactory.FacSearchPlaylistViewModelAsync(await _searchService.FindPlaylistsByQueryAsync(query), User.FindFirstValue(CookieKeys.UserIdCookieKey));
-            return View(playlistViewModel);
+            var listenerId = User.FindFirstValue(CookieKeys.UserIdCookieKey);
+
+            if (string.IsNullOrWhiteSpace(listenerId))
+                return RedirectToAction(nameof(Error), new {messahge = "Listener is null"});
+
+            HttpHelper.SetSessionValue(_httpAccessor, SessionKeys.QuerySessionKey, query);
+
+            var playlistViewModel = await _viewModelFactory.FacSearchPlaylistViewModelAsync(await _searchService.FindPlaylistsByQueryAsync(query, listenerId), User.FindFirstValue(CookieKeys.UserIdCookieKey));
+            return View("SearchPlaylists", playlistViewModel);
         }
 
         [HttpPost]
@@ -77,6 +87,16 @@ namespace MusicWeaveListener.Controllers
                     message = ex.Message
                 });
             }
+        }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error(string message)
+        {
+            return View(new ErrorViewModel
+            {
+                Message = message,
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+            });
         }
     }
 }

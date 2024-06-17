@@ -63,6 +63,16 @@ namespace ApplicationLayer.Factories
             return new Playlist(playlistVM.Id, playlistVM.Visibility, listenerId, playlistVM.Name, playlistVM.Description, await ByteConvertHelper.ConvertIFormFileInByteAsync(playlistVM.FileImage), DateTime.Now);
         }
 
+        public FavoritePlaylist FacFavoritePlaylist(string id, string playlistId, string listenerId)
+        {
+            return new FavoritePlaylist
+            {
+                PlaylistId = playlistId,
+                Id = id,
+                ListenerId = listenerId
+            };
+        }
+
         public IEnumerable<PlaylistMusic> FacPlaylistMusics(string playlistId, string listenerId, IEnumerable<string> musicsIds) 
         {
             return musicsIds.Select(musicId => new PlaylistMusic 

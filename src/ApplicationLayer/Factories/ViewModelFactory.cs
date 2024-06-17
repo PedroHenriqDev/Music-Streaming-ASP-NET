@@ -44,7 +44,7 @@ namespace ApplicationLayer.Factories
 
         public async Task<SearchPlaylistViewModel> FacSearchPlaylistViewModelAsync(IEnumerable<Playlist> playlists, string listenerId)
         {
-            var playlistsViewModel = FacPlaylistsViewModelAsync(playlists);
+            var playlistsViewModel = await FacPlaylistsViewModelAsync(playlists);
             var favoritePlaylists = await _searchService.FindEntitiesByFKAsync<FavoritePlaylist, Listener>(listenerId);
             return new SearchPlaylistViewModel
             {

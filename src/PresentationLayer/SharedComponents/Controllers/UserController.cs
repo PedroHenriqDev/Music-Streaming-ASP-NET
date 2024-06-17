@@ -25,7 +25,6 @@ namespace PresentationLayer.SharedComponents.Controllers
         private string UserPageName => typeof(T).Name + "Page";
         private string CreateUser => $"Create{typeof(T).Name}";
 
-
         public UserController(LoginService<T> loginService,
                               SearchService searchService,
                               UserAuthenticationService authenticationService, 

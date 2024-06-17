@@ -71,6 +71,8 @@ builder.WebHost.ConfigureKestrel(options =>
     options.Limits.MaxRequestBodySize = 3145722800;
 });
 
+builder.Logging.AddConsole();
+
 var app = builder.Build();
 
 async Task<UnitOfWork> CreateUnitOfWorkAsync(IServiceProvider provider, string connectionString)

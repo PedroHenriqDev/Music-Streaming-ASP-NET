@@ -18,13 +18,15 @@ namespace MusicWeaveListener.Controllers
         private readonly VerifyService _verifyService;
         private readonly RecordService _recordService;
         private readonly ModelFactory _modelFactory;
+        private readonly DeleteService _deleteService;
         private readonly IHttpContextAccessor _httpAccessor;
 
         public PlaylistController(ViewModelFactory viewModelFactory,
-                                   SearchService searchService, 
+                                   SearchService searchService,
                                    VerifyService verifyService,
                                    RecordService recordService,
                                    ModelFactory modelFactory,
+                                   DeleteService deleteService,
                                    IHttpContextAccessor httpAccessor)
         {
             _viewModelFactory = viewModelFactory;
@@ -32,6 +34,7 @@ namespace MusicWeaveListener.Controllers
             _verifyService = verifyService;
             _recordService = recordService;
             _httpAccessor = httpAccessor;
+            _deleteService = deleteService;
             _modelFactory = modelFactory;
         }
 
@@ -54,17 +57,56 @@ namespace MusicWeaveListener.Controllers
             }
         }
 
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> AddToFavorites(string playlistId, string controller, string action)
+        {
+            var listenerId = User.FindFirstValue(CookieKeys.UserIdCookieKey);
+            if (playlistId is null || listenerId is null)
+                return RedirectToAction(nameof(Error), new { message = "Playlist or listener is null" });
+
+            var favoritePlaylistQuery = await _recordService.CreateFavoritePlaylistAsync(_modelFactory.FacFavoritePlaylist(Guid.NewGuid().ToString(), playlistId, listenerId));
+
+            if (favoritePlaylistQuery.Result)
+            {
+                var query = HttpHelper.GetSessionValue<string>(_httpAccessor, SessionKeys.QuerySessionKey);
+                return RedirectToAction(action, controller, new { query });
+            }
+
+            return RedirectToAction(nameof(Error), new { message = favoritePlaylistQuery.Message });
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> RemoveToFavorites(string playlistId, string controller, string action)
+        {
+            try
+            {
+                var listenerId = User.FindFirstValue(CookieKeys.UserIdCookieKey);
+                if (playlistId is null || listenerId is null)
+                    return RedirectToAction(nameof(Error), new { message = "Playlist or listener is null" });
+
+                await _deleteService.DeleteFavoritePlaylistAsync(playlistId, listenerId);
+                return RedirectToAction(action, controller, new 
+                {
+                    query = HttpHelper.GetSessionValue<string>(_httpAccessor, SessionKeys.QuerySessionKey) 
+                });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction(nameof(Error), new { message = ex.Message });
+            }
+        }
+
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> Playlist(string playlistId)
         {
             if (playlistId is null)
-            {
                 return RedirectToAction(nameof(Error), new
                 {
                     message = "An error ocurred, because reference null"
                 });
-            }
 
             return View(await _viewModelFactory.FacPlaylistViewModelAsync(await _searchService.FindPlaylistByIdAsync(playlistId)));
         }
@@ -74,22 +116,18 @@ namespace MusicWeaveListener.Controllers
         public IActionResult PlaylistFromSession(string playlistId)
         {
             if (playlistId is null)
-            {
                 return RedirectToAction(nameof(Error), new
                 {
                     message = "An error ocurred, because: Playlist choice is null"
                 });
-            }
 
             var playlistsVM = HttpHelper.GetSessionValue<IEnumerable<PlaylistViewModel>>(_httpAccessor, SessionKeys.PlaylistSessionKey);
             var playlist = playlistsVM.FirstOrDefault(p => p.Id == playlistId);
             if (playlist is null)
-            {
                 return RedirectToAction(nameof(Error), new
                 {
                     message = "Not found playlist"
                 });
-            }
 
             return View(playlist);
         }
@@ -123,6 +161,7 @@ namespace MusicWeaveListener.Controllers
                     }
                     return View(playlistVM);
                 }
+
                 return View(playlistVM);
             }
             catch (Exception ex)
