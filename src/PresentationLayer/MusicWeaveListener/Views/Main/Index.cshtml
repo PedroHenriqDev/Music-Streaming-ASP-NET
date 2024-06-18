@@ -103,7 +103,7 @@
                 @foreach (var music in Model.MusicsViewModel)
                 {
                     <div class="music-item">
-                        @if (Model.FavoriteMusics.Any(fm => fm.MusicId == music.Music.Id))
+                        @if (music.IsFavorite)
                         {
                             <button class="unfavorite-button" onclick="removeToFavorites('@music.Music.Id')">
                                 <i class="bi bi-heart-fill"></i>

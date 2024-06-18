@@ -13,17 +13,20 @@ namespace ApplicationLayer.Mappings
         private readonly GenerateIntelliTextService _generateTextService;
         private readonly SearchService _searchService;
         private readonly CloudStorageService _storageService;
+        private readonly VerifyService _verifyService;
 
         public ViewModelMapper(
             IMapper mapper,
             GenerateIntelliTextService generateTextService,
             SearchService searchService,
-            CloudStorageService storageService)
+            CloudStorageService storageService,
+            VerifyService verifyService)
         {
             _mapper = mapper;
             _generateTextService = generateTextService;
             _searchService = searchService;
             _storageService = storageService;
+            _verifyService = verifyService;
         }
 
         public async Task<DescriptionViewModel> ToListenerDescriptionViewModelAsync(Listener listener)
@@ -102,11 +105,11 @@ namespace ApplicationLayer.Mappings
             return musicViewModel;
         }
 
-        public async Task<MainViewModel> ToMainViewModelAsync(IEnumerable<MusicViewModel> musicsVM, string listenerId)
+        public async Task<MainViewModel> ToMainViewModelAsync(IEnumerable<MusicViewModel> musicsViewModel, string listenerId)
         {
             var favoriteMusics = await _searchService.FindEntitiesByFKAsync<FavoriteMusic, Listener>(listenerId);
-
-            return new MainViewModel(musicsVM, favoriteMusics);
+            var musicsMarkViewModel = _verifyService.MarkMusicsViewModelAsFavorite(favoriteMusics, musicsViewModel);
+            return new MainViewModel(musicsMarkViewModel, favoriteMusics);
         }
 
         public async Task<ListenerPageViewModel> ToListenerPageViewModelAsync(Listener listener)

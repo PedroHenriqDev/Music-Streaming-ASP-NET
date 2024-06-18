@@ -90,5 +90,22 @@ namespace ApplicationLayer.Services
             }
             return false;
         }
+
+        public IEnumerable<MusicViewModel> MarkMusicsViewModelAsFavorite(IEnumerable<FavoriteMusic> favoriteMusics, IEnumerable<MusicViewModel> musicsViewModel)
+        {
+            List<MusicViewModel> musicsMarkViewModel = new List<MusicViewModel>();
+            foreach (FavoriteMusic favoriteMusic in favoriteMusics)
+            {
+                foreach (MusicViewModel musicViewModel in musicsViewModel)
+                {
+                    if (musicViewModel.Music.Id == favoriteMusic.MusicId)
+                    {
+                        musicViewModel.IsFavorite = true;
+                    }
+                    musicsMarkViewModel.Add(musicViewModel);
+                }
+            }
+            return musicsMarkViewModel;
+        }
     }
 }
