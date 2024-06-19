@@ -1,4 +1,4 @@
-using ApplicationLayer.Mappings;
+using ApplicationLayer.Factories;
 using ApplicationLayer.Profiles;
 using ApplicationLayer.Services;
 using DataAccessLayer.Cloud;
@@ -28,8 +28,8 @@ builder.Services.AddScoped<PictureService>();
 builder.Services.AddScoped<SearchService>();
 builder.Services.AddScoped<UserAuthenticationService>();
 builder.Services.AddScoped<UpdateService>();
-builder.Services.AddScoped<DomainCreationService>();
-builder.Services.AddScoped<ViewModelMapper>();
+builder.Services.AddScoped<DomainFactory>();
+builder.Services.AddScoped<ViewModelFactory>();
 builder.Services.AddScoped<ConnectionGoogleCloud>();
 builder.Services.AddTransient<DataMapper>();
 builder.Services.AddTransient<DataValidation>();

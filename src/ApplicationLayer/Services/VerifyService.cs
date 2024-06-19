@@ -93,19 +93,18 @@ namespace ApplicationLayer.Services
 
         public IEnumerable<MusicViewModel> MarkMusicsViewModelAsFavorite(IEnumerable<FavoriteMusic> favoriteMusics, IEnumerable<MusicViewModel> musicsViewModel)
         {
-            List<MusicViewModel> musicsMarkViewModel = new List<MusicViewModel>();
-            foreach (FavoriteMusic favoriteMusic in favoriteMusics)
+            HashSet<string> hashSetFavoriteMusicIds = new HashSet<string>(favoriteMusics.Select(favoriteMusic => favoriteMusic.MusicId));
+            Dictionary<string, MusicViewModel> musicsViewModelDictionary = musicsViewModel.ToDictionary(musicViewModel => musicViewModel.Music.Id);
+           
+            foreach(MusicViewModel musicViewModel in musicsViewModelDictionary.Values) 
             {
-                foreach (MusicViewModel musicViewModel in musicsViewModel)
+                if (hashSetFavoriteMusicIds.Contains(musicViewModel.Music.Id)) 
                 {
-                    if (musicViewModel.Music.Id == favoriteMusic.MusicId)
-                    {
-                        musicViewModel.IsFavorite = true;
-                    }
-                    musicsMarkViewModel.Add(musicViewModel);
+                    musicViewModel.IsFavorite = true;
                 }
             }
-            return musicsMarkViewModel;
+
+            return musicsViewModelDictionary.Values; 
         }
     }
 }

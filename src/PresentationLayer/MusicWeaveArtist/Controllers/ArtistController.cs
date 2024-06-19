@@ -7,13 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using UtilitiesLayer.Helpers;
 using System.Security.Claims;
 using ApplicationLayer.Services;
-using ApplicationLayer.Mappings;
+using ApplicationLayer.Factories;
 
 namespace PresentationLayer.MusicWeaveArtist.Controllers
 {
     public class ArtistController : UserController<Artist>
     {
-        private readonly ViewModelMapper _viewModelMapper;
+        private readonly ViewModelFactory _viewModelFactory;
         private readonly RecordService _recordService;
         private readonly GenerateIntelliTextService _generateIntelliTextService;
 
@@ -23,14 +23,14 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
                               VerifyService verifyService,
                               PictureService pictureService,
                               UpdateService updateService,
-                              DomainCreationService domainCreationService,
+                              DomainFactory domainCreationService,
                               IHttpContextAccessor httpAccessor,
-                              ViewModelMapper viewModelMapper,
+                              ViewModelFactory viewModelFactory,
                               RecordService recordService, 
                               GenerateIntelliTextService generateIntelliTextService)
             : base(loginService, searchService, authenticationService, verifyService, pictureService, updateService, domainCreationService, httpAccessor)
         {
-            _viewModelMapper = viewModelMapper;
+            _viewModelFactory = viewModelFactory;
             _recordService = recordService;
             _generateIntelliTextService = generateIntelliTextService;
         }
@@ -41,7 +41,7 @@ namespace PresentationLayer.MusicWeaveArtist.Controllers
         {   
             try
             {
-                ArtistPageViewModel artistPageVM = await _viewModelMapper.ToArtistPageViewModelAsync(await _searchService.FindUserByIdAsync<Artist>(User.FindFirstValue(CookieKeys.UserIdCookieKey)));
+                ArtistPageViewModel artistPageVM = await _viewModelFactory.CreateArtistPageViewModelAsync(await _searchService.FindUserByIdAsync<Artist>(User.FindFirstValue(CookieKeys.UserIdCookieKey)));
                 return View(artistPageVM);
             }
             catch (Exception ex)

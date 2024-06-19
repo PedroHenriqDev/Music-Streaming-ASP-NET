@@ -105,15 +105,25 @@
                     <div class="music-item">
                         @if (music.IsFavorite)
                         {
-                            <button class="unfavorite-button" onclick="removeToFavorites('@music.Music.Id')">
-                                <i class="bi bi-heart-fill"></i>
-                            </button>
+                            <form method="post" asp-action="RemoveToFavorites" asp-controller="Music">
+                                <input type="hidden" name="musicId" value="@music.Music.Id" />
+                                <input type="hidden" name="controller" value="Main" />
+                                <input type="hidden" name="action" value="Index" />
+                                <button class="unfavorite-button">
+                                    <i class="bi bi-heart-fill"></i>
+                                </button>
+                            </form>
                         }
                         else
                         {
-                            <button class="favorite-button" onclick="addToFavorites('@music.Music.Id')">
-                                <i class="bi bi-heart"></i>
-                            </button>
+                            <form method="post" asp-action="AddToFavorites" asp-controller="Music">
+                                <input type="hidden" name="musicId" value="@music.Music.Id" />
+                                <input type="hidden" name="controller" value="Main" />
+                                <input type="hidden" name="action" value="Index" />
+                                <button type="submit" class="favorite-button">
+                                    <i class="bi bi-heart"></i>
+                                </button>
+                            </form>
                         }
                         <div class="music-info">
                             <span class="artist-name">@music.DurationText<i class="bi bi-clock mx-2"></i></span>
@@ -177,42 +187,14 @@
             });
         }
 
-        async function addToFavorites(musicId) {
-            const response = await fetch('@Url.Action("AddFromFavorites", "Music")', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(musicId)
-            });
-
-            if (response.ok) {
-                const button = document.querySelector(`button[onclick="addToFavorites('${musicId}')"]`);
-                if (button) {
-                    button.className = 'unfavorite-button';
-                    button.setAttribute('onclick', `removeToFavorites('${musicId}')`);
-                    button.innerHTML = '<i class="bi bi-heart-fill"></i>';
-                }
+        if (response.ok) {
+            const button = document.querySelector(`button[onclick="removeToFavorites('${musicId}')"]`);
+            if (button) {
+                button.className = 'favorite-button';
+                button.setAttribute('onclick', `addToFavorites('${musicId}')`);
+                button.innerHTML = '<i class="bi bi-heart"></i>';
             }
         }
-
-        async function removeToFavorites(musicId) {
-            const response = await fetch('@Url.Action("RemoveFromFavorites", "Music")', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(musicId)
-            });
-
-            if (response.ok) {
-                const button = document.querySelector(`button[onclick="removeToFavorites('${musicId}')"]`);
-                if (button) {
-                    button.className = 'favorite-button';
-                    button.setAttribute('onclick', `addToFavorites('${musicId}')`);
-                    button.innerHTML = '<i class="bi bi-heart"></i>';
                 }
-            }
-        }
     </script>
 }

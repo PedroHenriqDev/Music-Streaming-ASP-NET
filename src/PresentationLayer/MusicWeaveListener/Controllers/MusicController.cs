@@ -1,7 +1,8 @@
-﻿using ApplicationLayer.Mappings;
+﻿using ApplicationLayer.Factories;
 using ApplicationLayer.Services;
 using ApplicationLayer.ViewModels;
 using DomainLayer.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using System.Security.Claims;
@@ -12,25 +13,28 @@ namespace MusicWeaveListener.Controllers
     public class MusicController : Controller
     {
         private readonly RecordService _recordService;
-        private readonly DomainCreationService _domainCreationService;
+        private readonly DomainFactory _domainCreationService;
         private readonly SearchService _searchService;
-        private readonly ViewModelMapper _viewModelMapper;
+        private readonly ViewModelFactory _viewModelFactory;
         private readonly DeleteService _deleteService;
         private static IDictionary<string, DateTime> _lastViewTime = new Dictionary<string, DateTime>();
 
         public MusicController(RecordService recordService,
-                               DomainCreationService domainCreationService,
+                               DomainFactory domainCreationService,
                                SearchService searchService, 
-                               ViewModelMapper viewModelMapper,
+                               ViewModelFactory viewModelFactory,
                                DeleteService deleteService)
         {
             _recordService = recordService;
             _domainCreationService = domainCreationService;
             _searchService = searchService;
-            _viewModelMapper = viewModelMapper;
+            _viewModelFactory = viewModelFactory;
             _deleteService = deleteService;
         }
 
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> RecordView([FromBody] string musicId)
         {
             var listenerId = User.FindFirstValue(CookieKeys.UserIdCookieKey);
@@ -56,35 +60,40 @@ namespace MusicWeaveListener.Controllers
             return RedirectToAction("Index", "Main");
         }
 
-        public async Task<IActionResult> AddFromFavorites([FromBody] string musicId)
+        [HttpGet]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MusicDetails(string musicId)
+        {
+            if (musicId is null)
+                return RedirectToAction(nameof(Error), new { message = "Any reference null ocurred" });
+
+            var favoriteMusics = await _searchService.FindEntitiesByFKAsync<FavoriteMusic, Listener>(User.FindFirstValue(CookieKeys.UserIdCookieKey));
+            return View(await _viewModelFactory.CreateMusicViewModelAsync(await _searchService.FindDetailedMusicAsync(musicId), favoriteMusics.Any(fm => fm.MusicId == musicId)));
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddToFavorites(string musicId, string controller, string action)
         {
             if (musicId is null)
                 return RedirectToAction(nameof(Error), new { message = "Any reference null ocurred" });
 
             await _recordService.RecordFavoriteMusicAsync(_domainCreationService.CreateFavoriteMusic(Guid.NewGuid().ToString(), musicId, User.FindFirstValue(CookieKeys.UserIdCookieKey)));
-            return RedirectToAction("Index", "Main");
+            return RedirectToAction(action, controller);
         }
 
-        public async Task<IActionResult> MusicDetails(string musicId)
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RemoveToFavorites(string musicId, string controller, string action)
         {
             if (musicId is null)
-            {
                 return RedirectToAction(nameof(Error), new { message = "Any reference null ocurred" });
-            }
-
-            var favoriteMusics = await _searchService.FindEntitiesByFKAsync<FavoriteMusic, Listener>(User.FindFirstValue(CookieKeys.UserIdCookieKey));
-            return View(await _viewModelMapper.ToMusicViewModelAsync(await _searchService.FindDetailedMusicAsync(musicId), favoriteMusics.Any(fm => fm.MusicId == musicId)));
-        }
-
-        public async Task<IActionResult> RemoveFromFavorites([FromBody] string musicId)
-        {
-            if (musicId is null)
-            {
-                return RedirectToAction(nameof(Error), new { message = "Any reference null ocurred" });
-            }
 
             await _deleteService.DeleteFavoriteMusicAsync(musicId, User.FindFirstValue(CookieKeys.UserIdCookieKey));
-            return RedirectToAction("Index", "Main");
+            return RedirectToAction(action, controller);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

@@ -3,11 +3,10 @@ using ApplicationLayer.ViewModels;
 using AutoMapper;
 using DomainLayer.Entities;
 using DomainLayer.Interfaces;
-using UtilitiesLayer.Helpers;
 
-namespace ApplicationLayer.Mappings
+namespace ApplicationLayer.Factories
 {
-    public class ViewModelMapper
+    public class ViewModelFactory
     {
         private readonly IMapper _mapper;
         private readonly GenerateIntelliTextService _generateTextService;
@@ -15,12 +14,11 @@ namespace ApplicationLayer.Mappings
         private readonly CloudStorageService _storageService;
         private readonly VerifyService _verifyService;
 
-        public ViewModelMapper(
-            IMapper mapper,
-            GenerateIntelliTextService generateTextService,
-            SearchService searchService,
-            CloudStorageService storageService,
-            VerifyService verifyService)
+        public ViewModelFactory(IMapper mapper,
+                                GenerateIntelliTextService generateTextService,
+                                SearchService searchService,
+                                CloudStorageService storageService,
+                                VerifyService verifyService)
         {
             _mapper = mapper;
             _generateTextService = generateTextService;
@@ -29,7 +27,7 @@ namespace ApplicationLayer.Mappings
             _verifyService = verifyService;
         }
 
-        public async Task<DescriptionViewModel> ToListenerDescriptionViewModelAsync(Listener listener)
+        public async Task<DescriptionViewModel> CreateListenerDescriptionViewModelAsync(Listener listener)
         {
             if (listener is null)
             {
@@ -41,7 +39,7 @@ namespace ApplicationLayer.Mappings
             return viewModel;
         }
 
-        public async Task<DescriptionViewModel> ToArtistDescriptionViewModelAsync(Artist artist)
+        public async Task<DescriptionViewModel> CreateArtistDescriptionViewModelAsync(Artist artist)
         {
             if (artist is null)
             {
@@ -53,7 +51,7 @@ namespace ApplicationLayer.Mappings
             return viewModel;
         }
 
-        public async Task<SearchPlaylistViewModel> ToSearchPlaylistViewModelAsync(IEnumerable<Playlist> playlists, string listenerId)
+        public async Task<SearchPlaylistViewModel> CreateSearchPlaylistViewModelAsync(IEnumerable<Playlist> playlists, string listenerId)
         {
             var playlistsViewModel = _mapper.Map<List<PlaylistViewModel>>(playlists);
             foreach (var playlistVM in playlistsViewModel)
@@ -79,23 +77,7 @@ namespace ApplicationLayer.Mappings
             };
         }
 
-        public async Task<IEnumerable<MusicViewModel>> ToMusicsViewModelByUserIdAsync<T>(string userId) where T : class, IUser<T>
-        {
-            var genres = await _searchService.FindUserGenresAsync<T>(userId);
-            var musics = await _searchService.FindMusicsByFkIdsAsync<Genre>(genres.Select(genre => genre.Id).ToList());
-            var musicDatas = await _storageService.DownloadMusicsAsync(musics.Select(music => music.Id).ToList());
-
-            var musicDataDict = musicDatas.ToDictionary(musicData => musicData.Id);
-            return musics.Select(music =>
-            {
-                var musicVM = _mapper.Map<MusicViewModel>(music);
-                musicVM.MusicData = musicDataDict[music.Id];
-                musicVM.Music = music;
-                return musicVM;
-            });
-        }
-
-        public async Task<MusicViewModel> ToMusicViewModelAsync(Music music, bool isFavorite)
+        public async Task<MusicViewModel> CreateMusicViewModelAsync(Music music, bool isFavorite)
         {
             var musicData = await _storageService.DownloadMusicAsync(music.Id);
             var musicViewModel = _mapper.Map<MusicViewModel>(music);
@@ -105,14 +87,14 @@ namespace ApplicationLayer.Mappings
             return musicViewModel;
         }
 
-        public async Task<MainViewModel> ToMainViewModelAsync(IEnumerable<MusicViewModel> musicsViewModel, string listenerId)
+        public async Task<MainViewModel> CreateMainViewModelAsync(IEnumerable<MusicViewModel> musicsViewModel, string listenerId)
         {
             var favoriteMusics = await _searchService.FindEntitiesByFKAsync<FavoriteMusic, Listener>(listenerId);
             var musicsMarkViewModel = _verifyService.MarkMusicsViewModelAsFavorite(favoriteMusics, musicsViewModel);
             return new MainViewModel(musicsMarkViewModel, favoriteMusics);
         }
 
-        public async Task<ListenerPageViewModel> ToListenerPageViewModelAsync(Listener listener)
+        public async Task<ListenerPageViewModel> CreateListenerPageViewModelAsync(Listener listener)
         {
             var favoriteMusics = await _searchService.FindDetailedFavoriteMusicsByListenerIdAsync(listener.Id);
             var musicDatas = await _storageService.DownloadMusicsAsync(favoriteMusics.Select(music => music.Id).ToList());
@@ -133,7 +115,23 @@ namespace ApplicationLayer.Mappings
             };
         }
 
-        public async Task<ArtistPageViewModel> ToArtistPageViewModelAsync(Artist artist)
+        public async Task<IEnumerable<MusicViewModel>> CreateMusicsViewModelByUserIdAsync<T>(string userId) where T : class, IUser<T>
+        {
+            var genres = await _searchService.FindUserGenresAsync<T>(userId);
+            var musics = await _searchService.FindMusicsByFkIdsAsync<Genre>(genres.Select(genre => genre.Id).ToList());
+            var musicDatas = await _storageService.DownloadMusicsAsync(musics.Select(music => music.Id).ToList());
+
+            var musicDataDict = musicDatas.ToDictionary(musicData => musicData.Id);
+            return musics.Select(music =>
+            {
+                var musicVM = _mapper.Map<MusicViewModel>(music);
+                musicVM.MusicData = musicDataDict[music.Id];
+                musicVM.Music = music;
+                return musicVM;
+            });
+        }
+
+        public async Task<ArtistPageViewModel> CreateArtistPageViewModelAsync(Artist artist)
         {
             var musics = await _searchService.FindMusicByFkIdAsync<Artist>(artist.Id);
             var musicDatas = await _storageService.DownloadMusicsAsync(musics.Select(music => music.Id).ToList());
@@ -154,7 +152,7 @@ namespace ApplicationLayer.Mappings
             };
         }
 
-        public async Task<SearchMusicsViewModel> ToSearchMusicViewModelAsync(string listenerId)
+        public async Task<SearchMusicsViewModel> CreateSearchMusicViewModelAsync(string listenerId)
         {
             var genres = await _searchService.FindUserGenresAsync<Listener>(listenerId);
             var musics = await _searchService.FindMusicsByFkIdsAsync<Genre>(genres.Select(genre => genre.Id).ToList());
@@ -173,7 +171,23 @@ namespace ApplicationLayer.Mappings
             };
         }
 
-        public async Task<SearchMusicsViewModel> ToSearchMusicViewModelAsync(List<string> foundMusicsIds, string listenerId)
+        public async Task<IEnumerable<MusicViewModel>> CreateMusicViewModelByGenreAsync(string userId)
+        {
+            var genres = await _searchService.FindUserGenresAsync<Listener>(userId);
+            var musics = await _searchService.FindMusicsByFkIdsAsync<Genre>(genres.Select(genre => genre.Id).ToList());
+            var musicDatas = await _storageService.DownloadMusicsAsync(musics.Select(music => music.Id).ToList());
+
+            var musicDataDict = musicDatas.ToDictionary(musicData => musicData.Id);
+            return musics.Select(music =>
+            {
+                var musicVM = _mapper.Map<MusicViewModel>(music);
+                musicVM.MusicData = musicDataDict[music.Id];
+                musicVM.Music = music;
+                return musicVM;
+            });
+        }
+
+        public async Task<SearchMusicsViewModel> CreateSearchMusicViewModelAsync(List<string> foundMusicsIds, string listenerId)
         {
             var genres = await _searchService.FindUserGenresAsync<Listener>(listenerId);
             var musicsSuggestion = await _searchService.FindMusicsByFkIdsAsync<Genre>(genres.Select(genre => genre.Id).ToList());
@@ -204,7 +218,7 @@ namespace ApplicationLayer.Mappings
             };
         }
 
-        public async Task<PlaylistViewModel> ToPlaylistViewModelAsync(Playlist playlist)
+        public async Task<PlaylistViewModel> CreatePlaylistViewModelAsync(Playlist playlist)
         {
             var musicDatas = await _storageService.DownloadMusicsAsync(playlist.Musics.Select(music => music.Id));
             var musicDataDict = musicDatas.ToDictionary(musicData => musicData.Id);
@@ -221,7 +235,7 @@ namespace ApplicationLayer.Mappings
             return viewModel;
         }
 
-        public async Task<IEnumerable<PlaylistViewModel>> ToPlaylistsViewModelAsync(IEnumerable<Playlist> playlists)
+        public async Task<IEnumerable<PlaylistViewModel>> CreatePlaylistsViewModelAsync(IEnumerable<Playlist> playlists)
         {
             var playlistsViewModel = _mapper.Map<List<PlaylistViewModel>>(playlists);
 

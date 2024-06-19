@@ -1,4 +1,5 @@
-﻿using ApplicationLayer.Services;
+﻿using ApplicationLayer.Factories;
+using ApplicationLayer.Services;
 using ApplicationLayer.ViewModels;
 using DomainLayer.Entities;
 using DomainLayer.Exceptions;
@@ -19,7 +20,7 @@ namespace PresentationLayer.SharedComponents.Controllers
         protected readonly VerifyService _verifyService;
         protected readonly PictureService _pictureService;
         protected readonly UpdateService _updateService;
-        protected readonly DomainCreationService _domainCreationService;
+        protected readonly DomainFactory _domainCreationService;
         protected readonly IHttpContextAccessor _httpAccessor;
         private string UserPageName => typeof(T).Name + "Page";
         private string CreateUser => $"Create{typeof(T).Name}";
@@ -30,7 +31,7 @@ namespace PresentationLayer.SharedComponents.Controllers
                               VerifyService verifyService, 
                               PictureService pictureService,
                               UpdateService updateService,
-                              DomainCreationService domainCreationService,
+                              DomainFactory domainCreationService,
                               IHttpContextAccessor httpAccessor)
         {
             _loginService = loginService;

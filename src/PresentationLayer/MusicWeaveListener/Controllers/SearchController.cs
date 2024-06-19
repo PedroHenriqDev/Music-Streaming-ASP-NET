@@ -1,4 +1,4 @@
-﻿using ApplicationLayer.Mappings;
+﻿using ApplicationLayer.Factories;
 using ApplicationLayer.Services;
 using ApplicationLayer.ViewModels;
 using DomainLayer.Exceptions;
@@ -13,17 +13,17 @@ namespace MusicWeaveListener.Controllers
     public class SearchController : Controller
     {
         private readonly SearchService _searchService;
-        private readonly ViewModelMapper _viewModelMapper;
+        private readonly ViewModelFactory _viewModelFactory;
         private readonly ILogger<SearchController> _logger;
         private readonly IHttpContextAccessor _httpAccessor;
 
         public SearchController(SearchService searchService, 
-                                ViewModelMapper viewModelMapper, 
+                                ViewModelFactory viewModelMapper, 
                                 ILogger<SearchController> logger,
                                 IHttpContextAccessor httpAccessor)
         {
             _searchService = searchService;
-            _viewModelMapper = viewModelMapper;
+            _viewModelFactory = viewModelMapper;
             _logger = logger;
             _httpAccessor = httpAccessor;
         }
@@ -49,7 +49,7 @@ namespace MusicWeaveListener.Controllers
 
             HttpHelper.SetSessionValue(_httpAccessor, SessionKeys.QuerySessionKey, query);
 
-            var playlistViewModel = await _viewModelMapper.ToSearchPlaylistViewModelAsync(await _searchService.FindPlaylistsByQueryAsync(query, listenerId), User.FindFirstValue(CookieKeys.UserIdCookieKey));
+            var playlistViewModel = await _viewModelFactory.CreateSearchPlaylistViewModelAsync(await _searchService.FindPlaylistsByQueryAsync(query, listenerId), User.FindFirstValue(CookieKeys.UserIdCookieKey));
             return View("SearchPlaylists", playlistViewModel);
         }
 

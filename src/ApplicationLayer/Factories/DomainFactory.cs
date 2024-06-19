@@ -4,13 +4,13 @@ using DomainLayer.Interfaces;
 using Microsoft.Extensions.Logging;
 using UtilitiesLayer.Helpers;
 
-namespace ApplicationLayer.Services
+namespace ApplicationLayer.Factories
 {
-    public class DomainCreationService
+    public class DomainFactory
     {
-        private readonly ILogger<DomainCreationService> _logger;
+        private readonly ILogger<DomainFactory> _logger;
 
-        public DomainCreationService(ILogger<DomainCreationService> logger)
+        public DomainFactory(ILogger<DomainFactory> logger)
         {
             _logger = logger;
         }

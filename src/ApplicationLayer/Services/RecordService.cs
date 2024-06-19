@@ -1,4 +1,5 @@
-﻿using ApplicationLayer.ViewModels;
+﻿using ApplicationLayer.Factories;
+using ApplicationLayer.ViewModels;
 using DataAccessLayer.UnitOfWork;
 using DomainLayer.Entities;
 using DomainLayer.Exceptions;
@@ -11,12 +12,12 @@ namespace ApplicationLayer.Services
     {
         private readonly ILogger<RecordService> _logger;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly DomainCreationService _domainCreationService;
+        private readonly DomainFactory _domainCreationService;
         private readonly CloudStorageService _storageService;
 
         public RecordService(ILogger<RecordService> logger,
                              IUnitOfWork unitOfWork,
-                             DomainCreationService domainCreationService, 
+                             DomainFactory domainCreationService, 
                              CloudStorageService storageService)
         {
             _logger = logger;

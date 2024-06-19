@@ -1,4 +1,3 @@
-using ApplicationLayer.Mappings;
 using ApplicationLayer.Services;
 using ApplicationLayer.ViewModels;
 using DomainLayer.Entities;
@@ -6,18 +5,19 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using UtilitiesLayer.Helpers;
+using ApplicationLayer.Factories;
 
 namespace PresentationLayer.MusicWeaveListener.Controllers
 {
     public class MainController : Controller
     {
         private readonly SearchService _searchService;
-        private readonly ViewModelMapper _viewModelMapper;
+        private readonly ViewModelFactory _viewModelFactory;
 
-        public MainController(SearchService searchService, ViewModelMapper viewModelMapper)
+        public MainController(SearchService searchService, ViewModelFactory viewModelMapper)
         {
             _searchService = searchService;
-            _viewModelMapper = viewModelMapper;
+            _viewModelFactory = viewModelMapper;
         }
 
         [HttpGet]
@@ -28,7 +28,7 @@ namespace PresentationLayer.MusicWeaveListener.Controllers
                 return View();
 
             Listener listener = await _searchService.FindUserByIdAsync<Listener>(User.FindFirstValue(CookieKeys.UserIdCookieKey));
-            MainViewModel modelVM = await _viewModelMapper.ToMainViewModelAsync(await _viewModelMapper.ToMusicsViewModelByUserIdAsync<Listener>(listener.Id), listener.Id);
+            MainViewModel modelVM = await _viewModelFactory.CreateMainViewModelAsync(await _viewModelFactory.CreateMusicsViewModelByUserIdAsync<Listener>(listener.Id), listener.Id);
             return View(modelVM);
         }
 
