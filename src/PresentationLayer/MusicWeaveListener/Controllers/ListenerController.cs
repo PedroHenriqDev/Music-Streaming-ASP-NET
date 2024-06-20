@@ -8,98 +8,98 @@ using UtilitiesLayer.Helpers;
 using System.Security.Claims;
 using ApplicationLayer.Services;
 using ApplicationLayer.Factories;
+using ApplicationLayer.Interfaces;
 
-namespace PresentationLayer.MusicWeaveListener.Controllers
+namespace PresentationLayer.MusicWeaveListener.Controllers;
+
+public class ListenerController : UserController<Listener>
 {
-    public class ListenerController : UserController<Listener>
+    private readonly IRecordService _recordService;
+    private readonly IDeleteService _deleteService;
+    private readonly ViewModelFactory _viewModelFactory;
+    private readonly IGenerateIntelliTextService _generateIntelliTextService;
+
+    public ListenerController(LoginService<Listener> loginService,
+                          ISearchService searchService,
+                          IUserAuthenticationService authenticationService,
+                          IVerifyService verifyService,
+                          IPictureService pictureService,
+                          IUpdateService updateService,
+                          DomainFactory domainCreationService,
+                          IHttpContextAccessor httpAccessor,
+                          IRecordService recordService, 
+                          IDeleteService deleteService,
+                          ViewModelFactory viewModelFactory,
+                          IGenerateIntelliTextService generateIntelliTextService)
+        : base(loginService, searchService, authenticationService, verifyService, pictureService, updateService, domainCreationService, httpAccessor)
     {
-        private readonly RecordService _recordService;
-        private readonly DeleteService _deleteService;
-        private readonly ViewModelFactory _viewModelFactory;
-        private readonly GenerateIntelliTextService _generateIntelliTextService;
+        _recordService = recordService;
+        _deleteService = deleteService;
+        _viewModelFactory = viewModelFactory;
+        _generateIntelliTextService = generateIntelliTextService;
+    }
 
-        public ListenerController(LoginService<Listener> loginService,
-                              SearchService searchService,
-                              UserAuthenticationService authenticationService,
-                              VerifyService verifyService,
-                              PictureService pictureService,
-                              UpdateService updateService,
-                              DomainFactory domainCreationService,
-                              IHttpContextAccessor httpAccessor,
-                              RecordService recordService, 
-                              DeleteService deleteService,
-                              ViewModelFactory viewModelFactory,
-                              GenerateIntelliTextService generateIntelliTextService)
-            : base(loginService, searchService, authenticationService, verifyService, pictureService, updateService, domainCreationService, httpAccessor)
-        {
-            _recordService = recordService;
-            _deleteService = deleteService;
-            _viewModelFactory = viewModelFactory;
-            _generateIntelliTextService = generateIntelliTextService;
-        }
+    [HttpGet]
+    [AllowAnonymous]
+    public IActionResult CreateListener()
+    {
+        return View();
+    }
 
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult CreateListener()
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [AllowAnonymous]
+    public async Task<IActionResult> CreateListener(RegisterUserViewModel listenerVM)
+    {
+        try
         {
-            return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [AllowAnonymous]
-        public async Task<IActionResult> CreateListener(RegisterUserViewModel listenerVM)
-        {
-            try
+            if (!_verifyService.VerifyUserGenres(listenerVM))
             {
-                if (!_verifyService.VerifyUserGenres(listenerVM))
-                {
-                    TempData["InvalidGenres"] = "You must select at least one genre!";
-                    listenerVM.Genres = HttpHelper.GetSessionValue<List<Genre>>(_httpAccessor, SessionKeys.UserSessionKey);
-                    return View("SelectGenres", listenerVM);
-                }
-
-                if (_verifyService.VerifyUser(listenerVM))
-                {
-                    HttpHelper.RemoveSessionValue(_httpAccessor, SessionKeys.UserSessionKey);
-                    EntityQuery<Listener> listenerQuery = await _recordService.RecordUserAsync(
-                                                            new Listener(Guid.NewGuid().ToString(), listenerVM.Name, EncryptHelper.EncryptPasswordSHA512(listenerVM.Password), listenerVM.Email, listenerVM.PhoneNumber, listenerVM.BirthDate, DateTime.Now));
-                    if (listenerQuery.Result) 
-                    {
-                        await _recordService.RecordUserGenresAsync(_domainCreationService.CreateUserGenres<Listener>(listenerQuery.Entity.Id, listenerVM.SelectedGenreIds));
-                        await _authenticationService.SignInUserAsync(listenerQuery.Entity);
-                        return RedirectToAction(nameof(CompleteRegistration));
-                    }
-                    await _deleteService.DeleteEntityByIdAsync<Listener>(listenerQuery.Entity.Id);
-                }
-                TempData["ErrorMessage"] = "Error creating object, some null parameter exists";
-                return View(listenerVM);
+                TempData["InvalidGenres"] = "You must select at least one genre!";
+                listenerVM.Genres = HttpHelper.GetSessionValue<List<Genre>>(_httpAccessor, SessionKeys.UserSessionKey);
+                return View("SelectGenres", listenerVM);
             }
-            catch (RecordException<EntityQuery<Listener>> ex)
+
+            if (_verifyService.VerifyUser(listenerVM))
             {
-                string message = $"Exception: {ex.Message}, result: {ex.EntityQuery.Result}, Query: {ex.EntityQuery.Message}, Moment: {ex.EntityQuery.Moment}";
-                return RedirectToAction(nameof(Error), new
+                HttpHelper.RemoveSessionValue(_httpAccessor, SessionKeys.UserSessionKey);
+                EntityQuery<Listener> listenerQuery = await _recordService.RecordUserAsync(
+                                                        new Listener(Guid.NewGuid().ToString(), listenerVM.Name, EncryptHelper.EncryptPasswordSHA512(listenerVM.Password), listenerVM.Email, listenerVM.PhoneNumber, listenerVM.BirthDate, DateTime.Now));
+                if (listenerQuery.Result) 
                 {
-                    message = message
-                });
+                    await _recordService.RecordUserGenresAsync(_domainCreationService.CreateUserGenres<Listener>(listenerQuery.Entity.Id, listenerVM.SelectedGenreIds));
+                    await _authenticationService.SignInUserAsync(listenerQuery.Entity);
+                    return RedirectToAction(nameof(CompleteRegistration));
+                }
+                await _deleteService.DeleteEntityByIdAsync<Listener>(listenerQuery.Entity.Id);
             }
+            TempData["ErrorMessage"] = "Error creating object, some null parameter exists";
+            return View(listenerVM);
         }
-
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> ListenerPage()
+        catch (RecordException<EntityQuery<Listener>> ex)
         {
-            var listenerPage = await _viewModelFactory.CreateListenerPageViewModelAsync(await _searchService.FindUserByIdAsync<Listener>(User.FindFirstValue(CookieKeys.UserIdCookieKey)));
-            return View(listenerPage);
+            string message = $"Exception: {ex.Message}, result: {ex.EntityQuery.Result}, Query: {ex.EntityQuery.Message}, Moment: {ex.EntityQuery.Moment}";
+            return RedirectToAction(nameof(Error), new
+            {
+                message = message
+            });
         }
+    }
 
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> EditDescription()
-        {
-            var listener = await _searchService.FindUserByIdAsync<Listener>(User.FindFirstValue(CookieKeys.UserIdCookieKey));
-            var descriptionVM = new DescriptionViewModel(listener.Description, listener.Name, listener.Id, await _generateIntelliTextService.GenerateListenerDescriptionAsync(listener));
-            return View(descriptionVM);
-        }
+    [HttpGet]
+    [AllowAnonymous]
+    public async Task<IActionResult> ListenerPage()
+    {
+        var listenerPage = await _viewModelFactory.CreateListenerPageViewModelAsync(await _searchService.FindUserByIdAsync<Listener>(User.FindFirstValue(CookieKeys.UserIdCookieKey)));
+        return View(listenerPage);
+    }
+
+    [HttpGet]
+    [AllowAnonymous]
+    public async Task<IActionResult> EditDescription()
+    {
+        var listener = await _searchService.FindUserByIdAsync<Listener>(User.FindFirstValue(CookieKeys.UserIdCookieKey));
+        var descriptionVM = new DescriptionViewModel(listener.Description, listener.Name, listener.Id, await _generateIntelliTextService.GenerateListenerDescriptionAsync(listener));
+        return View(descriptionVM);
     }
 }

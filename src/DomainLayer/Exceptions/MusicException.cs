@@ -1,9 +1,8 @@
-﻿namespace DomainLayer.Exceptions
+﻿namespace DomainLayer.Exceptions;
+
+public class MusicException : Exception
 {
-    public class MusicException : Exception
+    public MusicException(string message) : base(message)
     {
-        public MusicException(string message) : base(message)
-        {
-        }
     }
 }

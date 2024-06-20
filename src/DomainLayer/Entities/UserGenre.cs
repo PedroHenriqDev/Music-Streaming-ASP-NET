@@ -1,10 +1,9 @@
 ﻿using DomainLayer.Interfaces;
 
-namespace DomainLayer.Entities
+namespace DomainLayer.Entities;
+
+public class UserGenre<T> where T : class, IUser<T>
 {
-    public class UserGenre<T> where T : class, IUser<T>
-    {
-        public string Id { get; set; }
-        public string GenreId { get; set; }
-    }
+    public string Id { get; set; }
+    public string GenreId { get; set; }
 }

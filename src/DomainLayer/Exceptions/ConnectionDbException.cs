@@ -1,9 +1,8 @@
-﻿namespace DomainLayer.Exceptions
+﻿namespace DomainLayer.Exceptions;
+
+public class ConnectionDbException : Exception
 {
-    public class ConnectionDbException : Exception
+    public ConnectionDbException(string message) : base(message)
     {
-        public ConnectionDbException(string message) : base(message)
-        {
-        }
     }
 }

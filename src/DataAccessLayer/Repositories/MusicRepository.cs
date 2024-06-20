@@ -5,23 +5,23 @@ using DomainLayer.Entities;
 using DomainLayer.Interfaces;
 using Npgsql;
 
-namespace DataAccessLayer.Repositories
+namespace DataAccessLayer.Repositories;
+
+public class MusicRepository : IMusicRepository
 {
-    public class MusicRepository : IMusicRepository
+    private readonly NpgsqlConnection _connection;
+    private readonly DataMapper _mapper;
+
+    public MusicRepository(NpgsqlConnection connection,
+                           DataMapper mapper)
     {
-        private readonly NpgsqlConnection _connection;
-        private readonly DataMapper _mapper;
+        _connection = connection;
+        _mapper = mapper;
+    }
 
-        public MusicRepository(NpgsqlConnection connection,
-                               DataMapper mapper)
-        {
-            _connection = connection;
-            _mapper = mapper;
-        }
-
-        public async Task<IEnumerable<Music>> GetMusicsByIdsAsync(List<string> ids)
-        {
-            string sqlQuery = $@"
+    public async Task<IEnumerable<Music>> GetMusicsByIdsAsync(List<string> ids)
+    {
+        string sqlQuery = $@"
                                  SELECT
                                     m.Id, 
                                     m.Name,
@@ -39,20 +39,20 @@ namespace DataAccessLayer.Repositories
                                  WHERE
                                     m.Id = ANY(@ids))";
 
-            var result = await _connection.QueryAsync<Music, Artist, Music>(
-                sqlQuery, (music, artist) =>
-                {
-                    return _mapper.MapMusicArtist(music, artist);
-                },
-                splitOn: "ArtistId",
-                param: new { ids = FieldSanitization.JoinIds(ids) });
+        var result = await _connection.QueryAsync<Music, Artist, Music>(
+            sqlQuery, (music, artist) =>
+            {
+                return _mapper.MapMusicArtist(music, artist);
+            },
+            splitOn: "ArtistId",
+            param: new { ids = FieldSanitization.JoinIds(ids) });
 
-            return result;
-        }
+        return result;
+    }
 
-        public async Task<IEnumerable<Music>> GetMusicsByQueryAsync(string query)
-        {
-            string sqlQuery = $@"
+    public async Task<IEnumerable<Music>> GetMusicsByQueryAsync(string query)
+    {
+        string sqlQuery = $@"
                                  SELECT
                                     m.Id,
                                     m.Name,
@@ -72,24 +72,24 @@ namespace DataAccessLayer.Repositories
                                     OR LOWER(a.Name) LIKE LOWER('%' || @query || '%')
                                     OR LOWER(a.Description) LIKE LOWER('%' || @query || '%')";
 
-            var result = await _connection.QueryAsync<Music, Artist, Music>(
-                sqlQuery,
-                (music, artist) =>
-                {
-                    return _mapper.MapMusicArtist(music, artist);
-                },
-                splitOn: "ArtistId",
-                param: new { query });
+        var result = await _connection.QueryAsync<Music, Artist, Music>(
+            sqlQuery,
+            (music, artist) =>
+            {
+                return _mapper.MapMusicArtist(music, artist);
+            },
+            splitOn: "ArtistId",
+            param: new { query });
 
-            return result;
-        }
+        return result;
+    }
 
-        public async Task<IEnumerable<Music>> GetMusicsByFkIdAsync<T>(string fkId)
-            where T : class, IEntity
-        {
-            string fkField = FieldSanitization.ForeignKeyName<T>();
-          
-            string sqlQuery = $@"
+    public async Task<IEnumerable<Music>> GetMusicsByFkIdAsync<T>(string fkId)
+        where T : class, IEntity
+    {
+        string fkField = FieldSanitization.ForeignKeyName<T>();
+      
+        string sqlQuery = $@"
                                    SELECT
                                        m.Id,
                                        m.Name,
@@ -107,24 +107,24 @@ namespace DataAccessLayer.Repositories
                                     WHERE 
                                        m.{fkField} = @fkId";
 
-            var result = await _connection.QueryAsync<Music, Artist, Music>
-                (sqlQuery,
-                (music, artist) =>
-                {
-                    return _mapper.MapMusicArtist(music, artist);
-                },
-                splitOn: "ArtistId",
-                param: new { fkId });
+        var result = await _connection.QueryAsync<Music, Artist, Music>
+            (sqlQuery,
+            (music, artist) =>
+            {
+                return _mapper.MapMusicArtist(music, artist);
+            },
+            splitOn: "ArtistId",
+            param: new { fkId });
 
-            return result;
-        }
+        return result;
+    }
 
-        public async Task<IEnumerable<Music>> GetMusicsByFkIdsAsync<T>(IEnumerable<string> fkIds)
-           where T : class, IEntity
-        {
-            string fkField = FieldSanitization.ForeignKeyName<T>();
-          
-            string sqlQuery = @$"
+    public async Task<IEnumerable<Music>> GetMusicsByFkIdsAsync<T>(IEnumerable<string> fkIds)
+       where T : class, IEntity
+    {
+        string fkField = FieldSanitization.ForeignKeyName<T>();
+      
+        string sqlQuery = @$"
                                    SELECT
                                        m.Id,
                                        m.Name,
@@ -142,31 +142,31 @@ namespace DataAccessLayer.Repositories
                                    WHERE
                                       m.{fkField} = ANY(@fkIds)";
 
-            var result = await _connection.QueryAsync<Music, Artist, Music>(
-                    sqlQuery,
-                    (music, artist) =>
-                    {
-                        return _mapper.MapMusicArtist(music, artist);
-                    },
-                    splitOn: "ArtistId",
-                    param: new { fkIds });
+        var result = await _connection.QueryAsync<Music, Artist, Music>(
+                sqlQuery,
+                (music, artist) =>
+                {
+                    return _mapper.MapMusicArtist(music, artist);
+                },
+                splitOn: "ArtistId",
+                param: new { fkIds });
 
-            return result;
-        }
+        return result;
+    }
 
-        public async Task<IEnumerable<FavoriteMusic>> GetBasicFavoriteMusicsByListenerIdAsync(string listenerId)
+    public async Task<IEnumerable<FavoriteMusic>> GetBasicFavoriteMusicsByListenerIdAsync(string listenerId)
+    {
+        string sqlQuery = "SELECT * FROM FavoriteMusics WHERE ListenerId = @listenerId";
+     
+        return await _connection.QueryAsync<FavoriteMusic>(sqlQuery, new
         {
-            string sqlQuery = "SELECT * FROM FavoriteMusics WHERE ListenerId = @listenerId";
-         
-            return await _connection.QueryAsync<FavoriteMusic>(sqlQuery, new
-            {
-                listenerId = listenerId
-            });
-        }
+            listenerId = listenerId
+        });
+    }
 
-        public async Task<IEnumerable<Music>> GetDetailedFavoriteMusicsByListenerIdAsync(string listenerId)
-        {
-            string sqlQuery = @$"
+    public async Task<IEnumerable<Music>> GetDetailedFavoriteMusicsByListenerIdAsync(string listenerId)
+    {
+        string sqlQuery = @$"
                                 SELECT
                                   m.Id,
                                   m.Name,
@@ -187,18 +187,18 @@ namespace DataAccessLayer.Repositories
                                 WHERE
                                   f.ListenerId = @listenerId";
 
-            return await _connection.QueryAsync<Music, Artist, Music>(sqlQuery,
-                 (music, artist) =>
-                 {
-                     return _mapper.MapMusicArtist(music, artist);
-                 },
-                 splitOn: "ArtistId",
-                 param: new { listenerId = listenerId });
-        }
+        return await _connection.QueryAsync<Music, Artist, Music>(sqlQuery,
+             (music, artist) =>
+             {
+                 return _mapper.MapMusicArtist(music, artist);
+             },
+             splitOn: "ArtistId",
+             param: new { listenerId = listenerId });
+    }
 
-        public async Task<Music> GetDetailedMusicByIdAsync(string musicId)
-        {
-            string sqlQuery = @"
+    public async Task<Music> GetDetailedMusicByIdAsync(string musicId)
+    {
+        string sqlQuery = @"
                                 SELECT 
                                    m.Id,
                                    m.Name,
@@ -228,73 +228,72 @@ namespace DataAccessLayer.Repositories
                                 WHERE
                                     m.Id = @musicId";
 
-            var musicDictionary = new Dictionary<string, Music>();
-         
-            var result = await _connection.QueryAsync<Music, Artist, MusicView, Genre, Music>(
-                sqlQuery,
-                (music, artist, musicView, genre) =>
-                {
-                    return _mapper.MapMusicViews(_mapper.MapMusicArtist(music, artist), musicDictionary, musicView, genre);
-                },
-                splitOn: "Id,Id,MusicId,Id",
-                param: new { musicId });
+        var musicDictionary = new Dictionary<string, Music>();
+     
+        var result = await _connection.QueryAsync<Music, Artist, MusicView, Genre, Music>(
+            sqlQuery,
+            (music, artist, musicView, genre) =>
+            {
+                return _mapper.MapMusicViews(_mapper.MapMusicArtist(music, artist), musicDictionary, musicView, genre);
+            },
+            splitOn: "Id,Id,MusicId,Id",
+            param: new { musicId });
 
-            return musicDictionary.Values.FirstOrDefault();
-        }
+        return musicDictionary.Values.FirstOrDefault();
+    }
 
-        public async Task RecordMusicAsync(Music music)
-        {
-            string sqlQuery = @"INSERT INTO Musics (Id, Name, ArtistId, GenreId, Date, DateCreation, Duration) 
+    public async Task RecordMusicAsync(Music music)
+    {
+        string sqlQuery = @"INSERT INTO Musics (Id, Name, ArtistId, GenreId, Date, DateCreation, Duration) 
                                     VALUES(@id, @name, @artistId, @genreId, @date, @dateCreation, @duration)";
 
-            await _connection.QueryAsync(sqlQuery, new
-            {
-                id = music.Id,
-                name = music.Name,
-                artistId = music.ArtistId,
-                genreId = music.GenreId,
-                date = music.Date,
-                dateCreation = music.DateCreation,
-                duration = music.Duration
-            });
-        }
-
-        public async Task RecordMusicViewAsync(MusicView musicView)
+        await _connection.QueryAsync(sqlQuery, new
         {
-            string sqlQuery = @"INSERT INTO MusicViews (Id, MusicId, ListenerId, CreatedAt) 
+            id = music.Id,
+            name = music.Name,
+            artistId = music.ArtistId,
+            genreId = music.GenreId,
+            date = music.Date,
+            dateCreation = music.DateCreation,
+            duration = music.Duration
+        });
+    }
+
+    public async Task RecordMusicViewAsync(MusicView musicView)
+    {
+        string sqlQuery = @"INSERT INTO MusicViews (Id, MusicId, ListenerId, CreatedAt) 
                                     VALUES (@id, @musicId, @listenerId, @createdAt)";
 
-            await _connection.QueryAsync(sqlQuery, new
-            {
-                id = musicView.Id,
-                musicId = musicView.MusicId,
-                listenerId = musicView.ListenerId,
-                createdAt = musicView.CreatedAt
-            });
-        }
-
-        public async Task RecordFavoriteMusicAsync(FavoriteMusic favoriteMusic)
+        await _connection.QueryAsync(sqlQuery, new
         {
-            string sqlQuery = @"INSERT INTO FavoriteMusics (Id, ListenerId, MusicId)
+            id = musicView.Id,
+            musicId = musicView.MusicId,
+            listenerId = musicView.ListenerId,
+            createdAt = musicView.CreatedAt
+        });
+    }
+
+    public async Task RecordFavoriteMusicAsync(FavoriteMusic favoriteMusic)
+    {
+        string sqlQuery = @"INSERT INTO FavoriteMusics (Id, ListenerId, MusicId)
                                     VALUES (@id, @listenerId, @musicId)";
 
-            await _connection.QueryAsync(sqlQuery, new
-            {
-                id = favoriteMusic.Id,
-                listenerId = favoriteMusic.ListenerId,
-                musicId = favoriteMusic.MusicId
-            });
-        }
-
-        public async Task RemoveFavoriteMusicAsync(string musicId, string listenerId)
+        await _connection.QueryAsync(sqlQuery, new
         {
-            string sqlQuery = $"DELETE FROM FavoriteMusics WHERE MusicId = @musicId AND ListenerId = @listenerId";
-           
-            await _connection.QueryAsync(sqlQuery, new
-            {
-                musicId = musicId,
-                listenerId = listenerId
-            });
-        }
+            id = favoriteMusic.Id,
+            listenerId = favoriteMusic.ListenerId,
+            musicId = favoriteMusic.MusicId
+        });
+    }
+
+    public async Task RemoveFavoriteMusicAsync(string musicId, string listenerId)
+    {
+        string sqlQuery = $"DELETE FROM FavoriteMusics WHERE MusicId = @musicId AND ListenerId = @listenerId";
+       
+        await _connection.QueryAsync(sqlQuery, new
+        {
+            musicId = musicId,
+            listenerId = listenerId
+        });
     }
 }

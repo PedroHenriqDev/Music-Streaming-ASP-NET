@@ -1,9 +1,8 @@
-﻿namespace DomainLayer.Exceptions
+﻿namespace DomainLayer.Exceptions;
+
+public class EncryptException : Exception
 {
-    public class EncryptException : Exception
+    public EncryptException(string message) : base(message)
     {
-        public EncryptException(string message) : base(message)
-        {
-        }
     }
 }

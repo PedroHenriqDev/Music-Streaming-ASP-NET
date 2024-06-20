@@ -1,10 +1,9 @@
-﻿namespace DomainLayer.Entities
+﻿namespace DomainLayer.Entities;
+
+public class PlaylistMusic
 {
-    public class PlaylistMusic
-    {
-        public string Id { get; set; }
-        public string PlaylistId { get; set; }
-        public string ListenerId { get; set; }
-        public string MusicId { get; set; }
-    }
+    public string Id { get; set; }
+    public string PlaylistId { get; set; }
+    public string ListenerId { get; set; }
+    public string MusicId { get; set; }
 }

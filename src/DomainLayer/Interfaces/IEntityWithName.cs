@@ -1,7 +1,6 @@
-﻿namespace DomainLayer.Interfaces
+﻿namespace DomainLayer.Interfaces;
+
+public interface IEntityWithName<T> : IEntity
 {
-    public interface IEntityWithName<T> : IEntity
-    {
-        public string Name { get; set; }
-    }
+    public string Name { get; set; }
 }

@@ -1,18 +1,17 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace UtilitiesLayer.Attributes
+namespace UtilitiesLayer.Attributes;
+
+public class AgeAttribute : ValidationAttribute
 {
-    public class AgeAttribute : ValidationAttribute
+
+    public override bool IsValid(object? value)
     {
+        if (value == null || !(value is DateTime)) return false;
 
-        public override bool IsValid(object? value)
-        {
-            if (value == null || !(value is DateTime)) return false;
+        DateTime birthDate = (DateTime)value;
+        TimeSpan duration = DateTime.Now.Subtract(birthDate);
 
-            DateTime birthDate = (DateTime)value;
-            TimeSpan duration = DateTime.Now.Subtract(birthDate);
-
-            return duration.TotalDays > 3650;
-        }
+        return duration.TotalDays > 3650;
     }
 }

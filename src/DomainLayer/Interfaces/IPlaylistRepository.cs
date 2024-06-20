@@ -1,19 +1,18 @@
 ﻿using DomainLayer.Entities;
 
-namespace DomainLayer.Interfaces
+namespace DomainLayer.Interfaces;
+
+public interface IPlaylistRepository
 {
-    public interface IPlaylistRepository
-    {
-        Task<IEnumerable<Playlist>> GetPlaylistsWithMusicsByListenerIdAsync(string listenerId);
-   
-        Task<Playlist> GetPlaylistByIdAsync(string playlistId);
+    Task<IEnumerable<Playlist>> GetPlaylistsWithMusicsByListenerIdAsync(string listenerId);
 
-        Task<IEnumerable<Playlist>> GetPlaylistsByQueryAsync(string query, string listenerId);
-     
-        Task RecordPlaylistAsync(Playlist playlist);
+    Task<Playlist> GetPlaylistByIdAsync(string playlistId);
 
-        Task RecordFavoritePlaylistAsync(FavoritePlaylist favoritePlaylist);
+    Task<IEnumerable<Playlist>> GetPlaylistsByQueryAsync(string query, string listenerId);
+ 
+    Task RecordPlaylistAsync(Playlist playlist);
 
-        Task RemoveFavoritePlaylistAsync(string playlistId, string listenerId);
-    }
+    Task RecordFavoritePlaylistAsync(FavoritePlaylist favoritePlaylist);
+
+    Task RemoveFavoritePlaylistAsync(string playlistId, string listenerId);
 }

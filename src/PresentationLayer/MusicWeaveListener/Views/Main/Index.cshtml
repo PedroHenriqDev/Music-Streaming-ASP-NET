@@ -127,10 +127,7 @@
                         }
                         <div class="music-info">
                             <span class="artist-name">@music.DurationText<i class="bi bi-clock mx-2"></i></span>
-                            <a href="@Url.Action("MusicDetails", "Music", new { musicId = music.Music.Id })">
-                                <img src="data:image/png;base64,@(Convert.ToBase64String(music.MusicData.Picture))" class="music-image" />
-                            </a>
-                            <input type="hidden" name="musicId" value="@music.Music.Id" />
+                            <img src="data:image/png;base64,@(Convert.ToBase64String(music.MusicData.Picture))" class="music-image" />
                             <button type="button" class="btn btn-dark text-black rounded-circle play-button" id="playButton@(music.Music.Id)" onclick="togglePlayPause('@music.Music.Name', '@Convert.ToBase64String(music.MusicData.Audio)', this)">
                                 <i class="bi bi-play-fill"></i>
                             </button>
@@ -146,15 +143,19 @@
 
 @section Scripts {
     <script>
-        var audioPlayer = document.getElementById('audioPlayer');
         var currentPlayingButton = null;
 
-        audioPlayer.addEventListener('ended', function () {
+        function playMusic(musicName, audioData, playButton) {
+            var audioPlayer = document.getElementById('audioPlayer');
             if (currentPlayingButton !== null) {
-                var musicId = currentPlayingButton.id.replace('playButton', '');
-                recordView(musicId);
+                currentPlayingButton.innerHTML = '<i class="bi bi-play-fill"></i>';
             }
-        });
+            audioPlayer.src = "data:audio/mp3;base64," + audioData;
+            audioPlayer.play();
+            document.getElementById('songName').textContent = musicName;
+            playButton.innerHTML = '<i class="bi bi-pause-fill"></i>';
+            currentPlayingButton = playButton;
+        }
 
         function togglePlayPause(musicName, audioData, button) {
             var audioPlayer = document.getElementById('audioPlayer');
@@ -171,11 +172,15 @@
                 audioPlayer.pause();
                 button.innerHTML = '<i class="bi bi-play-fill"></i>';
                 currentPlayingButton = null;
-
-                var musicId = button.id.replace('playButton', '');
-                recordView(musicId);
             }
         }
+
+        audioPlayer.addEventListener('ended', function () {
+            if (currentPlayingButton !== null) {
+                var musicId = currentPlayingButton.id.replace('playButton', '');
+                recordView(musicId);
+            }
+        });
 
         async function recordView(musicId) {
             await fetch('@Url.Action("RecordView", "Music")', {
@@ -195,6 +200,5 @@
                 button.innerHTML = '<i class="bi bi-heart"></i>';
             }
         }
-                }
     </script>
 }

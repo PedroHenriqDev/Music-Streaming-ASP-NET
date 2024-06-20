@@ -1,18 +1,15 @@
-﻿using DataAccessLayer.Mappers;
-using DataAccessLayer.Repositories;
-using DomainLayer.Interfaces;
+﻿using DomainLayer.Interfaces;
 
-namespace DataAccessLayer.UnitOfWork
+namespace DataAccessLayer.UnitOfWork;
+
+public interface IUnitOfWork : IDisposable
 {
-    public interface IUnitOfWork : IDisposable
-    {
-        IPlaylistRepository PlaylistRepository { get; }
-        IMusicRepository MusicRepository { get; }
-        IEntitiesAssociationRepository EntitiesAssociationRepository { get; }
-        IUserRepository UserRepository { get; }
-        IGenericRepository GenericRepository { get; }
+    IPlaylistRepository PlaylistRepository { get; }
+    IMusicRepository MusicRepository { get; }
+    IEntitiesAssociationRepository EntitiesAssociationRepository { get; }
+    IUserRepository UserRepository { get; }
+    IGenericRepository GenericRepository { get; }
 
-        void Dispose();
-        Task DisposeAsync();
-    }
+    void Dispose();
+    Task DisposeAsync();
 }

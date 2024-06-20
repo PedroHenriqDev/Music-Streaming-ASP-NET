@@ -1,24 +1,23 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace DataAccessLayer.Sanitization
+namespace DataAccessLayer.Sanitization;
+
+public static class FieldSanitization
 {
-    public static class FieldSanitization
+
+    public static string SanitizeId(string id) 
     {
+        return Regex.Replace(id, @"[^\w-]", "");
+    }
 
-        public static string SanitizeId(string id) 
-        {
-            return Regex.Replace(id, @"[^\w-]", "");
-        }
+    public static string JoinIds(IEnumerable<string> ids)
+    {
+        var sanitizedIds = ids.Select(SanitizeId);
+        return string.Join(",", sanitizedIds.Select(id => $"'{id}'"));
+    }
 
-        public static string JoinIds(IEnumerable<string> ids)
-        {
-            var sanitizedIds = ids.Select(SanitizeId);
-            return string.Join(",", sanitizedIds.Select(id => $"'{id}'"));
-        }
-
-        public static string ForeignKeyName<T>() 
-        {
-            return $"{typeof(T).Name}Id";
-        }
+    public static string ForeignKeyName<T>() 
+    {
+        return $"{typeof(T).Name}Id";
     }
 }

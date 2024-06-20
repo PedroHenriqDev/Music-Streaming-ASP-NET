@@ -1,7 +1,6 @@
-﻿namespace DomainLayer.Interfaces
+﻿namespace DomainLayer.Interfaces;
+
+public interface IEntity
 {
-    public interface IEntity
-    {
-        string Id { get; }
-    }
+    string Id { get; }
 }

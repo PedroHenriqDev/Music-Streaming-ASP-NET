@@ -1,12 +1,11 @@
 using ApplicationLayer.Factories;
+using ApplicationLayer.Interfaces;
 using ApplicationLayer.Services;
 using DataAccessLayer.Cloud;
 using DataAccessLayer.Mappers;
-using DataAccessLayer.Repositories;
 using DataAccessLayer.UnitOfWork;
 using DataAccessLayer.Validations;
 using DomainLayer.Entities;
-using DomainLayer.Interfaces;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.FileProviders;
 using Npgsql;
@@ -25,24 +24,19 @@ async Task<UnitOfWork> CreateUnitOfWorkAsync(IServiceProvider provider, string c
 builder.Services.AddControllersWithViews();
 builder.Services.AddLogging();
 
-builder.Services.AddScoped<RecordService>();
-builder.Services.AddScoped<DeleteService>();
-builder.Services.AddScoped<LoginService<Artist>>();
-builder.Services.AddScoped<VerifyService>();
-builder.Services.AddScoped<CloudStorageService>();
-builder.Services.AddScoped<GenerateIntelliTextService>();
-builder.Services.AddScoped<PictureService>();
-builder.Services.AddScoped<SearchService>();
-builder.Services.AddScoped<UserAuthenticationService>();
-builder.Services.AddScoped<UpdateService>();
+builder.Services.AddScoped<IRecordService, RecordService>();
+builder.Services.AddScoped<IDeleteService, DeleteService>();
+builder.Services.AddScoped<ILoginService<Artist>, LoginService<Artist>>();
+builder.Services.AddScoped<IVerifyService, VerifyService>();
+builder.Services.AddScoped<ICloudStorageService, CloudStorageService>();
+builder.Services.AddScoped<IGenerateIntelliTextService, GenerateIntelliTextService>();
+builder.Services.AddScoped<IPictureService, PictureService>();
+builder.Services.AddScoped<ISearchService, SearchService>();
+builder.Services.AddScoped<IUserAuthenticationService, UserAuthenticationService>();
+builder.Services.AddScoped<IUpdateService, UpdateService>();
 builder.Services.AddScoped<DomainFactory>();
 builder.Services.AddScoped<ViewModelFactory>();
 builder.Services.AddScoped<ConnectionGoogleCloud>();
-builder.Services.AddScoped<IEntitiesAssociationRepository, EntitiesAssociationRepository>();
-builder.Services.AddScoped<IGenericRepository, GenericRepository>();
-builder.Services.AddScoped<IMusicRepository, MusicRepository>();
-builder.Services.AddScoped<IPlaylistRepository, PlaylistRepository>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddTransient<DataMapper>();
 builder.Services.AddTransient<DataValidation>();
 

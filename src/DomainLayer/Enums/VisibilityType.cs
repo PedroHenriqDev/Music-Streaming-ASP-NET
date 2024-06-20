@@ -1,10 +1,8 @@
-﻿namespace DomainLayer.Enums
+﻿namespace DomainLayer.Enums;
+
+public enum VisibilityType
 {
-    public enum VisibilityType
-    {
-        Private,
-        Friends,
-        Public
-    }
+    Private,
+    Friends,
+    Public
 }
- 

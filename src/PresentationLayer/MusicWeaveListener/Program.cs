@@ -1,4 +1,5 @@
 using ApplicationLayer.Factories;
+using ApplicationLayer.Interfaces;
 using ApplicationLayer.Profiles;
 using ApplicationLayer.Services;
 using DataAccessLayer.Cloud;
@@ -18,16 +19,16 @@ string connectionString = builder.Configuration.GetConnectionString("DefaultConn
 builder.Services.AddControllersWithViews();
 builder.Services.AddLogging();
 
-builder.Services.AddScoped<RecordService>();
-builder.Services.AddScoped<DeleteService>();
-builder.Services.AddScoped<LoginService<Listener>>();
-builder.Services.AddScoped<VerifyService>();
-builder.Services.AddScoped<GenerateIntelliTextService>();
-builder.Services.AddScoped<CloudStorageService>();
-builder.Services.AddScoped<PictureService>();
-builder.Services.AddScoped<SearchService>();
-builder.Services.AddScoped<UserAuthenticationService>();
-builder.Services.AddScoped<UpdateService>();
+builder.Services.AddScoped<IRecordService, RecordService>();
+builder.Services.AddScoped<IDeleteService, DeleteService>();
+builder.Services.AddScoped<ILoginService<Listener>, LoginService<Listener>>();
+builder.Services.AddScoped<IVerifyService, VerifyService>();
+builder.Services.AddScoped<IGenerateIntelliTextService, GenerateIntelliTextService>();
+builder.Services.AddScoped<ICloudStorageService, CloudStorageService>();
+builder.Services.AddScoped<IPictureService, PictureService>();
+builder.Services.AddScoped<ISearchService, SearchService>();
+builder.Services.AddScoped<IUserAuthenticationService ,UserAuthenticationService>();
+builder.Services.AddScoped<IUpdateService, UpdateService>();
 builder.Services.AddScoped<DomainFactory>();
 builder.Services.AddScoped<ViewModelFactory>();
 builder.Services.AddScoped<ConnectionGoogleCloud>();

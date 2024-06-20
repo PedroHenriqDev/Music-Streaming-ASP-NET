@@ -1,8 +1,7 @@
-﻿namespace ApplicationLayer.ViewModels
+﻿namespace ApplicationLayer.ViewModels;
+
+public class RedirectViewModel<T> 
 {
-    public class RedirectViewModel<T> 
-    {
-        public string RedirectUrl { get; set; }
-        public T? Value { get; set; }
-    }
+    public string RedirectUrl { get; set; }
+    public T? Value { get; set; }
 }

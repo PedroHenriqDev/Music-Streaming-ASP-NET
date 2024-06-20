@@ -1,9 +1,8 @@
-﻿namespace DomainLayer.Exceptions
+﻿namespace DomainLayer.Exceptions;
+
+public class EqualException : Exception
 {
-    public class EqualException : Exception
+    public EqualException(string message) : base(message)
     {
-        public EqualException(string message) : base(message)
-        {
-        }
     }
 }

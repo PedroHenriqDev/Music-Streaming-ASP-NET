@@ -1,9 +1,8 @@
-﻿namespace DomainLayer.Exceptions
+﻿namespace DomainLayer.Exceptions;
+
+public class CloudException : Exception
 {
-    public class CloudException : Exception
+    public CloudException(string message) : base(message)
     {
-        public CloudException(string message) : base(message)
-        {
-        }
     }
 }
