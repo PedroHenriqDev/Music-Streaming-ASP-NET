@@ -2,6 +2,7 @@
 using DataAccessLayer.UnitOfWork;
 using DomainLayer.Entities;
 using DomainLayer.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 namespace ApplicationLayer.Services;
@@ -35,27 +36,31 @@ public class DeleteService : IDeleteService
         }
     }
 
-    public async Task DeleteFavoriteMusicAsync(string musicId, string listenerId)
+    public async Task<EntityQuery<FavoriteMusic>> DeleteFavoriteMusicAsync(FavoriteMusic favoriteMusic)
     {
         try
         {
-            await _unitOfWork.MusicRepository.RemoveFavoriteMusicAsync(musicId, listenerId);
+            await _unitOfWork.MusicRepository.RemoveFavoriteMusicAsync(favoriteMusic);
+            return new EntityQuery<FavoriteMusic>(true, "Deleted successfully", favoriteMusic, DateTime.Now);
         }
         catch(Exception ex) 
         {
-            throw new InvalidOperationException($"Error in delete favorite music, because {ex.Message}");
+            _logger.LogError($"Error in delete favorite music, because {ex.Message}");
+            return new EntityQuery<FavoriteMusic>(false, $"Deletion error, Status Code:{StatusCodes.Status500InternalServerError}", favoriteMusic, DateTime.Now);
         }
     }
 
-    public async Task DeleteFavoritePlaylistAsync(string playlistId, string listenerId) 
+    public async Task<EntityQuery<FavoritePlaylist>> DeleteFavoritePlaylistAsync(FavoritePlaylist favoritePlaylist) 
     {
         try
         {
-            await _unitOfWork.PlaylistRepository.RemoveFavoritePlaylistAsync(playlistId, listenerId);
+            await _unitOfWork.PlaylistRepository.RemoveFavoritePlaylistAsync(favoritePlaylist);
+            return new EntityQuery<FavoritePlaylist>(true, "Deleted succesfully", favoritePlaylist, DateTime.Now);
         }
         catch(Exception ex) 
         {
-            throw new InvalidOperationException($"Error in delete favorite playlist, because {ex.Message}");
+            _logger.LogError($"Error ocurred in method: {DeleteFavoritePlaylistAsync}, Error: {ex.Message}");
+            return new EntityQuery<FavoritePlaylist>(false, $"Deletion error, Status Code: {StatusCodes.Status500InternalServerError}", favoritePlaylist, DateTime.Now);
         }
     }
 
@@ -68,8 +73,8 @@ public class DeleteService : IDeleteService
         }
         catch(Exception ex)
         {
-            _logger.LogError($"Error ocurrer in method: {DeletePlaylistMusicAsync}, Error: {ex.Message}");
-            return new EntityQuery<PlaylistMusic>(false, $"Deletion error, because: {ex.Message}", playlistMusic, DateTime.Now);
+            _logger.LogError($"Error ocurred in method: {DeletePlaylistMusicAsync}, Error: {ex.Message}");
+            return new EntityQuery<PlaylistMusic>(false, $"Deletion error, Status Code:{StatusCodes.Status500InternalServerError}", playlistMusic, DateTime.Now);
         }
     }
 }

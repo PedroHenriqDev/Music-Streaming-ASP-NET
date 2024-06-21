@@ -127,7 +127,12 @@
                         }
                         <div class="music-info">
                             <span class="artist-name">@music.DurationText<i class="bi bi-clock mx-2"></i></span>
-                            <img src="data:image/png;base64,@(Convert.ToBase64String(music.MusicData.Picture))" class="music-image" />
+                            <form asp-action="MusicDetails" asp-controller="Music" method="get">
+                            <input type="hidden" name="musicId" value="@music.Music.Id" />
+                            <button class="btn" type="submit">
+                                <img src="data:image/png;base64,@(Convert.ToBase64String(music.MusicData.Picture))" class="music-image" />
+                            </button>
+                            </form>
                             <button type="button" class="btn btn-dark text-black rounded-circle play-button" id="playButton@(music.Music.Id)" onclick="togglePlayPause('@music.Music.Name', '@Convert.ToBase64String(music.MusicData.Audio)', this)">
                                 <i class="bi bi-play-fill"></i>
                             </button>

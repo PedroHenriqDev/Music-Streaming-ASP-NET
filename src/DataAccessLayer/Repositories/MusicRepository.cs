@@ -286,14 +286,14 @@ public class MusicRepository : IMusicRepository
         });
     }
 
-    public async Task RemoveFavoriteMusicAsync(string musicId, string listenerId)
+    public async Task RemoveFavoriteMusicAsync(FavoriteMusic favoriteMusic)
     {
         string sqlQuery = $"DELETE FROM FavoriteMusics WHERE MusicId = @musicId AND ListenerId = @listenerId";
        
         await _connection.QueryAsync(sqlQuery, new
         {
-            musicId = musicId,
-            listenerId = listenerId
+            musicId = favoriteMusic.MusicId,
+            listenerId = favoriteMusic.ListenerId
         });
     }
 }

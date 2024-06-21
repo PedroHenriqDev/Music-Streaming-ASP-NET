@@ -197,13 +197,13 @@ public class PlaylistRepository : IPlaylistRepository
         });
     }
 
-    public async Task RemoveFavoritePlaylistAsync(string playlistId, string listenerId) 
+    public async Task RemoveFavoritePlaylistAsync(FavoritePlaylist favoritePlaylist) 
     {
         string sqlQuery = @"DELETE FROM FavoritePlaylists WHERE PlaylistId = @playlistId AND ListenerId = @listenerId";
         await _connection.QueryAsync(sqlQuery, new 
         {
-            playlistId = playlistId,
-            listenerId = listenerId
+            playlistId = favoritePlaylist.PlaylistId,
+            listenerId = favoritePlaylist.ListenerId
         });       
     }
 }

@@ -14,5 +14,5 @@ public interface IPlaylistRepository
 
     Task RecordFavoritePlaylistAsync(FavoritePlaylist favoritePlaylist);
 
-    Task RemoveFavoritePlaylistAsync(string playlistId, string listenerId);
+    Task RemoveFavoritePlaylistAsync(FavoritePlaylist favoritePlaylist);
 }

@@ -26,5 +26,5 @@ public interface IMusicRepository
 
     Task RecordFavoriteMusicAsync(FavoriteMusic favoriteMusic);
 
-    Task RemoveFavoriteMusicAsync(string musicId, string listenerId);
+    Task RemoveFavoriteMusicAsync(FavoriteMusic favoriteMusic);
 }

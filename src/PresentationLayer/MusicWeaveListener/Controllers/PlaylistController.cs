@@ -18,7 +18,6 @@ public class PlaylistController : Controller
     private readonly ISearchService _searchService;
     private readonly IVerifyService _verifyService;
     private readonly IRecordService _recordService;
-    private readonly DomainFactory _domainCreationService;
     private readonly IDeleteService _deleteService;
     private readonly IHttpContextAccessor _httpAccessor;
 
@@ -27,7 +26,6 @@ public class PlaylistController : Controller
                                ISearchService searchService,
                                IVerifyService verifyService,
                                IRecordService recordService,
-                               DomainFactory domainCreationService,
                                IDeleteService deleteService,
                                IHttpContextAccessor httpAccessor)
     {
@@ -36,7 +34,6 @@ public class PlaylistController : Controller
         _searchService = searchService;
         _verifyService = verifyService;
         _recordService = recordService;
-        _domainCreationService = domainCreationService;
         _httpAccessor = httpAccessor;
         _deleteService = deleteService;
     }
@@ -87,7 +84,7 @@ public class PlaylistController : Controller
 
         var playlistsViewModel = HttpHelper.GetSessionValue<IEnumerable<PlaylistViewModel>>(_httpAccessor, SessionKeys.PlaylistSessionKey);
         var playlistViewModel = playlistsViewModel.FirstOrDefault(p => p.Id == playlistId);
-        
+
         if (playlistViewModel is null)
             return RedirectToAction(nameof(Error), new
             {
@@ -118,7 +115,7 @@ public class PlaylistController : Controller
         {
             if (playlistVerify.IsValid)
             {
-                EntityQuery<Playlist> playlistQuery = await _recordService.RecordPlaylistAsync(await _domainCreationService.CreatePlaylistAsync(playlistVM, User.FindFirstValue(CookieKeys.UserIdCookieKey)));
+                EntityQuery<Playlist> playlistQuery = await _recordService.RecordPlaylistAsync(await _domainFactory.CreatePlaylistAsync(playlistVM, User.FindFirstValue(CookieKeys.UserIdCookieKey)));
                 if (playlistQuery.Result)
                 {
                     HttpHelper.SetSessionValue(_httpAccessor, SessionKeys.PlaylistIdSessionKey, playlistId);
@@ -161,7 +158,7 @@ public class PlaylistController : Controller
             });
         }
 
-        return RedirectToAction(action, controller, new 
+        return RedirectToAction(action, controller, new
         {
             playlistId = playlistId
         });
@@ -183,7 +180,7 @@ public class PlaylistController : Controller
         if (string.IsNullOrWhiteSpace(musicsToAdd))
             return RedirectToAction(nameof(AddPlaylistMusics));
 
-        var playlistQuery = await _recordService.RecordPlaylistMusicsAsync(_domainCreationService.CreatePlaylistMusics(HttpHelper.GetSessionValue<string>(_httpAccessor, SessionKeys.PlaylistIdSessionKey), User.FindFirstValue(CookieKeys.UserIdCookieKey), musicsToAdd.ConvertStringJoinInList()));
+        var playlistQuery = await _recordService.RecordPlaylistMusicsAsync(_domainFactory.CreatePlaylistMusics(HttpHelper.GetSessionValue<string>(_httpAccessor, SessionKeys.PlaylistIdSessionKey), User.FindFirstValue(CookieKeys.UserIdCookieKey), musicsToAdd.ConvertStringJoinInList()));
         HttpHelper.RemoveSessionValue(_httpAccessor, SessionKeys.PlaylistIdSessionKey);
 
         if (playlistQuery.Result)
@@ -211,7 +208,7 @@ public class PlaylistController : Controller
         if (playlistId is null || listenerId is null)
             return RedirectToAction(nameof(Error), new { message = "Playlist or listener is null" });
 
-        var favoritePlaylistQuery = await _recordService.RecordFavoritePlaylistAsync(_domainCreationService.CreateFavoritePlaylist(Guid.NewGuid().ToString(), playlistId, listenerId));
+        var favoritePlaylistQuery = await _recordService.RecordFavoritePlaylistAsync(_domainFactory.CreateFavoritePlaylist(Guid.NewGuid().ToString(), playlistId, listenerId));
 
         if (favoritePlaylistQuery.Result)
         {
@@ -223,25 +220,23 @@ public class PlaylistController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     [AllowAnonymous]
     public async Task<IActionResult> RemoveToFavorites(string playlistId, string controller, string action)
     {
-        try
-        {
-            var listenerId = User.FindFirstValue(CookieKeys.UserIdCookieKey);
-            if (playlistId is null || listenerId is null)
-                return RedirectToAction(nameof(Error), new { message = "Playlist or listener is null" });
+        var listenerId = User.FindFirstValue(CookieKeys.UserIdCookieKey);
+        if (playlistId is null || listenerId is null)
+            return RedirectToAction(nameof(Error), new { message = "Playlist or listener is null" });
 
-            await _deleteService.DeleteFavoritePlaylistAsync(playlistId, listenerId);
+        var favoritePlaylistQuery = await _deleteService.DeleteFavoritePlaylistAsync(_domainFactory.CreateFavoritePlaylist(playlistId, listenerId));
+
+        if (favoritePlaylistQuery.Result)
             return RedirectToAction(action, controller, new
             {
                 query = HttpHelper.GetSessionValue<string>(_httpAccessor, SessionKeys.QuerySessionKey)
             });
-        }
-        catch (Exception ex)
-        {
-            return RedirectToAction(nameof(Error), new { message = ex.Message });
-        }
+
+        return RedirectToAction(nameof(Error), new { message = favoritePlaylistQuery.Message });
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

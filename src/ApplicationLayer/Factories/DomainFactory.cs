@@ -25,6 +25,24 @@ public class DomainFactory
         };
     }
 
+    public FavoriteMusic CreateFavoriteMusic(string musicId, string listenerId) 
+    {
+        return new FavoriteMusic
+        {
+            MusicId = musicId,
+            ListenerId = listenerId 
+        };
+    }
+
+    public FavoritePlaylist CreateFavoritePlaylist(string playlistId, string listenerId) 
+    {
+        return new FavoritePlaylist
+        {
+            PlaylistId = playlistId,
+            ListenerId = listenerId
+        };
+    }
+
     public PlaylistMusic CreatePlaylistMusic(string playlistId, string musicId, string listenerId) 
     {
         return new PlaylistMusic 

@@ -1,6 +1,5 @@
 ﻿using ApplicationLayer.Factories;
 using ApplicationLayer.Interfaces;
-using ApplicationLayer.Services;
 using ApplicationLayer.ViewModels;
 using DomainLayer.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -14,20 +13,20 @@ namespace MusicWeaveListener.Controllers;
 public class MusicController : Controller
 {
     private readonly IRecordService _recordService;
-    private readonly DomainFactory _domainCreationService;
+    private readonly DomainFactory _domainFactory;
     private readonly ISearchService _searchService;
     private readonly ViewModelFactory _viewModelFactory;
     private readonly IDeleteService _deleteService;
     private static IDictionary<string, DateTime> _lastViewTime = new Dictionary<string, DateTime>();
 
     public MusicController(IRecordService recordService,
-                           DomainFactory domainCreationService,
+                           DomainFactory domainFactory,
                            ISearchService searchService, 
                            ViewModelFactory viewModelFactory,
                            IDeleteService deleteService)
     {
         _recordService = recordService;
-        _domainCreationService = domainCreationService;
+        _domainFactory = domainFactory;
         _searchService = searchService;
         _viewModelFactory = viewModelFactory;
         _deleteService = deleteService;
@@ -57,13 +56,11 @@ public class MusicController : Controller
         }
 
         _lastViewTime.Add(listenerId, DateTime.Now);
-        await _recordService.RecordMusicViewAsync(_domainCreationService.CreateMusicView(Guid.NewGuid().ToString(), listenerId, musicId, DateTime.Now));
+        await _recordService.RecordMusicViewAsync(_domainFactory.CreateMusicView(Guid.NewGuid().ToString(), listenerId, musicId, DateTime.Now));
         return RedirectToAction("Index", "Main");
     }
 
     [HttpGet]
-    [AllowAnonymous]
-    [ValidateAntiForgeryToken]
     public async Task<IActionResult> MusicDetails(string musicId)
     {
         if (musicId is null)
@@ -81,7 +78,7 @@ public class MusicController : Controller
         if (musicId is null)
             return RedirectToAction(nameof(Error), new { message = "Any reference null ocurred" });
 
-        await _recordService.RecordFavoriteMusicAsync(_domainCreationService.CreateFavoriteMusic(Guid.NewGuid().ToString(), musicId, User.FindFirstValue(CookieKeys.UserIdCookieKey)));
+        await _recordService.RecordFavoriteMusicAsync(_domainFactory.CreateFavoriteMusic(Guid.NewGuid().ToString(), musicId, User.FindFirstValue(CookieKeys.UserIdCookieKey)));
         return RedirectToAction(action, controller);
     }
 
@@ -93,7 +90,11 @@ public class MusicController : Controller
         if (musicId is null)
             return RedirectToAction(nameof(Error), new { message = "Any reference null ocurred" });
 
-        await _deleteService.DeleteFavoriteMusicAsync(musicId, User.FindFirstValue(CookieKeys.UserIdCookieKey));
+        var favoriteMusicQuery = await _deleteService.DeleteFavoriteMusicAsync(_domainFactory.CreateFavoriteMusic(musicId, User.FindFirstValue(CookieKeys.UserIdCookieKey)));
+
+        if (!favoriteMusicQuery.Result) 
+            return RedirectToAction(nameof(Error), new { message = favoriteMusicQuery.Message});
+
         return RedirectToAction(action, controller);
     }
 

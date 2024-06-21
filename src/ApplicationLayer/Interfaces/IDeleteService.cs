@@ -8,9 +8,9 @@ public interface IDeleteService
     Task DeleteEntityByIdAsync<T>(string id)
         where T : class, IEntity;
 
-    Task DeleteFavoriteMusicAsync(string musicId, string listenerId);
+    Task<EntityQuery<FavoriteMusic>> DeleteFavoriteMusicAsync(FavoriteMusic favoriteMusic);
 
-    Task DeleteFavoritePlaylistAsync(string playlistId, string listenerId);
+    Task<EntityQuery<FavoritePlaylist>> DeleteFavoritePlaylistAsync(FavoritePlaylist favoritePlaylist);
 
     Task<EntityQuery<PlaylistMusic>> DeletePlaylistMusicAsync(PlaylistMusic playlistMusic);
 }
