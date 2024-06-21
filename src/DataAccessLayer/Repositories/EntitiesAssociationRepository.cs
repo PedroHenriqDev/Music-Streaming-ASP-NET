@@ -84,4 +84,14 @@ public class EntitiesAssociationRepository : IEntitiesAssociationRepository
             }
         }
     }
+
+    public async Task RemovePlaylistMusicAsync(PlaylistMusic playlistMusic)
+    {
+        string sqlQuery = "DELETE FROM PlaylistMusics WHERE PlaylistId = @playlistId AND musicId = @musicId AND ListenerId = @listenerId";
+        await _connection.QueryAsync(sqlQuery, new
+        {
+            playlistId = playlistMusic.PlaylistId, 
+            musicId = playlistMusic.MusicId,
+            listenerId = playlistMusic.ListenerId});
+    }
 }

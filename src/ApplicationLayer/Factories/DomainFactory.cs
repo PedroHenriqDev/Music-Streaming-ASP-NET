@@ -25,6 +25,15 @@ public class DomainFactory
         };
     }
 
+    public PlaylistMusic CreatePlaylistMusic(string playlistId, string musicId, string listenerId) 
+    {
+        return new PlaylistMusic 
+        {
+            PlaylistId = playlistId, 
+            MusicId = musicId, 
+            ListenerId = listenerId };
+    }
+
     public List<UserGenre<T>> CreateUserGenres<T>(string userIdid, List<string> genreIds)
         where T : class, IUser<T>
     {

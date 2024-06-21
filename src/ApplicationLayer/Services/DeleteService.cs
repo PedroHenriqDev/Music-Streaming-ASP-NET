@@ -1,16 +1,20 @@
 ﻿using ApplicationLayer.Interfaces;
 using DataAccessLayer.UnitOfWork;
+using DomainLayer.Entities;
 using DomainLayer.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace ApplicationLayer.Services;
 
 public class DeleteService : IDeleteService
 {
+    private readonly ILogger<DeleteService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IVerifyService _verifyService;
 
-    public DeleteService(IUnitOfWork unitOfWork, IVerifyService verifyService)
+    public DeleteService(ILogger<DeleteService> logger, IUnitOfWork unitOfWork, IVerifyService verifyService)
     {
+        _logger = logger;
         _unitOfWork = unitOfWork;
         _verifyService = verifyService;
     }
@@ -52,6 +56,20 @@ public class DeleteService : IDeleteService
         catch(Exception ex) 
         {
             throw new InvalidOperationException($"Error in delete favorite playlist, because {ex.Message}");
+        }
+    }
+
+    public async Task<EntityQuery<PlaylistMusic>> DeletePlaylistMusicAsync(PlaylistMusic playlistMusic)
+    {
+        try
+        {
+            await _unitOfWork.EntitiesAssociationRepository.RemovePlaylistMusicAsync(playlistMusic);
+            return new EntityQuery<PlaylistMusic>(true, "Deleted successfully", playlistMusic, DateTime.Now);
+        }
+        catch(Exception ex)
+        {
+            _logger.LogError($"Error ocurrer in method: {DeletePlaylistMusicAsync}, Error: {ex.Message}");
+            return new EntityQuery<PlaylistMusic>(false, $"Deletion error, because: {ex.Message}", playlistMusic, DateTime.Now);
         }
     }
 }

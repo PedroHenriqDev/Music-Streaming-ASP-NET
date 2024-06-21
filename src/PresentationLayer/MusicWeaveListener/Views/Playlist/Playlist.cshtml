@@ -21,6 +21,15 @@
                         {
                             <div class="music-item">
                                 <div class="music-info">
+                                    <form asp-action="DeletePlaylistMusic" asp-controller="Playlist" method="post">
+                                        <input type="hidden" name="playlistId" value="@Model.Id"></input>
+                                        <input type="hidden" name="musicId" value="@music.Music.Id"></input>
+                                        <input type="hidden" name="controller" value="Playlist"></input>
+                                        <input type="hidden" name="action" value="Playlist"></input>
+                                        <button type="submit" class="btn remove-button">
+                                            <i class="bi bi-x-circle"></i>
+                                        </button>
+                                    </form>
                                     <span class="artist-name">@music.DurationText<i class="bi bi-clock mx-2"></i></span>
                                     <img src="data:image/png;base64,@(Convert.ToBase64String(music.MusicData.Picture))" class="music-image" />
                                     <button type="button" class="btn btn-dark text-black rounded-circle play-button" id="playButton@(music.Music.Id)" onclick="togglePlayPause('@music.Music.Name', '@Convert.ToBase64String(music.MusicData.Audio)', this)">
@@ -63,11 +72,34 @@
         width: 220px;
         border-radius: 10px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        position: relative;
     }
 
         .music-item:hover {
             transform: translateY(-5px);
         }
+
+    .remove-button {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        border: none;
+        color: white;
+        font-size: 16px;
+        padding: 5px;
+        border-radius: 50%;
+        cursor: pointer;
+        background-color: transparent;
+    }
+
+        .remove-button i {
+            font-size: 20px;
+        }
+
+        .remove-button:hover {
+            color: red;
+        }
+
 
     .music-info {
         display: flex;

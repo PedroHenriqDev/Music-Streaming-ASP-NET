@@ -14,6 +14,7 @@ namespace MusicWeaveListener.Controllers;
 public class PlaylistController : Controller
 {
     private readonly ViewModelFactory _viewModelFactory;
+    private readonly DomainFactory _domainFactory;
     private readonly ISearchService _searchService;
     private readonly IVerifyService _verifyService;
     private readonly IRecordService _recordService;
@@ -22,6 +23,7 @@ public class PlaylistController : Controller
     private readonly IHttpContextAccessor _httpAccessor;
 
     public PlaylistController(ViewModelFactory viewModelFactory,
+                               DomainFactory domainFactory,
                                ISearchService searchService,
                                IVerifyService verifyService,
                                IRecordService recordService,
@@ -30,6 +32,7 @@ public class PlaylistController : Controller
                                IHttpContextAccessor httpAccessor)
     {
         _viewModelFactory = viewModelFactory;
+        _domainFactory = domainFactory;
         _searchService = searchService;
         _verifyService = verifyService;
         _recordService = recordService;
@@ -68,6 +71,7 @@ public class PlaylistController : Controller
             });
 
         var playlistViewModel = await _viewModelFactory.CreatePlaylistViewModelAsync(await _searchService.FindPlaylistByIdAsync(playlistId));
+
         return View(playlistViewModel);
     }
 
@@ -83,6 +87,7 @@ public class PlaylistController : Controller
 
         var playlistsViewModel = HttpHelper.GetSessionValue<IEnumerable<PlaylistViewModel>>(_httpAccessor, SessionKeys.PlaylistSessionKey);
         var playlistViewModel = playlistsViewModel.FirstOrDefault(p => p.Id == playlistId);
+        
         if (playlistViewModel is null)
             return RedirectToAction(nameof(Error), new
             {
@@ -133,6 +138,35 @@ public class PlaylistController : Controller
         }
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [AllowAnonymous]
+    public async Task<IActionResult> DeletePlaylistMusic(string playlistId, string musicId, string controller, string action)
+    {
+        if (playlistId is null || musicId is null || action is null || controller is null)
+        {
+            return RedirectToAction(nameof(Error), new
+            {
+                message = $"Any reference null ocurred in {nameof(DeletePlaylistMusic)}"
+            });
+        }
+
+        var playlistMusicQuery = await _deleteService.DeletePlaylistMusicAsync(_domainFactory.CreatePlaylistMusic(playlistId, musicId, User.FindFirstValue(CookieKeys.UserIdCookieKey)));
+
+        if (!playlistMusicQuery.Result)
+        {
+            return RedirectToAction(nameof(Error), new
+            {
+                message = playlistMusicQuery.Message
+            });
+        }
+
+        return RedirectToAction(action, controller, new 
+        {
+            playlistId = playlistId
+        });
+    }
+
     [HttpGet]
     [AllowAnonymous]
     public async Task<IActionResult> AddPlaylistMusics()
@@ -147,17 +181,13 @@ public class PlaylistController : Controller
     public async Task<IActionResult> AddPlaylistMusics(string musicsToAdd)
     {
         if (string.IsNullOrWhiteSpace(musicsToAdd))
-        {
             return RedirectToAction(nameof(AddPlaylistMusics));
-        }
 
         var playlistQuery = await _recordService.RecordPlaylistMusicsAsync(_domainCreationService.CreatePlaylistMusics(HttpHelper.GetSessionValue<string>(_httpAccessor, SessionKeys.PlaylistIdSessionKey), User.FindFirstValue(CookieKeys.UserIdCookieKey), musicsToAdd.ConvertStringJoinInList()));
         HttpHelper.RemoveSessionValue(_httpAccessor, SessionKeys.PlaylistIdSessionKey);
 
         if (playlistQuery.Result)
-        {
             return RedirectToAction(nameof(Index));
-        }
 
         return RedirectToAction(nameof(Error), new
         {

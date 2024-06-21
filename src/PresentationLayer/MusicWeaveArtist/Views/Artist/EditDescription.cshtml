@@ -26,7 +26,7 @@
 </div>
 
 <script>
-    var descriptions = @Html.Raw(Json.Serialize(Model.GenerateDescription));
+    var descriptions = @Html.Raw(Json.Serialize(Model.GeneratedDescription));
     var currentIndex = 0;
 
     function generateDescription() {

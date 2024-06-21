@@ -1,4 +1,5 @@
-﻿using DomainLayer.Interfaces;
+﻿using DomainLayer.Entities;
+using DomainLayer.Interfaces;
 
 namespace ApplicationLayer.Interfaces;
 
@@ -10,4 +11,6 @@ public interface IDeleteService
     Task DeleteFavoriteMusicAsync(string musicId, string listenerId);
 
     Task DeleteFavoritePlaylistAsync(string playlistId, string listenerId);
+
+    Task<EntityQuery<PlaylistMusic>> DeletePlaylistMusicAsync(PlaylistMusic playlistMusic);
 }
